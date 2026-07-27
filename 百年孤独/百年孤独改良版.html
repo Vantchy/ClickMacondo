@@ -1,0 +1,1115 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>百年孤独 · 互动探索</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #0d0a06;
+      font-family: 'Georgia', 'Noto Serif SC', 'STSong', 'SimSun', serif;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+      cursor: default;
+    }
+
+    /* --- 全屏背景 --- */
+    #bg-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      transition: opacity 0.9s ease;
+      opacity: 1;
+    }
+    #bg-layer.fading {
+      opacity: 0;
+    }
+    #bg-layer-next {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    /* --- 暗色叠加 + 纹理 --- */
+    #dark-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      background: rgba(10, 8, 4, 0.55);
+      pointer-events: none;
+    }
+    .texture-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+      opacity: 0.06;
+      background:
+        repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.04) 2px, rgba(0, 0, 0, 0.04) 4px),
+        repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0, 0, 0, 0.03) 2px, rgba(0, 0, 0, 0.03) 4px);
+    }
+    .vignette {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+      box-shadow: inset 0 0 200px 80px rgba(0, 0, 0, 0.7);
+    }
+
+    /* --- 点击区域 (左右半屏) --- */
+    #click-area {
+      position: fixed;
+      inset: 0;
+      z-index: 5;
+      display: flex;
+      pointer-events: none;
+    }
+    #click-area>div {
+      flex: 1;
+      pointer-events: all;
+      cursor: pointer;
+    }
+    #click-left {
+      cursor: w-resize;
+    }
+    #click-right {
+      cursor: e-resize;
+    }
+
+    /* --- 文字容器 (毛玻璃) --- */
+    #text-container {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 6;
+      width: min(90%, 720px);
+      max-height: 60vh;
+      background: rgba(10, 10, 10, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 16px;
+      border: 1px solid rgba(196, 149, 74, 0.2);
+      padding: 28px 32px 24px;
+      box-shadow: 0 12px 48px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+      overflow-y: auto;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+    #text-container.fading {
+      opacity: 0;
+    }
+    #text-container::-webkit-scrollbar {
+      width: 3px;
+    }
+    #text-container::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    #text-container::-webkit-scrollbar-thumb {
+      background: rgba(196, 149, 74, 0.3);
+      border-radius: 4px;
+    }
+
+    .scene-tag {
+      display: inline-block;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      color: #c4954a;
+      text-transform: uppercase;
+      padding: 4px 14px;
+      border: 1px solid rgba(196, 149, 74, 0.25);
+      border-radius: 20px;
+      background: rgba(10, 8, 4, 0.3);
+      margin-bottom: 12px;
+    }
+    .character-name {
+      display: inline-block;
+      font-size: 1.1rem;
+      color: #e0b060;
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+      cursor: pointer;
+      pointer-events: all;
+      transition: color 0.3s, text-shadow 0.3s;
+      text-shadow: 0 0 8px rgba(184, 134, 11, 0.2);
+      border-bottom: 1px solid transparent;
+      padding-bottom: 2px;
+    }
+    .character-name:hover {
+      color: #f0d080;
+      text-shadow: 0 0 16px rgba(184, 134, 11, 0.4);
+      border-bottom-color: #c4954a;
+    }
+    .story-text {
+      font-size: clamp(16px, 2.2vw, 20px);
+      line-height: 1.9;
+      color: #efe8d8;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+      text-align: justify;
+      text-indent: 2em;
+      margin: 6px 0 12px;
+      word-break: break-word;
+    }
+    .atmosphere-row {
+      display: flex;
+      justify-content: flex-start;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+      pointer-events: none;
+    }
+    .atmo-tag {
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: #b68f4a;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 12px;
+      background: rgba(10, 8, 4, 0.35);
+      border-radius: 20px;
+      border: 1px solid rgba(139, 105, 20, 0.15);
+    }
+    .atmo-tag::before {
+      content: '◆';
+      font-size: 0.3rem;
+      color: #c4954a;
+    }
+
+    /* --- 底部栏 --- */
+    #bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      padding: 12px 24px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(transparent, rgba(10, 8, 4, 0.8) 30%, rgba(10, 8, 4, 0.95) 100%);
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .progress-info {
+      font-size: 0.75rem;
+      color: #b68f4a;
+      letter-spacing: 0.08em;
+      min-width: 80px;
+      white-space: nowrap;
+    }
+    .progress-track {
+      flex: 1;
+      min-width: 60px;
+      height: 2px;
+      background: rgba(196, 149, 74, 0.2);
+      border-radius: 2px;
+      position: relative;
+    }
+    .progress-fill {
+      height: 100%;
+      background: #c4954a;
+      border-radius: 2px;
+      transition: width 0.5s ease;
+      width: 4.35%;
+      position: relative;
+    }
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      right: -3px;
+      top: -3px;
+      width: 8px;
+      height: 8px;
+      background: #c4954a;
+      border-radius: 50%;
+      box-shadow: 0 0 8px rgba(184, 134, 11, 0.4);
+    }
+    .btn-graph {
+      font-family: inherit;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      color: #c4954a;
+      background: rgba(10, 8, 4, 0.4);
+      border: 1px solid rgba(196, 149, 74, 0.3);
+      padding: 6px 18px;
+      border-radius: 20px;
+      cursor: pointer;
+      pointer-events: all;
+      transition: all 0.3s;
+      backdrop-filter: blur(4px);
+      white-space: nowrap;
+    }
+    .btn-graph:hover {
+      background: rgba(196, 149, 74, 0.12);
+      border-color: #c4954a;
+      box-shadow: 0 0 14px rgba(196, 149, 74, 0.15);
+    }
+
+    /* --- 蝴蝶 --- */
+    .butterfly {
+      position: fixed;
+      z-index: 4;
+      pointer-events: none;
+      font-size: 1.2rem;
+      opacity: 0;
+      animation: butterflyFall var(--dur) ease-in forwards;
+      animation-delay: var(--delay);
+      filter: drop-shadow(0 0 6px rgba(218, 165, 32, 0.4));
+    }
+    @keyframes butterflyFall {
+      0% {
+        opacity: 0;
+        transform: translate(0, -20px) rotate(0deg) scale(0.5);
+      }
+      10% {
+        opacity: 0.8;
+      }
+      30% {
+        transform: translate(var(--dx1), 30vh) rotate(var(--r1)) scale(1);
+      }
+      60% {
+        transform: translate(var(--dx2), 60vh) rotate(var(--r2)) scale(0.9);
+      }
+      85% {
+        opacity: 0.6;
+      }
+      100% {
+        opacity: 0;
+        transform: translate(var(--dx3), 105vh) rotate(var(--r3)) scale(0.3);
+      }
+    }
+
+    /* --- 人物档案弹窗 --- */
+    #modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s;
+      backdrop-filter: blur(3px);
+      padding: 20px;
+    }
+    #modal-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .modal-card {
+      background: linear-gradient(160deg, #f7ebd0 0%, #ecd9a8 35%, #e0cfa0 100%);
+      max-width: 420px;
+      width: 100%;
+      padding: 32px 28px 26px;
+      border-radius: 12px;
+      border: 1px solid rgba(139, 105, 20, 0.3);
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7), inset 0 0 40px rgba(139, 105, 20, 0.04);
+      position: relative;
+      transform: translateY(20px);
+      transition: transform 0.35s;
+      color: #3c2415;
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+    #modal-overlay.active .modal-card {
+      transform: translateY(0);
+    }
+    .modal-close {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      color: #5c3a1e;
+      cursor: pointer;
+      opacity: 0.5;
+      transition: opacity 0.3s;
+      font-family: inherit;
+    }
+    .modal-close:hover {
+      opacity: 1;
+    }
+    .modal-alias {
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      color: #8b6914;
+      text-transform: uppercase;
+    }
+    .modal-name {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #3c2415;
+      letter-spacing: 0.06em;
+    }
+    .modal-role {
+      font-size: 0.8rem;
+      color: #6b2d2d;
+      font-style: italic;
+      margin-bottom: 14px;
+    }
+    .modal-divider {
+      width: 40px;
+      height: 1px;
+      background: #8b6914;
+      margin: 14px auto;
+      opacity: 0.3;
+    }
+    .modal-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: #8b6914;
+      margin-bottom: 2px;
+    }
+    .modal-appearance,
+    .modal-fate {
+      font-size: 0.9rem;
+      line-height: 1.8;
+      color: #5c3a1e;
+      text-indent: 2em;
+    }
+    .modal-fate {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(139, 105, 20, 0.15);
+    }
+
+    /* --- 关系图谱 --- */
+    #graph-panel {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      background: rgba(10, 8, 4, 0.97);
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s;
+    }
+    #graph-panel.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .graph-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 24px;
+      border-bottom: 1px solid rgba(196, 149, 74, 0.1);
+      flex-shrink: 0;
+    }
+    .graph-title {
+      font-size: 0.95rem;
+      letter-spacing: 0.12em;
+      color: #c4954a;
+    }
+    .graph-close {
+      font-family: inherit;
+      font-size: 0.7rem;
+      color: #c4954a;
+      background: transparent;
+      border: 1px solid rgba(196, 149, 74, 0.3);
+      padding: 5px 18px;
+      border-radius: 20px;
+      cursor: pointer;
+      letter-spacing: 0.08em;
+      transition: all 0.3s;
+    }
+    .graph-close:hover {
+      background: rgba(196, 149, 74, 0.08);
+    }
+
+    #graph-container {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      min-height: 0;
+    }
+    #graph-svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .graph-legend {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 10px 16px;
+      border-top: 1px solid rgba(196, 149, 74, 0.08);
+      flex-wrap: wrap;
+      flex-shrink: 0;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.6rem;
+      color: #b68f4a;
+      letter-spacing: 0.06em;
+    }
+    .legend-line {
+      width: 20px;
+      height: 2px;
+      border-radius: 1px;
+    }
+
+    /* 图谱内浮窗 */
+    #graph-popup-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+      backdrop-filter: blur(2px);
+    }
+    #graph-popup-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .graph-popup-card {
+      background: linear-gradient(160deg, #f7ebd0 0%, #ecd9a8 35%, #e0cfa0 100%);
+      max-width: 360px;
+      width: 85%;
+      padding: 28px 24px 24px;
+      border-radius: 12px;
+      border: 1px solid rgba(139, 105, 20, 0.3);
+      box-shadow: 0 20px 52px rgba(0, 0, 0, 0.7);
+      position: relative;
+      color: #3c2415;
+      transform: translateY(16px);
+      transition: transform 0.3s;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    #graph-popup-overlay.active .graph-popup-card {
+      transform: translateY(0);
+    }
+    .graph-popup-close {
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      background: none;
+      border: none;
+      font-size: 1.1rem;
+      color: #5c3a1e;
+      cursor: pointer;
+      opacity: 0.5;
+      transition: opacity 0.3s;
+      font-family: inherit;
+    }
+    .graph-popup-close:hover {
+      opacity: 1;
+    }
+    .graph-popup-alias {
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      color: #8b6914;
+      text-transform: uppercase;
+    }
+    .graph-popup-name {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #3c2415;
+      letter-spacing: 0.06em;
+    }
+    .graph-popup-role {
+      font-size: 0.75rem;
+      color: #6b2d2d;
+      font-style: italic;
+      margin-bottom: 10px;
+    }
+    .graph-popup-divider {
+      width: 36px;
+      height: 1px;
+      background: #8b6914;
+      margin: 12px auto;
+      opacity: 0.3;
+    }
+    .graph-popup-label {
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      color: #8b6914;
+    }
+    .graph-popup-appearance,
+    .graph-popup-fate {
+      font-size: 0.85rem;
+      line-height: 1.7;
+      color: #5c3a1e;
+      text-indent: 2em;
+    }
+    .graph-popup-fate {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(139, 105, 20, 0.12);
+    }
+
+    /* 响应式 */
+    @media (max-width: 640px) {
+      #text-container {
+        bottom: 80px;
+        padding: 20px 18px 18px;
+        width: 92%;
+        max-height: 55vh;
+      }
+      .story-text {
+        font-size: 16px;
+        line-height: 1.8;
+      }
+      .character-name {
+        font-size: 1rem;
+      }
+      #bottom-bar {
+        padding: 8px 14px 14px;
+        gap: 8px;
+      }
+      .progress-info {
+        font-size: 0.65rem;
+        min-width: 60px;
+      }
+      .btn-graph {
+        font-size: 0.6rem;
+        padding: 4px 14px;
+      }
+      .modal-card {
+        padding: 24px 20px 20px;
+      }
+      .graph-popup-card {
+        padding: 20px 16px 16px;
+        max-width: 300px;
+      }
+    }
+    @media (max-width: 400px) {
+      #text-container {
+        padding: 16px 14px 14px;
+        bottom: 70px;
+      }
+      .story-text {
+        font-size: 15px;
+      }
+      .scene-tag {
+        font-size: 0.55rem;
+        padding: 2px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 背景图层 -->
+  <div id="bg-layer"></div>
+  <div id="bg-layer-next"></div>
+
+  <!-- 暗色叠加 & 纹理 -->
+  <div id="dark-overlay"></div>
+  <div class="texture-overlay"></div>
+  <div class="vignette"></div>
+
+  <!-- 蝴蝶容器 -->
+  <div id="butterfly-container"></div>
+
+  <!-- 点击区域 (左右半屏) -->
+  <div id="click-area">
+    <div id="click-left" title="上一段"></div>
+    <div id="click-right" title="下一段"></div>
+  </div>
+
+  <!-- 文字容器 (毛玻璃) -->
+  <div id="text-container">
+    <div class="scene-tag" id="sceneTag"></div>
+    <div class="character-name" id="charName" title="点击查看人物档案"></div>
+    <div class="story-text" id="storyText"></div>
+    <div class="atmosphere-row" id="atmoRow"></div>
+  </div>
+
+  <!-- 底部栏 -->
+  <div id="bottom-bar">
+    <div class="progress-info" id="progressInfo">第 1 / 23 段</div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <button class="btn-graph" id="btnGraph">📜 家族树</button>
+  </div>
+
+  <!-- 人物档案弹窗 -->
+  <div id="modal-overlay">
+    <div class="modal-card">
+      <button class="modal-close" id="modalClose">✕</button>
+      <div class="modal-alias" id="modalAlias"></div>
+      <div class="modal-name" id="modalName"></div>
+      <div class="modal-role" id="modalRole"></div>
+      <div class="modal-divider"></div>
+      <div class="modal-label">外貌</div>
+      <div class="modal-appearance" id="modalAppearance"></div>
+      <div class="modal-fate" id="modalFate"></div>
+    </div>
+  </div>
+
+  <!-- 关系图谱面板 -->
+  <div id="graph-panel">
+    <div class="graph-header">
+      <span class="graph-title">📜 布恩迪亚家族 · 关系图谱</span>
+      <button class="graph-close" id="graphClose">关闭</button>
+    </div>
+    <div id="graph-container">
+      <svg id="graph-svg"></svg>
+      <div id="graph-popup-overlay">
+        <div class="graph-popup-card">
+          <button class="graph-popup-close" id="graphPopupClose">✕</button>
+          <div class="graph-popup-alias" id="graphPopupAlias"></div>
+          <div class="graph-popup-name" id="graphPopupName"></div>
+          <div class="graph-popup-role" id="graphPopupRole"></div>
+          <div class="graph-popup-divider"></div>
+          <div class="graph-popup-label">外貌</div>
+          <div class="graph-popup-appearance" id="graphPopupAppearance"></div>
+          <div class="graph-popup-fate" id="graphPopupFate"></div>
+        </div>
+      </div>
+    </div>
+    <div class="graph-legend">
+      <span class="legend-item"><span class="legend-line" style="background:#c4954a;"></span>夫妻</span>
+      <span class="legend-item"><span class="legend-line" style="background:#6b8c5c;"></span>亲子</span>
+      <span class="legend-item"><span class="legend-line" style="background:#b8860b;border-bottom:2px dashed #b8860b;background:none;height:0;"></span>情人</span>
+      <span class="legend-item"><span class="legend-line" style="background:#9b6b9e;"></span>恋人</span>
+      <span class="legend-item"><span class="legend-line" style="background:#5c7a8a;"></span>手足/战友</span>
+    </div>
+  </div>
+
+  <script>
+    // ═══════════════ 数据 ═══════════════
+    const DATA = {
+      episodes: [
+        { "id": 1, "text": "多年以后，面对行刑队，奥雷里亚诺·布恩迪亚上校将会回想起父亲带他去见识冰块的那个遥远的下午。那时的马孔多是一个二十户人家的村落，泥巴和芦苇盖成的屋子沿河岸排开，湍急的河水清澈见底，河床里卵石洁白光滑宛如史前巨蛋。世界新生伊始，许多事物还没有名字，提到的时候尚需用手指指点点。", "character": "奥雷里亚诺·布恩迪亚上校", "scene": "马孔多", "atmosphere": "午后", "sound": "鸟鸣", "specialEffect": "冰块" },
+        { "id": 2, "text": "他拖着两块金属锭走家串户，引发的景象使所有人目瞪口呆：铁锅、铁盆、铁钳、小铁炉纷纷跌落，木板因钉子绝望挣扎、螺丝奋力挣脱而吱嘎作响，甚至连那些丢失多日的物件也在久寻不见的地方出现，一窝蜂似的追随在梅尔基亚德斯的魔铁后面。", "character": "梅尔基亚德斯", "scene": "马孔多", "atmosphere": "正午", "sound": "金属碰撞声", "specialEffect": "磁铁" },
+        { "id": 3, "text": "最终，在十二月一个星期二的午饭时分，他从所有的折磨中一下解脱了。孩子们终其一生都将记得父亲如何在桌首庄严入座，被长期熬夜和苦思冥想折磨得形销骨立，因激动而颤抖着，向他们透露自己的发现：地球是圆的，就像个橙子。", "character": "何塞·阿尔卡蒂奥·布恩迪亚", "scene": "老宅", "atmosphere": "正午", "sound": "钟声", "specialEffect": "地球仪" },
+        { "id": 4, "text": "吉卜赛人纠正道：不是钻石，是冰块。何塞·阿尔卡蒂奥·布恩迪亚付了钱，把手放在冰块上，就这样停了好几分钟，心中充满了体验神秘的恐惧和喜悦。他无法用语言表达，又另付了十个里亚尔，让儿子们也体验一下这神奇的感觉。", "character": "何塞·阿尔卡蒂奥·布恩迪亚", "scene": "吉普赛营地", "atmosphere": "黄昏", "sound": "铃铛声", "specialEffect": "冰块" },
+        { "id": 5, "text": "何塞·阿尔卡蒂奥·布恩迪亚以公牛般的力气投出了长矛，以第一代奥雷里亚诺·布恩迪亚当年猎杀本地老虎的准头，刺穿了他的咽喉。那是六月里一个美好的夜晚，天气清凉，月光明亮。两人一夜不眠，在床上嬉闹直到破晓，任凭夜风吹过卧室。", "character": "何塞·阿尔卡蒂奥·布恩迪亚", "scene": "老宅", "atmosphere": "黎明", "sound": "风声", "specialEffect": "血" },
+        { "id": 6, "text": "他梦见那个地方耸立起一座喧嚣的城市，家家户户以镜子为墙。他询问这是什么城市，得到的回答是一个他从未听说、也没有任何含义的名字，但那名字却在梦中神秘地回响：马孔多。第二天，他说服众人相信永远也找不到大海了，在河边最凉爽的地方建起了村庄。", "character": "何塞·阿尔卡蒂奥·布恩迪亚", "scene": "雨林", "atmosphere": "黎明", "sound": "河水声", "specialEffect": "镜子之城" },
+        { "id": 7, "text": "那是什么感觉？奥雷里亚诺问道。何塞·阿尔卡蒂奥当即回答：好像地震。一月里一个星期四的凌晨两点，阿玛兰妲出生了。在其他人进入房间之前，乌尔苏拉先把她浑身上下细细检查了一遍，身体所有部位都属于人类无疑。", "character": "何塞·阿尔卡蒂奥", "scene": "老宅", "atmosphere": "凌晨", "sound": "雨声", "specialEffect": "地震" },
+        { "id": 8, "text": "何塞·阿尔卡蒂奥感觉身体悬空，飞向极乐之境，心灵融化在柔情色欲的泉源里，那情欲涌入女郎的耳朵，又从她的口中变成语言涌出。那天是星期四。到星期六晚上，何塞·阿尔卡蒂奥往头上缠了块红布，跟着吉卜赛人走了。", "character": "何塞·阿尔卡蒂奥", "scene": "吉普赛营地", "atmosphere": "夜晚", "sound": "鼓声", "specialEffect": "红布" },
+        { "id": 9, "text": "丽贝卡坐在厨房角落里的摇椅上，梦见一个和自己相貌极其相似的男人，他身着白色亚麻衣裳，衬衫领口别着一粒金扣，给她带来一束玫瑰。陪伴他的还有一位女士，用纤细的手指拣出一枝玫瑰簪在她发间。", "character": "丽贝卡·布恩迪亚", "scene": "老宅", "atmosphere": "黄昏", "sound": "钟声", "specialEffect": "玫瑰" },
+        { "id": 10, "text": "奥雷里亚诺把名称写在纸上，用树胶贴在小铁砧底部：砧子。这样，他相信今后就不会再忘记。他用小刷子蘸上墨水给每样东西注明名称：桌子，椅子，钟，门，墙，床，平锅。他又到畜栏为动物和植物标上名称：奶牛，山羊，猪，母鸡，木薯，海芋，香蕉。", "character": "奥雷里亚诺·布恩迪亚上校", "scene": "老宅", "atmosphere": "正午", "sound": "雨声", "specialEffect": "羊皮卷" },
+        { "id": 11, "text": "马孔多欢庆重获记忆的同时，何塞·阿尔卡蒂奥·布恩迪亚和梅尔基亚德斯正在重温往昔的友情。老吉卜赛人准备就此留在镇上。他的确一度死去，但难以忍受孤独又重返人世。他因执著于生命受到惩罚，被剥夺了一切超自然能力，又被逐出了部落。", "character": "梅尔基亚德斯", "scene": "老宅", "atmosphere": "黄昏", "sound": "雷声", "specialEffect": "银版照片" },
+        { "id": 12, "text": "她曾经在泥土的味道中，在皮埃特罗·克雷斯皮芬芳的书信里，在丈夫如狂风暴雨的床榻上徒劳地寻寻觅觅，最终却在这个家中找到了安宁。在这里，记忆因思绪无情的力量化为实体，如同活人一般在幽闭的房间里游荡。", "character": "丽贝卡·布恩迪亚", "scene": "老宅", "atmosphere": "黄昏", "sound": "风声", "specialEffect": "血" },
+        { "id": 13, "text": "奥雷里亚诺·布恩迪亚上校发动过三十二场武装起义，无一成功。他与十七个女人生下十七个儿子，一夜之间都被逐个除掉，其中最年长的不到三十五岁。他逃过十四次暗杀、七十三次伏击和一次枪决。他有一次被人在咖啡里投毒，投入的马钱子碱足够毒死一匹马。", "character": "奥雷里亚诺·布恩迪亚上校", "scene": "马孔多", "atmosphere": "黎明", "sound": "马蹄声", "specialEffect": "金鱼" },
+        { "id": 14, "text": "何塞·阿尔卡蒂奥刚关上卧室的门，一声枪响震彻全屋。一道血线从门下涌出，穿过客厅，流到街上，沿着起伏不平的便道径直向前，经台阶下行，爬上路栏，绕过土耳其人大街，右拐又左拐，九十度转向直奔布恩迪亚家。", "character": "何塞·阿尔卡蒂奥", "scene": "街道", "atmosphere": "黄昏", "sound": "枪声", "specialEffect": "血线" },
+        { "id": 15, "text": "何塞·阿尔卡蒂奥·布恩迪亚在一个有无穷房间的梦中得到慰藉。他梦见自己从床上起来，打开房门，走进另一间一模一样的房间，里面有同样铸铁床头的床、同样的藤椅和后墙上同样的救难圣母像。从这一间又进入另一间一模一样的，如此循环，无穷无尽。", "character": "何塞·阿尔卡蒂奥·布恩迪亚", "scene": "老宅", "atmosphere": "黎明", "sound": "钟声", "specialEffect": "镜廊" },
+        { "id": 16, "text": "花雨在镇上落了一整夜，这静寂的风暴覆盖了房顶，堵住了屋门，令露宿的动物窒息而死。如此多的花朵自天而降，天亮时大街小巷都覆上了一层绵密的花毯，人们得用铲子耙子清理出通道才能出殡。", "character": "何塞·阿尔卡蒂奥·布恩迪亚", "scene": "马孔多", "atmosphere": "黎明", "sound": "风声", "specialEffect": "黄花雨" },
+        { "id": 17, "text": "奥雷里亚诺·布恩迪亚上校坐在栗树下小便，忽然听见远处铜管奏乐、大鼓轰鸣、孩童欢呼。他看见一个女人穿得金光闪闪骑在大象的脖子上，看见哀伤的单峰驼，看见打扮成荷兰姑娘的熊用炒勺和菜锅敲出音乐节奏。", "character": "奥雷里亚诺·布恩迪亚上校", "scene": "马孔多", "atmosphere": "黄昏", "sound": "铜管乐", "specialEffect": "马戏团" },
+        { "id": 18, "text": "美人儿蕾梅黛丝开始离开地面。乌尔苏拉那时几近失明，却只有她能镇定自若地看出那阵不可阻挡的微风因何而来，便任凭床单随光芒而去，看着她挥手告别，身边鼓荡放光的床单和她一起冉冉上升，永远消失在连飞得最高的回忆之鸟也无法企及的高邈空间。", "character": "美人儿蕾梅黛丝", "scene": "老宅", "atmosphere": "黄昏", "sound": "风声", "specialEffect": "升天" },
+        { "id": 19, "text": "工人被包围在车站，十四处机枪掩体立时响应。一切宛似一场闹剧，仿佛机枪正在喷射的只是骗人的烟火，因为能听见急迫的枪声嗒嗒，能看见白炽的烈焰喷吐，却感受不到任何轻微的反应。突然，一声垂死的呼号打破了着魔般的状态：啊啊，妈妈呀。", "character": "何塞·阿尔卡蒂奥第二", "scene": "马孔多", "atmosphere": "正午", "sound": "枪声", "specialEffect": "血" },
+        { "id": 20, "text": "那是他平生见过的最长的火车，有将近两百节运货车厢，首尾各有一个火车头，中间还夹着一个。火车悄无声息地在夜间滑行，车上没有任何光亮，连定位的红绿灯光也没有。车厢顶上依稀可见一挺挺机枪旁士兵的黑影。", "character": "何塞·阿尔卡蒂奥第二", "scene": "雨林", "atmosphere": "黑夜", "sound": "雨声", "specialEffect": "尸体火车" },
+        { "id": 21, "text": "他们发现了他和他的孩子。那孩子只剩下一张肿胀干瘪的皮，全世界的蚂蚁一齐出动，正沿着花园的石子路努力把他拖回巢去。奥雷里亚诺僵在原地，因为在那神奇的一瞬梅尔基亚德斯终极的密码向他显明了意义。", "character": "奥雷里亚诺·巴比伦", "scene": "老宅", "atmosphere": "黎明", "sound": "蚁声", "specialEffect": "蚂蚁" },
+        { "id": 22, "text": "奥雷里亚诺平生从未像此刻一般清醒，他忘却了家中的死者，忘却了死者的痛苦，用费尔南达留下的十字木条再次钉死门窗，远离世间一切干扰，因为他知道梅尔基亚德斯的羊皮卷上记载着自己的命运。他顾不得拿到光亮处，就站在原地，开始毫不费力地大声破译。", "character": "奥雷里亚诺·巴比伦", "scene": "老宅", "atmosphere": "黎明", "sound": "风声", "specialEffect": "羊皮卷" },
+        { "id": 23, "text": "马孔多在《圣经》所载那种龙卷风的怒号中化作可怕的瓦砾与尘埃旋涡时，奥雷里亚诺译出羊皮卷的最后一页。这座镜子之城——或蜃景之城——将在奥雷里亚诺·巴比伦全部译出羊皮卷之时被飓风抹去，从世人记忆中根除，注定经受百年孤独的家族不会有第二次机会在大地上出现。", "character": "奥雷里亚诺·巴比伦", "scene": "马孔多", "atmosphere": "黄昏", "sound": "飓风", "specialEffect": "龙卷风" }
+      ],
+      characters: [
+        { "name": "何塞·阿尔卡蒂奥·布恩迪亚", "alias": "老布恩迪亚", "description": "马孔多的创始人，富有进取心和想象力，痴迷于吉卜赛人带来的磁铁、放大镜等科学发明和炼金术。他天马行空，带领村民翻山越岭寻找大海，最终因疯狂被绑在栗树下，晚年与亡灵为伴，在无尽的梦境中游荡。", "appearance": "身材魁梧，胡须野蛮，目光充满探索精神，晚年形销骨立。", "fate": "在栗树下衰老而死，尸体被无数小黄花覆盖。", "familyRole": "家族族长 / 父亲" },
+        { "name": "乌尔苏拉·伊瓜兰", "alias": "乌尔苏拉", "description": "何塞·阿尔卡蒂奥·布恩迪亚的妻子，身材娇小却活力充沛，意志坚定，是家族真正的支柱。她勤劳能干，经营糖果小动物生意，见证了家族六代人的兴衰。晚年双目失明，却凭其他感官洞察一切，是家族历史的守护者。", "appearance": "身材娇小，穿着细棉布裙，眼神坚定，充满活力。", "fate": "在百岁高龄去世，死前预言自己将在雨停后死去。", "familyRole": "家族女族长 / 母亲" },
+        { "name": "奥雷里亚诺·布恩迪亚上校", "alias": "上校", "description": "何塞与乌尔苏拉的次子，沉默寡言，富有预感和洞察力。他发动了三十二场起义，均告失败，成为传奇人物。他一生深陷战争与孤独，晚年在小作坊里反复制作小金鱼，在无尽的循环中寻求平静。", "appearance": "瘦削，颧骨突出，眼神锐利，留着翘尖角的黑髭须。", "fate": "在栗树下因衰老和孤独悄然去世，尸体被秃鹫发现。", "familyRole": "次子 / 革命军上校" },
+        { "name": "何塞·阿尔卡蒂奥", "alias": "大何塞", "description": "何塞与乌尔苏拉的长子，体格魁梧，冲动任性。少年时随吉卜赛人出走，多年后返回，浑身刺青，与丽贝卡结婚。他因强占土地引来麻烦，最终在卧室中被不明来源的枪击打死，死因成谜。", "appearance": "身材过人的大汉，满身刺青，头发像骡子的鬃毛。", "fate": "在家中卧室被枪杀，死因成谜。", "familyRole": "长子" },
+        { "name": "阿玛兰妲·布恩迪亚", "alias": "阿玛兰妲", "description": "何塞与乌尔苏拉的女儿，性格高傲，内心充满矛盾的爱与恨。她因嫉妒百般阻挠丽贝卡的婚事，又因无法战胜恐惧拒绝了皮埃特罗·克雷斯皮和赫里内勒多·马尔克斯的爱，在悔恨和孤独中为自己编织精美的寿衣。", "appearance": "面容苍白，眼神高傲，手上永远缠着代表赎罪的黑纱。", "fate": "预知死期后，平静地织完寿衣，宣告死讯后去世。", "familyRole": "女儿" },
+        { "name": "丽贝卡·布恩迪亚", "alias": "丽贝卡", "description": "乌尔苏拉的远房表妹，被收养。她幼年有食土癖，性格冲动热烈。她爱上皮埃特罗·克雷斯皮，后又嫁给何塞·阿尔卡蒂奥，丈夫死后将自己幽闭家中，与世隔绝至死，带着她暴躁的激情和秘密孤独地老去。", "appearance": "面容白皙，眼睛大而沉静，青绿色皮肤，喜欢坐在摇椅上。", "fate": "在孤寂的破败老屋中老死，无人知晓。", "familyRole": "养女 / 表妹" },
+        { "name": "梅尔基亚德斯", "alias": "老吉卜赛人", "description": "吉卜赛智者，带来了磁铁、放大镜、冰块等新发明，并留下了用梵文写成的羊皮卷，预言了布恩迪亚家族的历史。他死后因难以忍受孤独又重返人间，最终在马孔多安详去世，是家族智慧的源头。", "appearance": "衰老，大胡子，手如雀爪，头戴黑色大礼帽，身穿天鹅绒坎肩。", "fate": "在新加坡死于热病，但又重返人间，最后在马孔多去世。", "familyRole": "家族挚友 / 导师" },
+        { "name": "美人儿蕾梅黛丝", "alias": "蕾梅黛丝", "description": "阿尔卡蒂奥和桑塔索菲亚·德拉·彼达的女儿，拥有惊世骇俗的美貌和致命的气息，却天真无邪，不谙世事。她对男人毫无兴趣，拥有非凡的洞察力，最终在花园里晾晒床单时，肉身和灵魂一起升天而去。", "appearance": "惊人的美貌，光头，喜欢穿简单的麻布长袍，赤身裸体。", "fate": "在花园里被风吹起，肉身和灵魂一起升天消失。", "familyRole": "曾孙女 / 第三代" },
+        { "name": "奥雷里亚诺第二", "alias": "大胖子", "description": "阿尔卡蒂奥与桑塔索菲亚的双胞胎儿子之一，性格开朗，喜爱聚会和挥霍。通过情妇佩特拉·科特斯获得了令牲畜疯狂繁殖的运气，积攒了巨大财富，但最终因咽喉肿瘤在贫困和失声中死去。", "appearance": "体形魁梧，有快活的乌龟脸，因暴饮暴食而肥胖。", "fate": "患咽喉肿瘤，在贫困和失声中死去。", "familyRole": "曾孙 / 双胞胎之一 / 第四代" },
+        { "name": "何塞·阿尔卡蒂奥第二", "alias": "瘦子", "description": "阿尔卡蒂奥与桑塔索菲亚的双胞胎儿子之一，性格内向，严肃。他曾观看枪决，留下心理阴影。后在香蕉公司任职，组织工人罢工，是三千名工人大屠杀的唯一幸存者，余生躲在梅尔基亚德斯的房间破解羊皮卷。", "appearance": "瘦削，严肃，有阿拉伯人般的忧郁眼神。", "fate": "在梅尔基亚德斯的房间内，研究羊皮卷时平静去世。", "familyRole": "曾孙 / 双胞胎之一 / 第四代" },
+        { "name": "费尔南达·德尔·卡皮奥", "alias": "费尔南达", "description": "奥雷里亚诺第二的妻子，出身于没落的贵族家庭，一心想当女王。她刻板、保守、虚伪，将家中欢快气氛彻底消灭，推行繁文缛节，与家人格格不入，最终在孤独和自欺中老死。", "appearance": "面容苍白，举止高傲，身着阴郁的塔夫绸长袍，佩戴圣牌。", "fate": "在孤独和疾病中去世，死后被儿子发现。", "familyRole": "曾孙媳妇" },
+        { "name": "庇拉尔·特尔内拉", "alias": "纸牌女", "description": "一位会用纸牌算命的女性，是布恩迪亚家族血脉的源头之一。她与何塞·阿尔卡蒂奥生下了阿尔卡蒂奥，与奥雷里亚诺上校生下了奥雷里亚诺·何塞。她一生放荡不羁，充满生命力，活了一个多世纪，见证了家族的兴衰。", "appearance": "年轻时充满魅力，言语无忌，老年时肥胖，笑声依然洪亮。", "fate": "在妓院的藤摇椅上安详去世，被葬在舞池中央的大坑中。", "familyRole": "情人 / 祖先" },
+        { "name": "佩特拉·科特斯", "alias": "彩票女", "description": "奥雷里亚诺第二的情妇，一个黑白混血女人，拥有一双美洲豹般的黄色杏眼。她的爱具有催化自然的能力，令牲畜疯狂繁殖。她深爱奥雷里亚诺第二，即使在他破产后也与他患难与共，是小说中最具生命力的女性形象之一。", "appearance": "年轻的混血女人，一双黄色的杏眼，带有美洲豹般的凶悍神情。", "fate": "在贫穷中与奥雷里亚诺第二相伴终老，继续经营彩票生意。", "familyRole": "情人" },
+        { "name": "梅梅", "alias": "雷纳塔·蕾梅黛丝", "description": "奥雷里亚诺第二与费尔南达的长女，她表面顺从，内心却追求自由，爱上了汽修厂学徒马乌里肖·巴比伦。恋情败露后，被母亲送往远方的修道院，终生一言未发，在孤独和思念中衰老而死。", "appearance": "性格活泼，外表平凡，但眼神中带着对自由的渴望。", "fate": "被送往修道院，改名换姓，在孤独中老死。", "familyRole": "外孙女 / 第五代" },
+        { "name": "阿玛兰妲·乌尔苏拉", "alias": "小阿玛兰妲", "description": "奥雷里亚诺第二与费尔南达的小女儿，性格开朗、活泼、新潮，继承了乌尔苏拉的活力和家族的热情。她带着丈夫加斯通从欧洲回到马孔多，试图重振家业，最终与自己的外甥奥雷里亚诺·巴比伦相爱，并生下长猪尾巴的孩子。", "appearance": "身材娇小，充满活力，穿着时尚，佩戴翡翠和黄玉戒指。", "fate": "生下孩子后因产后大出血去世。", "familyRole": "外孙女 / 第五代" },
+        { "name": "奥雷里亚诺·巴比伦", "alias": "巴比伦", "description": "梅梅与马乌里肖·巴比伦的儿子，是家族最后一代。他在孤独中长大，与姨妈阿玛兰妲·乌尔苏拉相爱。他花费大量时间破解梅尔基亚德斯的羊皮卷，最终在译出羊皮卷最后一页时，目睹马孔多被飓风抹去。", "appearance": "瘦削，颧骨突出，眼神狂热，具有奥雷里亚诺家族成员的典型特征。", "fate": "译出羊皮卷的同时，随马孔多一起被飓风抹去。", "familyRole": "最后一代 / 第六代" },
+        { "name": "蕾梅黛丝·摩斯科特", "alias": "小蕾梅黛丝", "description": "奥雷里亚诺上校的妻子，里正最小的女儿。她温柔善良，给沉闷的家族带来了短暂的欢快气息。她爱奥雷里亚诺，怀有双胞胎，却因血毒症和意外流产早逝，成为奥雷里亚诺心中永远痛楚的记忆。", "appearance": "肤色如百合，眼睛碧绿，穿着粉色薄纱裙，眼神天真。", "fate": "因血毒症流产去世，年仅十四岁左右。", "familyRole": "上校之妻" },
+        { "name": "阿尔卡蒂奥", "alias": "阿尔卡蒂奥", "description": "何塞·阿尔卡蒂奥与庇拉尔·特尔内拉的私生子。他在马孔多成为残暴的军政首领，施行铁腕统治，滥杀无辜，最终被政府军捕获并枪决。行刑前，他表现出勇敢，并希望为孩子取名乌尔苏拉和何塞·阿尔卡蒂奥。", "appearance": "身材魁伟，穿着带饰带和元帅肩章的制服，眼神狂热。", "fate": "被政府军军事法庭判处死刑，在公墓墙前被枪决。", "familyRole": "私生子 / 第三代" },
+        { "name": "桑塔索菲亚·德拉·彼达", "alias": "桑塔索菲亚", "description": "阿尔卡蒂奥的妻子，沉默寡言，逆来顺受。她在家中勤恳劳作了一生，照顾了乌尔苏拉和几代孩子，却从未被当作家人看待。最终在感到失败后，她悄然离家出走，再无音讯。", "appearance": "沉默寡言，面容模糊，总是穿着朴素的衣服。", "fate": "离家出走，不知所踪。", "familyRole": "阿尔卡蒂奥之妻" },
+        { "name": "马乌里肖·巴比伦", "alias": "巴比伦", "description": "马孔多本地人，香蕉公司汽修厂的学徒。他深情地爱上了梅梅，他们的恋情被费尔南达发现后，他在试图潜入家中与梅梅相会时被当成偷鸡贼开枪射中脊柱，从此卧床不起，在孤独和怀念中死去。", "appearance": "年轻，脸色青黄，眼神悲伤而梦幻，穿着旧亚麻衣裳。", "fate": "被当作偷鸡贼枪击，卧床不起，在孤独中老死。", "familyRole": "梅梅的恋人" },
+        { "name": "皮埃特罗·克雷斯皮", "alias": "皮埃特罗", "description": "意大利自动钢琴技师，温文尔雅，先与丽贝卡订婚，后爱上阿玛兰妲。被阿玛兰妲拒绝后，他以极度浪漫的方式在布恩迪亚家老宅中自刎而死，成为阿玛兰妲一生中无法抹去的阴影。", "appearance": "金发，举止优雅，身着白色亚麻衣裳，衬衫领口别着一粒金扣。", "fate": "被阿玛兰妲拒绝后，在布恩迪亚家自刎而死。", "familyRole": "丽贝卡与阿玛兰妲的爱慕对象" },
+        { "name": "加斯通", "alias": "加斯通", "description": "阿玛兰妲·乌尔苏拉的丈夫，一个身材匀称、气质成熟的佛兰德人，是飞机驾驶员。他为了爱情随妻子来到马孔多，但最终无法忍受这里的死寂和妻子的疏离，独自回到布鲁塞尔，并祝福了妻子和奥雷里亚诺的爱情。", "appearance": "身材匀称，气质成熟，穿着考究，戴窄边草帽，拿柳木手杖。", "fate": "回到布鲁塞尔，独自生活，寄信祝福妻子。", "familyRole": "阿玛兰妲·乌尔苏拉之夫" },
+        { "name": "赫里内勒多·马尔克斯上校", "alias": "马尔克斯上校", "description": "奥雷里亚诺·布恩迪亚上校最忠实的战友和同袍，忠诚而勇敢。他默默爱恋阿玛兰妲一生，却同样被她拒绝。后因政治分歧差点被上校枪决，最终在孤独和瘫痪中死去。", "appearance": "身材矮壮，眼神忠诚，身着军装，举止温和。", "fate": "在孤独和瘫痪中死去，一生深爱阿玛兰妲未果。", "familyRole": "上校的战友" }
+      ],
+      relationships: [
+        { "from": "何塞·阿尔卡蒂奥·布恩迪亚", "to": "乌尔苏拉·伊瓜兰", "type": "夫妻", "description": "丈夫是疯狂的探索者，妻子是务实的家族支柱，共同创立了马孔多。" },
+        { "from": "何塞·阿尔卡蒂奥·布恩迪亚", "to": "奥雷里亚诺·布恩迪亚上校", "type": "父子", "description": "父亲带他见识冰块，传授科学知识，奠定了上校一生的基础记忆。" },
+        { "from": "何塞·阿尔卡蒂奥·布恩迪亚", "to": "何塞·阿尔卡蒂奥", "type": "父子", "description": "长子，少年时出走，最终回归。" },
+        { "from": "何塞·阿尔卡蒂奥·布恩迪亚", "to": "阿玛兰妲·布恩迪亚", "type": "父女", "description": "唯一的女儿，性格高傲，内心矛盾。" },
+        { "from": "奥雷里亚诺·布恩迪亚上校", "to": "蕾梅黛丝·摩斯科特", "type": "夫妻", "description": "他深爱的小妻子，她的早逝成为他一生的痛楚和孤独的根源。" },
+        { "from": "何塞·阿尔卡蒂奥", "to": "丽贝卡·布恩迪亚", "type": "夫妻", "description": "两人激情结合，婚后隐居，后被家族遗忘，最终丈夫神秘死亡。" },
+        { "from": "何塞·阿尔卡蒂奥", "to": "庇拉尔·特尔内拉", "type": "情人", "description": "他的第一个女人，为他生下了私生子阿尔卡蒂奥。" },
+        { "from": "奥雷里亚诺·布恩迪亚上校", "to": "庇拉尔·特尔内拉", "type": "情人", "description": "他的第一个女人，为他生下了私生子奥雷里亚诺·何塞。" },
+        { "from": "阿尔卡蒂奥", "to": "桑塔索菲亚·德拉·彼达", "type": "夫妻", "description": "她是庇拉尔花钱雇来为他破处的女人，后成为他的妻子，为他生下双胞胎。" },
+        { "from": "庇拉尔·特尔内拉", "to": "阿尔卡蒂奥", "type": "母子", "description": "儿子并不知道她是自己的母亲，直到临死前才隐约知晓真相。" },
+        { "from": "奥雷里亚诺第二", "to": "费尔南达·德尔·卡皮奥", "type": "夫妻", "description": "政治婚姻，不幸福，妻子古板，丈夫放荡，两人貌合神离。" },
+        { "from": "奥雷里亚诺第二", "to": "佩特拉·科特斯", "type": "情人", "description": "他们之间有真爱和默契，她是他的福星，她的爱能催生财富。" },
+        { "from": "奥雷里亚诺第二", "to": "何塞·阿尔卡蒂奥第二", "type": "孪生兄弟", "description": "童年时互换身份，长大后性格迥异，在死亡中重新变得酷似。" },
+        { "from": "何塞·阿尔卡蒂奥第二", "to": "奥雷里亚诺·巴比伦", "type": "师生", "description": "他教年幼的奥雷里亚诺读写，并向他讲述三千人大屠杀的真相。" },
+        { "from": "阿玛兰妲·布恩迪亚", "to": "丽贝卡·布恩迪亚", "type": "姐妹/情敌", "description": "因对皮埃特罗·克雷斯皮的爱而反目成仇，终生怨恨。" },
+        { "from": "阿玛兰妲·布恩迪亚", "to": "皮埃特罗·克雷斯皮", "type": "恋人（未成）", "description": "阿玛兰妲拒绝他，致其自杀。" },
+        { "from": "梅梅", "to": "马乌里肖·巴比伦", "type": "情侣", "description": "她爱上工人阶级的他，恋情被发现后，两人都遭遇了悲惨的命运。" },
+        { "from": "奥雷里亚诺·巴比伦", "to": "阿玛兰妲·乌尔苏拉", "type": "恋人（近亲）", "description": "两人相爱，但不知彼此血缘关系，是导致家族毁灭的最后一环。" },
+        { "from": "梅尔基亚德斯", "to": "何塞·阿尔卡蒂奥·布恩迪亚", "type": "朋友", "description": "吉卜赛智者引领他进入科学和幻想的世界，是家族命运的记录者。" },
+        { "from": "奥雷里亚诺·布恩迪亚上校", "to": "赫里内勒多·马尔克斯上校", "type": "朋友/战友", "description": "最忠实的战友和同袍，后因政治分歧差点被枪决，最终在孤独中死去。" },
+        { "from": "阿玛兰妲·乌尔苏拉", "to": "加斯通", "type": "夫妻", "description": "丈夫顺从地陪伴她返回马孔多，最终因无法融入而独自离开。" },
+        { "from": "乌尔苏拉·伊瓜兰", "to": "奥雷里亚诺·布恩迪亚上校", "type": "母子", "description": "母亲一生操持家务，养育三子一女，支撑家族百年。" },
+        { "from": "乌尔苏拉·伊瓜兰", "to": "何塞·阿尔卡蒂奥", "type": "母子", "description": "长子体格魁梧，母亲对他既骄傲又担忧。" },
+        { "from": "乌尔苏拉·伊瓜兰", "to": "阿玛兰妲·布恩迪亚", "type": "母女", "description": "唯一的女儿，母亲见证了她一生的爱与恨。" }
+      ]
+    };
+
+    // ═══════════════ 图片映射 ═══════════════
+    const IMG_BASE = '百年孤独插画/';
+    const IMG_PREFIX = '《百年孤独》版画场景';
+    const IMG_EXT = '.png';
+
+    function getImagePath(episodeId) {
+      return IMG_BASE + IMG_PREFIX + episodeId + IMG_EXT;
+    }
+
+    // ═══════════════ 核心逻辑 ═══════════════
+    let currentIndex = 0;
+    const total = DATA.episodes.length;
+    const $ = s => document.querySelector(s);
+    const $$ = s => document.querySelectorAll(s);
+
+    const bgLayer = $('#bg-layer');
+    const textContainer = $('#text-container');
+    const sceneTag = $('#sceneTag');
+    const charName = $('#charName');
+    const storyText = $('#storyText');
+    const atmoRow = $('#atmoRow');
+    const progressInfo = $('#progressInfo');
+    const progressFill = $('#progressFill');
+    const modalOverlay = $('#modal-overlay');
+    const graphPanel = $('#graph-panel');
+    const graphSvg = $('#graph-svg');
+    const graphPopupOverlay = $('#graph-popup-overlay');
+    const butterflyContainer = $('#butterfly-container');
+
+    // 预加载图片
+    const preloaded = {};
+    function preloadImage(id) {
+      if (preloaded[id]) return preloaded[id];
+      const img = new Image();
+      img.src = getImagePath(id);
+      preloaded[id] = img;
+      return img;
+    }
+    for (let i = 1; i <= Math.min(5, total); i++) preloadImage(i);
+
+    let currentBgId = null;
+    function setBackground(episodeId, instant) {
+      if (currentBgId === episodeId) return;
+      currentBgId = episodeId;
+      const path = getImagePath(episodeId);
+      preloadImage(episodeId);
+      if (instant) {
+        bgLayer.style.backgroundImage = `url('${path}')`;
+        bgLayer.style.opacity = '1';
+        bgLayer.classList.remove('fading');
+        return;
+      }
+      bgLayer.classList.add('fading');
+      setTimeout(() => {
+        bgLayer.style.backgroundImage = `url('${path}')`;
+        bgLayer.classList.remove('fading');
+      }, 600);
+    }
+
+    function renderEpisode(idx, instant) {
+      const ep = DATA.episodes[idx];
+      if (!ep) return;
+      setBackground(ep.id, instant);
+
+      textContainer.classList.add('fading');
+      setTimeout(() => {
+        sceneTag.textContent = `${ep.scene} · ${ep.atmosphere}`;
+        charName.textContent = ep.character;
+        charName.onclick = (e) => { e.stopPropagation(); openModal(ep.character); };
+        storyText.textContent = ep.text;
+        atmoRow.innerHTML = `
+          <span class="atmo-tag">🔊 ${ep.sound}</span>
+          <span class="atmo-tag">✨ ${ep.specialEffect}</span>
+        `;
+        const pct = ((idx + 1) / total) * 100;
+        progressInfo.textContent = `第 ${idx + 1} / ${total} 段`;
+        progressFill.style.width = Math.max(2, pct) + '%';
+        textContainer.classList.remove('fading');
+
+        const nextId = DATA.episodes[(idx + 1) % total].id;
+        preloadImage(nextId);
+      }, 500);
+    }
+
+    // ── 导航 ──
+    function goPrev() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        renderEpisode(currentIndex);
+        spawnButterflies(2);
+      }
+    }
+
+    function goNext() {
+      if (currentIndex < total - 1) {
+        currentIndex++;
+        renderEpisode(currentIndex);
+        spawnButterflies(2);
+      }
+    }
+
+    // ── 点击区域绑定 ──
+    $('#click-left').addEventListener('click', goPrev);
+    $('#click-right').addEventListener('click', goNext);
+
+    // 键盘
+    document.addEventListener('keydown', (e) => {
+      if (modalOverlay.classList.contains('active')) {
+        if (e.key === 'Escape') closeModal();
+        return;
+      }
+      if (graphPanel.classList.contains('active')) {
+        if (e.key === 'Escape') {
+          if (graphPopupOverlay.classList.contains('active')) closeGraphPopup();
+          else closeGraph();
+        }
+        return;
+      }
+      if (e.key === 'ArrowLeft') { e.preventDefault();
+        goPrev(); }
+      if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault();
+        goNext(); }
+    });
+
+    // 触摸滑动
+    let touchX = 0,
+      touchY = 0;
+    document.addEventListener('touchstart', (e) => {
+      touchX = e.touches[0].clientX;
+      touchY = e.touches[0].clientY;
+    }, { passive: true });
+    document.addEventListener('touchend', (e) => {
+      if (modalOverlay.classList.contains('active') || graphPanel.classList.contains('active')) return;
+      const dx = e.changedTouches[0].clientX - touchX;
+      const dy = e.changedTouches[0].clientY - touchY;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.2) {
+        if (dx < 0) goNext();
+        else goPrev();
+      }
+    }, { passive: true });
+
+    // ── 人物档案 ──
+    function openModal(name) {
+      const ch = DATA.characters.find(c => c.name === name);
+      if (!ch) return;
+      $('#modalAlias').textContent = ch.alias || '';
+      $('#modalName').textContent = ch.name;
+      $('#modalRole').textContent = ch.familyRole || '';
+      $('#modalAppearance').textContent = ch.appearance || '暂无记载';
+      $('#modalFate').textContent = ch.fate || '命运成谜';
+      modalOverlay.classList.add('active');
+    }
+
+    function closeModal() { modalOverlay.classList.remove('active'); }
+    $('#modalClose').addEventListener('click', (e) => { e.stopPropagation();
+      closeModal(); });
+    modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModal(); });
+
+    // ── 图谱 ──
+    $('#btnGraph').addEventListener('click', openGraph);
+    $('#graphClose').addEventListener('click', closeGraph);
+
+    function openGraph() { graphPanel.classList.add('active');
+      renderGraph(); }
+
+    function closeGraph() {
+      if (graphPopupOverlay.classList.contains('active')) closeGraphPopup();
+      graphPanel.classList.remove('active');
+    }
+
+    // ── 图谱浮窗 ──
+    function openGraphPopup(name) {
+      const ch = DATA.characters.find(c => c.name === name);
+      if (!ch) return;
+      $('#graphPopupAlias').textContent = ch.alias || '';
+      $('#graphPopupName').textContent = ch.name;
+      $('#graphPopupRole').textContent = ch.familyRole || '';
+      $('#graphPopupAppearance').textContent = ch.appearance || '暂无记载';
+      $('#graphPopupFate').textContent = ch.fate || '命运成谜';
+      graphPopupOverlay.classList.add('active');
+    }
+
+    function closeGraphPopup() { graphPopupOverlay.classList.remove('active'); }
+    $('#graphPopupClose').addEventListener('click', (e) => { e.stopPropagation();
+      closeGraphPopup(); });
+    graphPopupOverlay.addEventListener('click', (e) => { if (e.target === graphPopupOverlay) closeGraphPopup(); });
+
+    // ── 渲染图谱 (优化布局, 减少重叠) ──
+    function renderGraph() {
+      const container = $('#graph-container');
+      const W = container.clientWidth || 800;
+      const H = container.clientHeight || 600;
+
+      // 分层布局 (手动分配坐标)
+      const layers = [
+        { name: 'gen0', items: ['梅尔基亚德斯'], yOff: 0.06 },
+        { name: 'gen1', items: ['何塞·阿尔卡蒂奥·布恩迪亚', '乌尔苏拉·伊瓜兰'], yOff: 0.18 },
+        { name: 'gen1b', items: ['庇拉尔·特尔内拉'], yOff: 0.30 },
+        { name: 'gen2', items: ['何塞·阿尔卡蒂奥', '奥雷里亚诺·布恩迪亚上校', '阿玛兰妲·布恩迪亚', '丽贝卡·布恩迪亚'], yOff: 0.42 },
+        { name: 'gen2b', items: ['蕾梅黛丝·摩斯科特', '皮埃特罗·克雷斯皮', '赫里内勒多·马尔克斯上校'], yOff: 0.54 },
+        { name: 'gen3', items: ['阿尔卡蒂奥', '桑塔索菲亚·德拉·彼达', '美人儿蕾梅黛丝'], yOff: 0.66 },
+        { name: 'gen4', items: ['奥雷里亚诺第二', '何塞·阿尔卡蒂奥第二', '佩特拉·科特斯', '费尔南达·德尔·卡皮奥'], yOff: 0.78 },
+        { name: 'gen5', items: ['梅梅', '阿玛兰妲·乌尔苏拉', '马乌里肖·巴比伦', '加斯通'], yOff: 0.88 },
+        { name: 'gen6', items: ['奥雷里亚诺·巴比伦'], yOff: 0.97 }
+      ];
+
+      const positions = {};
+      const nodeW = 100,
+        nodeH = 34;
+      const gapX = 14;
+
+      layers.forEach(layer => {
+        const items = layer.items;
+        if (!items || !items.length) return;
+        const y = H * layer.yOff;
+        const totalW = items.length * (nodeW + gapX) - gapX;
+        const startX = Math.max(20, (W - totalW) / 2);
+        items.forEach((name, i) => {
+          positions[name] = {
+            x: startX + i * (nodeW + gapX) + nodeW / 2,
+            y: y
+          };
+        });
+      });
+
+      // 关系类型样式
+      const typeColors = {
+        '夫妻': '#c4954a',
+        '父子': '#6b8c5c',
+        '父女': '#6b8c5c',
+        '母子': '#6b8c5c',
+        '母女': '#6b8c5c',
+        '情人': '#b8860b',
+        '情侣': '#9b6b9e',
+        '恋人': '#9b6b9e',
+        '恋人（未成）': '#9b6b9e',
+        '恋人（近亲）': '#9b6b9e',
+        '孪生兄弟': '#5c7a8a',
+        '兄弟': '#5c7a8a',
+        '朋友': '#5c7a8a',
+        '朋友/战友': '#5c7a8a',
+        '姐妹/情敌': '#cc6655',
+        '师生': '#6b8c8c'
+      };
+      const typeDash = {
+        '情人': '5,3',
+        '情侣': '4,3',
+        '恋人': '4,3',
+        '恋人（未成）': '4,3',
+        '恋人（近亲）': '4,2'
+      };
+
+      let svg = `<defs><filter id="glow"><feGaussianBlur stdDeviation="1.5"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+      <rect width="100%" height="100%" fill="#0d0a06"/>`;
+
+      // 画连线 (先画线, 再画节点, 避免遮挡)
+      DATA.relationships.forEach(rel => {
+        const from = positions[rel.from];
+        const to = positions[rel.to];
+        if (!from || !to) return;
+        const color = typeColors[rel.type] || '#888';
+        const dash = typeDash[rel.type] || 'none';
+        const midY = (from.y + to.y) / 2;
+        svg += `<path d="M${from.x},${from.y} C${from.x},${midY} ${to.x},${midY} ${to.x},${to.y}" 
+          fill="none" stroke="${color}" stroke-width="1.2" stroke-dasharray="${dash}" opacity="0.7"/>`;
+        // 关系标签 (放在线条中间偏上)
+        const mx = (from.x + to.x) / 2;
+        const my = (from.y + to.y) / 2 - 10;
+        svg += `<text x="${mx}" y="${my}" fill="${color}" font-size="8" text-anchor="middle" font-family="Georgia,serif" opacity="0.8">${rel.type}</text>`;
+      });
+
+      // 画节点
+      Object.entries(positions).forEach(([name, pos]) => {
+        const ch = DATA.characters.find(c => c.name === name);
+        const display = ch ? (ch.alias || name) : name;
+        const isCore = ['何塞·阿尔卡蒂奥·布恩迪亚', '乌尔苏拉·伊瓜兰', '奥雷里亚诺·布恩迪亚上校'].includes(name);
+        const fill = isCore ? '#8b6914' : '#2d4a3e';
+        const stroke = isCore ? '#c4954a' : '#4a6a4a';
+        const x = pos.x - nodeW / 2;
+        const y = pos.y - nodeH / 2;
+        svg += `<g class="graph-node" style="cursor:pointer" data-name="${escapeHtml(name)}"
+          onmouseover="this.querySelector('rect').setAttribute('fill','${isCore ? '#c4954a' : '#4a7a4a'}')"
+          onmouseout="this.querySelector('rect').setAttribute('fill','${fill}')"
+          onclick="event.stopPropagation(); openGraphPopup('${escapeHtml(name)}')">
+          <rect x="${x}" y="${y}" width="${nodeW}" height="${nodeH}" rx="4" fill="${fill}" stroke="${stroke}" stroke-width="1" opacity="0.92" filter="url(#glow)"/>
+          <text x="${pos.x}" y="${pos.y + 3}" fill="#e8d5a3" font-size="9.5" text-anchor="middle" font-family="Georgia,'Noto Serif SC',serif" letter-spacing="0.3">${display}</text>
+        </g>`;
+      });
+
+      svg += `<text x="${W/2}" y="${H-10}" fill="#5c4a2a" font-size="9" text-anchor="middle" font-family="Georgia,serif" letter-spacing="1.5" opacity="0.5">点击节点查看人物档案</text>`;
+      graphSvg.innerHTML = svg;
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, '&amp;').replace(/'/g, '&#39;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function debounce(fn, ms) { let t; return (...args) => { clearTimeout(t);
+        t = setTimeout(() => fn(...args), ms); }; }
+    window.addEventListener('resize', debounce(() => { if (graphPanel.classList.contains('active')) renderGraph(); }, 250));
+
+    // ── 蝴蝶 ──
+    function spawnButterflies(count) {
+      const emojis = ['🦋', '🦋', '🦋'];
+      for (let i = 0; i < count; i++) {
+        const el = document.createElement('span');
+        el.className = 'butterfly';
+        el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        el.style.left = Math.random() * 90 + '%';
+        el.style.setProperty('--dur', (5 + Math.random() * 7) + 's');
+        el.style.setProperty('--delay', Math.random() * 1.2 + 's');
+        el.style.setProperty('--dx1', (Math.random() - 0.5) * 100 + 'px');
+        el.style.setProperty('--dx2', (Math.random() - 0.5) * 140 + 'px');
+        el.style.setProperty('--dx3', (Math.random() - 0.5) * 180 + 'px');
+        el.style.setProperty('--r1', (Math.random() * 50 - 25) + 'deg');
+        el.style.setProperty('--r2', (Math.random() * 70 - 35) + 'deg');
+        el.style.setProperty('--r3', (Math.random() * 100 - 50) + 'deg');
+        butterflyContainer.appendChild(el);
+        el.addEventListener('animationend', () => el.remove());
+      }
+    }
+
+    // ── 初始化 ──
+    renderEpisode(0, true);
+    setTimeout(() => spawnButterflies(3), 600);
+    setInterval(() => {
+      if (!graphPanel.classList.contains('active') && !modalOverlay.classList.contains('active')) {
+        spawnButterflies(1);
+      }
+    }, 7000);
+  </script>
+</body>
+</html>
+```
