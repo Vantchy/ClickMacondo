@@ -108,7 +108,10 @@
       pointer-events: none;
       gap: 8px;
       flex-wrap: wrap;
+      opacity: 0;
+      transition: opacity 1.2s ease;
     }
+    #top-bar.show { opacity: 1; }
     #top-bar > * { pointer-events: all; }
     .top-btn {
       font-family: inherit;
@@ -144,7 +147,7 @@
       position: fixed;
       bottom: 100px;
       left: 50%;
-      transform: translateX(-50%);
+      transform: translateX(-50%) translateY(30px);
       z-index: 6;
       width: min(88%, 780px);
       max-height: 62vh;
@@ -158,6 +161,11 @@
       overflow-y: auto;
       pointer-events: none;
       transition: opacity 1.0s cubic-bezier(0.4, 0.0, 0.2, 1), transform 1.0s cubic-bezier(0.4, 0.0, 0.2, 1);
+      opacity: 0;
+    }
+    #text-container.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
     }
     #text-container.fading {
       opacity: 0;
@@ -211,15 +219,7 @@
       word-break: break-word;
       letter-spacing: 0.01em;
       transition: opacity 0.8s ease;
-    }
-    .story-text.typing {
-      overflow: hidden;
-      border-right: 2px solid rgba(196,149,74,0.3);
-      animation: blink-caret 0.75s step-end infinite;
-    }
-    @keyframes blink-caret {
-      0%, 100% { border-color: rgba(196,149,74,0.3); }
-      50% { border-color: transparent; }
+      min-height: 1.5em;
     }
     .atmosphere-row {
       display: flex;
@@ -264,7 +264,10 @@
       gap: 18px;
       flex-wrap: wrap;
       backdrop-filter: blur(4px);
+      opacity: 0;
+      transition: opacity 1.2s ease;
     }
+    #bottom-bar.show { opacity: 1; }
     .progress-info {
       font-size: 0.7rem;
       font-weight: 300;
@@ -332,28 +335,6 @@
       transform: scale(0.96);
       background: rgba(196, 149, 74, 0.18);
       transition-duration: 0.1s;
-    }
-
-    /* ===== 蝴蝶 ===== */
-    .butterfly {
-      position: fixed;
-      z-index: 4;
-      pointer-events: none;
-      font-size: 1.3rem;
-      opacity: 0;
-      animation: butterflyFlight var(--dur) ease-in-out forwards;
-      animation-delay: var(--delay);
-      filter: drop-shadow(0 0 10px rgba(218, 165, 32, 0.25)) blur(0.3px);
-      will-change: transform, opacity;
-    }
-    @keyframes butterflyFlight {
-      0% { opacity: 0; transform: translate(0, -10px) rotate(0deg) scale(0.4); }
-      8% { opacity: 0.9; transform: translate(calc(var(--dx1)*0.2), 5vh) rotate(calc(var(--r1)*0.3)) scale(0.9); }
-      25% { transform: translate(calc(var(--dx1)*0.7), 25vh) rotate(calc(var(--r1)*0.7)) scale(1.05); }
-      45% { transform: translate(var(--dx1), 45vh) rotate(var(--r1)) scale(1); }
-      65% { transform: translate(calc(var(--dx2)*0.8), 68vh) rotate(calc(var(--r2)*0.8)) scale(0.95); }
-      85% { opacity: 0.7; transform: translate(calc(var(--dx3)*0.9), 88vh) rotate(calc(var(--r3)*0.6)) scale(0.6); }
-      100% { opacity: 0; transform: translate(var(--dx3), 105vh) rotate(var(--r3)) scale(0.2); }
     }
 
     /* ===== 环境特效 ===== */
@@ -816,7 +797,10 @@
       flex-direction: column;
       gap: 6px;
       pointer-events: none;
+      opacity: 0;
+      transition: opacity 1.2s ease;
     }
+    #sound-controls.show { opacity: 1; }
     #sound-controls > * { pointer-events: all; }
     .sound-btn {
       font-family: inherit;
@@ -929,9 +913,101 @@
       font-family: inherit;
       text-shadow: 0 0 60px rgba(196,149,74,0.1);
     }
+
+    /* ===== 引入动画 ===== */
+    #intro-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: #0d0a06;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      pointer-events: none;
+      transition: opacity 2.0s ease;
+    }
+    #intro-overlay.hide {
+      opacity: 0;
+    }
+    .intro-title {
+      font-size: clamp(2.8rem, 12vw, 6rem);
+      font-weight: 700;
+      color: #d4b68a;
+      text-shadow: 0 0 40px rgba(184, 134, 11, 0.2);
+      letter-spacing: 0.15em;
+      opacity: 0;
+      transform: scale(0.96);
+      transition: opacity 1.8s ease, transform 1.8s ease;
+      font-family: 'Georgia', 'Times New Roman', serif;
+      margin-bottom: 0.2em;
+    }
+    .intro-title.show {
+      opacity: 1;
+      transform: scale(1);
+    }
+    .intro-sub {
+      font-size: clamp(0.8rem, 2vw, 1.2rem);
+      color: #b68f4a;
+      letter-spacing: 0.25em;
+      opacity: 0;
+      transition: opacity 2.0s ease 0.6s;
+      text-align: center;
+      max-width: 80%;
+      font-style: italic;
+      font-weight: 300;
+      text-shadow: 0 0 20px rgba(184, 134, 11, 0.1);
+    }
+    .intro-sub.show {
+      opacity: 0.6;
+    }
+    .intro-dust {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: rgba(196, 149, 74, 0.3);
+      border-radius: 50%;
+      animation: dustFloat 12s infinite linear;
+      pointer-events: none;
+    }
+    @keyframes dustFloat {
+      0% { transform: translateY(0) translateX(0) scale(0.5); opacity: 0; }
+      10% { opacity: 0.8; }
+      90% { opacity: 0.8; }
+      100% { transform: translateY(-100vh) translateX(60px) scale(1.2); opacity: 0; }
+    }
+    .intro-light {
+      position: absolute;
+      width: 80vmax;
+      height: 80vmax;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, rgba(184, 134, 11, 0.06) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 2.0s ease 2.2s;
+      pointer-events: none;
+    }
+    .intro-light.show {
+      opacity: 1;
+    }
   </style>
 </head>
 <body>
+
+  <!-- 引入动画 -->
+  <div id="intro-overlay">
+    <div class="intro-light"></div>
+    <div class="intro-title">百年孤独</div>
+    <div class="intro-sub">家族的第一个人被捆在树上，最后一个人正被蚂蚁吃掉。</div>
+    <!-- 尘埃粒子 -->
+    <div class="intro-dust" style="left:10%;animation-delay:0.2s;"></div>
+    <div class="intro-dust" style="left:30%;animation-delay:1.5s;width:3px;height:3px;"></div>
+    <div class="intro-dust" style="left:50%;animation-delay:3s;"></div>
+    <div class="intro-dust" style="left:70%;animation-delay:0.8s;width:1px;height:1px;"></div>
+    <div class="intro-dust" style="left:90%;animation-delay:2.2s;"></div>
+    <div class="intro-dust" style="left:20%;animation-delay:4s;width:2px;height:2px;"></div>
+    <div class="intro-dust" style="left:60%;animation-delay:5.5s;"></div>
+    <div class="intro-dust" style="left:80%;animation-delay:3.5s;width:3px;height:3px;"></div>
+  </div>
 
   <!-- 背景 -->
   <div id="bg-layer"></div>
@@ -944,9 +1020,6 @@
 
   <!-- 环境特效 -->
   <div id="env-container"></div>
-
-  <!-- 蝴蝶 -->
-  <div id="butterfly-container"></div>
 
   <!-- 点击区域 -->
   <div id="click-area">
@@ -962,8 +1035,7 @@
       <button class="top-btn" id="btnBookmark">🔖 书签</button>
     </div>
     <div class="top-group">
-      <button class="top-btn" id="btnAutoPlay">▶ 自动播放</button>
-      <button class="top-btn" id="btnTypewriter">⌨️ 打字机</button>
+      <!-- 自动播放和打字机按钮已移除 -->
     </div>
   </div>
 
@@ -1034,12 +1106,13 @@
       <span class="graph-title">📜 布恩迪亚家族 · 关系图谱</span>
       <div class="graph-controls">
         <select id="graphFilter">
-          <option value="all">所有关系</option>
           <option value="夫妻">夫妻</option>
-          <option value="父子">亲子</option>
+          <option value="亲子">亲子</option>
+          <option value="手足">手足</option>
+          <option value="战友">战友</option>
+          <option value="师生">师生</option>
           <option value="情人">情人</option>
           <option value="恋人">恋人</option>
-          <option value="朋友">朋友/战友</option>
         </select>
         <button id="graphResetView">🔄 重置视图</button>
         <button class="graph-close" id="graphClose">关闭</button>
@@ -1126,29 +1199,29 @@
       ],
       relationships: [
         { "from": "何塞·阿尔卡蒂奥·布恩迪亚", "to": "乌尔苏拉·伊瓜兰", "type": "夫妻", "description": "丈夫是疯狂的探索者，妻子是务实的家族支柱，共同创立了马孔多。" },
-        { "from": "何塞·阿尔卡蒂奥·布恩迪亚", "to": "奥雷里亚诺·布恩迪亚上校", "type": "父子", "description": "父亲带他见识冰块，传授科学知识，奠定了上校一生的基础记忆。" },
-        { "from": "何塞·阿尔卡蒂奥·布恩迪亚", "to": "何塞·阿尔卡蒂奥", "type": "父子", "description": "长子，少年时出走，最终回归。" },
-        { "from": "何塞·阿尔卡蒂奥·布恩迪亚", "to": "阿玛兰妲·布恩迪亚", "type": "父女", "description": "唯一的女儿，性格高傲，内心矛盾。" },
+        { "from": "何塞·阿尔卡蒂奥·布恩迪亚", "to": "奥雷里亚诺·布恩迪亚上校", "type": "亲子", "description": "父亲带他见识冰块，传授科学知识，奠定了上校一生的基础记忆。" },
+        { "from": "何塞·阿尔卡蒂奥·布恩迪亚", "to": "何塞·阿尔卡蒂奥", "type": "亲子", "description": "长子，少年时出走，最终回归。" },
+        { "from": "何塞·阿尔卡蒂奥·布恩迪亚", "to": "阿玛兰妲·布恩迪亚", "type": "亲子", "description": "唯一的女儿，性格高傲，内心矛盾。" },
         { "from": "奥雷里亚诺·布恩迪亚上校", "to": "蕾梅黛丝·摩斯科特", "type": "夫妻", "description": "他深爱的小妻子，她的早逝成为他一生的痛楚和孤独的根源。" },
         { "from": "何塞·阿尔卡蒂奥", "to": "丽贝卡·布恩迪亚", "type": "夫妻", "description": "两人激情结合，婚后隐居，后被家族遗忘，最终丈夫神秘死亡。" },
         { "from": "何塞·阿尔卡蒂奥", "to": "庇拉尔·特尔内拉", "type": "情人", "description": "他的第一个女人，为他生下了私生子阿尔卡蒂奥。" },
         { "from": "奥雷里亚诺·布恩迪亚上校", "to": "庇拉尔·特尔内拉", "type": "情人", "description": "他的第一个女人，为他生下了私生子奥雷里亚诺·何塞。" },
         { "from": "阿尔卡蒂奥", "to": "桑塔索菲亚·德拉·彼达", "type": "夫妻", "description": "她是庇拉尔花钱雇来为他破处的女人，后成为他的妻子，为他生下双胞胎。" },
-        { "from": "庇拉尔·特尔内拉", "to": "阿尔卡蒂奥", "type": "母子", "description": "儿子并不知道她是自己的母亲，直到临死前才隐约知晓真相。" },
+        { "from": "庇拉尔·特尔内拉", "to": "阿尔卡蒂奥", "type": "亲子", "description": "儿子并不知道她是自己的母亲，直到临死前才隐约知晓真相。" },
         { "from": "奥雷里亚诺第二", "to": "费尔南达·德尔·卡皮奥", "type": "夫妻", "description": "政治婚姻，不幸福，妻子古板，丈夫放荡，两人貌合神离。" },
         { "from": "奥雷里亚诺第二", "to": "佩特拉·科特斯", "type": "情人", "description": "他们之间有真爱和默契，她是他的福星，她的爱能催生财富。" },
-        { "from": "奥雷里亚诺第二", "to": "何塞·阿尔卡蒂奥第二", "type": "孪生兄弟", "description": "童年时互换身份，长大后性格迥异，在死亡中重新变得酷似。" },
+        { "from": "奥雷里亚诺第二", "to": "何塞·阿尔卡蒂奥第二", "type": "手足", "description": "童年时互换身份，长大后性格迥异，在死亡中重新变得酷似。" },
         { "from": "何塞·阿尔卡蒂奥第二", "to": "奥雷里亚诺·巴比伦", "type": "师生", "description": "他教年幼的奥雷里亚诺读写，并向他讲述三千人大屠杀的真相。" },
-        { "from": "阿玛兰妲·布恩迪亚", "to": "丽贝卡·布恩迪亚", "type": "姐妹/情敌", "description": "因对皮埃特罗·克雷斯皮的爱而反目成仇，终生怨恨。" },
-        { "from": "阿玛兰妲·布恩迪亚", "to": "皮埃特罗·克雷斯皮", "type": "恋人（未成）", "description": "阿玛兰妲拒绝他，致其自杀。" },
-        { "from": "梅梅", "to": "马乌里肖·巴比伦", "type": "情侣", "description": "她爱上工人阶级的他，恋情被发现后，两人都遭遇了悲惨的命运。" },
-        { "from": "奥雷里亚诺·巴比伦", "to": "阿玛兰妲·乌尔苏拉", "type": "恋人（近亲）", "description": "两人相爱，但不知彼此血缘关系，是导致家族毁灭的最后一环。" },
-        { "from": "梅尔基亚德斯", "to": "何塞·阿尔卡蒂奥·布恩迪亚", "type": "朋友", "description": "吉卜赛智者引领他进入科学和幻想的世界，是家族命运的记录者。" },
-        { "from": "奥雷里亚诺·布恩迪亚上校", "to": "赫里内勒多·马尔克斯上校", "type": "朋友/战友", "description": "最忠实的战友和同袍，后因政治分歧差点被枪决，最终在孤独中死去。" },
+        { "from": "阿玛兰妲·布恩迪亚", "to": "丽贝卡·布恩迪亚", "type": "手足", "description": "因对皮埃特罗·克雷斯皮的爱而反目成仇，终生怨恨。" },
+        { "from": "阿玛兰妲·布恩迪亚", "to": "皮埃特罗·克雷斯皮", "type": "恋人", "description": "阿玛兰妲拒绝他，致其自杀。" },
+        { "from": "梅梅", "to": "马乌里肖·巴比伦", "type": "恋人", "description": "她爱上工人阶级的他，恋情被发现后，两人都遭遇了悲惨的命运。" },
+        { "from": "奥雷里亚诺·巴比伦", "to": "阿玛兰妲·乌尔苏拉", "type": "恋人", "description": "两人相爱，但不知彼此血缘关系，是导致家族毁灭的最后一环。" },
+        { "from": "梅尔基亚德斯", "to": "何塞·阿尔卡蒂奥·布恩迪亚", "type": "战友", "description": "吉卜赛智者引领他进入科学和幻想的世界，是家族命运的记录者。" },
+        { "from": "奥雷里亚诺·布恩迪亚上校", "to": "赫里内勒多·马尔克斯上校", "type": "战友", "description": "最忠实的战友和同袍，后因政治分歧差点被枪决，最终在孤独中死去。" },
         { "from": "阿玛兰妲·乌尔苏拉", "to": "加斯通", "type": "夫妻", "description": "丈夫顺从地陪伴她返回马孔多，最终因无法融入而独自离开。" },
-        { "from": "乌尔苏拉·伊瓜兰", "to": "奥雷里亚诺·布恩迪亚上校", "type": "母子", "description": "母亲一生操持家务，养育三子一女，支撑家族百年。" },
-        { "from": "乌尔苏拉·伊瓜兰", "to": "何塞·阿尔卡蒂奥", "type": "母子", "description": "长子体格魁梧，母亲对他既骄傲又担忧。" },
-        { "from": "乌尔苏拉·伊瓜兰", "to": "阿玛兰妲·布恩迪亚", "type": "母女", "description": "唯一的女儿，母亲见证了她一生的爱与恨。" }
+        { "from": "乌尔苏拉·伊瓜兰", "to": "奥雷里亚诺·布恩迪亚上校", "type": "亲子", "description": "母亲一生操持家务，养育三子一女，支撑家族百年。" },
+        { "from": "乌尔苏拉·伊瓜兰", "to": "何塞·阿尔卡蒂奥", "type": "亲子", "description": "长子体格魁梧，母亲对他既骄傲又担忧。" },
+        { "from": "乌尔苏拉·伊瓜兰", "to": "阿玛兰妲·布恩迪亚", "type": "亲子", "description": "唯一的女儿，母亲见证了她一生的爱与恨。" }
       ]
     };
 
@@ -1175,10 +1248,6 @@
     const state = {
       currentIndex: 0,
       bookmarks: new Set(),
-      autoPlay: false,
-      autoPlayTimer: null,
-      typewriter: false,
-      typingTimer: null,
       soundEnabled: { rain: false, wind: false, cricket: false },
       audioContext: null,
       soundNodes: {},
@@ -1259,7 +1328,6 @@
           source.loop = true;
           const gain = ctx.createGain();
           gain.gain.value = 0.06;
-          // 添加节奏脉冲
           const lfo = ctx.createOscillator();
           lfo.frequency.value = 3;
           const lfoGain = ctx.createGain();
@@ -1313,6 +1381,7 @@
       _currentBgId: null,
       _bgTimer: null,
       _preloaded: {},
+      _renderTimer: null,
 
       _preloadImages() {
         for (let i = 1; i <= Math.min(5, DATA.episodes.length); i++) {
@@ -1410,7 +1479,6 @@
         this._triggerEnvironment(ep);
 
         this._container.classList.add('fading');
-        clearTimeout(this._typingTimer);
         clearTimeout(this._renderTimer);
 
         this._renderTimer = setTimeout(() => {
@@ -1418,27 +1486,8 @@
           this._charName.textContent = ep.character;
           this._charName.onclick = (e) => { e.stopPropagation(); Modal.open(ep.character); };
 
-          const text = ep.text;
-          if (state.typewriter) {
-            this._storyText.textContent = '';
-            this._storyText.classList.add('typing');
-            let pos = 0;
-            const speed = 25;
-            const typeFn = () => {
-              if (pos < text.length) {
-                this._storyText.textContent += text.charAt(pos);
-                pos++;
-                this._storyText.scrollTop = this._storyText.scrollHeight;
-                this._typingTimer = setTimeout(typeFn, speed);
-              } else {
-                this._storyText.classList.remove('typing');
-              }
-            };
-            typeFn();
-          } else {
-            this._storyText.textContent = text;
-            this._storyText.classList.remove('typing');
-          }
+          this._storyText.textContent = ep.text;
+          this._storyText.classList.remove('typing');
 
           this._atmoRow.innerHTML = `
             <span class="atmo-tag">🔊 ${ep.sound}</span>
@@ -1449,47 +1498,17 @@
           this._progressFill.style.width = Math.max(2, pct) + '%';
           this._container.classList.remove('fading');
 
-          // 统计
           state.stats.totalRead++;
           this._updateStats();
 
-          // 章节完成动画
           if (index === DATA.episodes.length - 1) this._showChapterComplete();
 
           const nextId = DATA.episodes[(index + 1) % DATA.episodes.length].id;
           if (!this._preloaded[nextId]) { this._preloaded[nextId] = new Image(); this._preloaded[nextId].src = getImagePath(nextId); }
-        }, 600);
+        }, instant ? 0 : 600);
 
-        // 蝴蝶
-        this._spawnButterflies(2 + Math.floor(Math.random() * 2));
-        // 更新书签状态
         this._updateBookmarkUI();
-        // 更新目录
         TOC.render();
-      },
-
-      _spawnButterflies(count) {
-        const container = $('#butterfly-container');
-        const emojis = ['🦋','🦋','🦋'];
-        for (let i = 0; i < count; i++) {
-          const el = document.createElement('span');
-          el.className = 'butterfly';
-          el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
-          el.style.left = (10+Math.random()*80)+'%';
-          el.style.fontSize = (1.0+Math.random()*0.6)+'rem';
-          const dur = 7+Math.random()*10;
-          el.style.setProperty('--dur', dur+'s');
-          el.style.setProperty('--delay', (Math.random()*2.5)+'s');
-          const dx1 = (Math.random()-0.5)*180, dx2 = (Math.random()-0.5)*220, dx3 = (Math.random()-0.5)*200;
-          el.style.setProperty('--dx1', dx1+'px');
-          el.style.setProperty('--dx2', dx2+'px');
-          el.style.setProperty('--dx3', dx3+'px');
-          el.style.setProperty('--r1', (Math.random()*80-40)+'deg');
-          el.style.setProperty('--r2', (Math.random()*100-50)+'deg');
-          el.style.setProperty('--r3', (Math.random()*120-60)+'deg');
-          container.appendChild(el);
-          el.addEventListener('animationend', () => el.remove());
-        }
       },
 
       _updateStats() {
@@ -1508,13 +1527,7 @@
       },
 
       goPrev() { if (state.currentIndex > 0) this.render(state.currentIndex - 1); },
-      goNext() {
-        if (state.currentIndex < DATA.episodes.length - 1) {
-          this.render(state.currentIndex + 1);
-        } else if (state.autoPlay) {
-          this.toggleAutoPlay();
-        }
-      },
+      goNext() { if (state.currentIndex < DATA.episodes.length - 1) this.render(state.currentIndex + 1); },
       goTo(index) { if (index >= 0 && index < DATA.episodes.length) this.render(index); },
 
       toggleBookmark() {
@@ -1525,30 +1538,6 @@
         }
         this._updateBookmarkUI();
         TOC.render();
-      },
-
-      toggleAutoPlay() {
-        state.autoPlay = !state.autoPlay;
-        const btn = $('#btnAutoPlay');
-        if (btn) {
-          btn.textContent = state.autoPlay ? '⏸ 暂停' : '▶ 自动播放';
-          btn.classList.toggle('active', state.autoPlay);
-        }
-        if (state.autoPlay) {
-          state.autoPlayTimer = setInterval(() => this.goNext(), 5000);
-        } else {
-          clearInterval(state.autoPlayTimer);
-          state.autoPlayTimer = null;
-        }
-      },
-
-      toggleTypewriter() {
-        state.typewriter = !state.typewriter;
-        const btn = $('#btnTypewriter');
-        if (btn) {
-          btn.classList.toggle('active', state.typewriter);
-        }
-        this.render(state.currentIndex, true);
       },
 
       search(query) {
@@ -1575,16 +1564,10 @@
 
       init() {
         this._preloadImages();
-        this.render(0, true);
+        setTimeout(() => {
+          this.render(0, true);
+        }, 6000);
         this._updateStats();
-        // 定时蝴蝶
-        setInterval(() => {
-          if (!$('#graph-panel').classList.contains('active') &&
-              !$('#modal-overlay').classList.contains('active')) {
-            this._spawnButterflies(1 + Math.floor(Math.random() * 2));
-          }
-        }, 8000);
-        setTimeout(() => this._spawnButterflies(4), 800);
       }
     };
 
@@ -1712,7 +1695,7 @@
     };
 
     // ════════════════════════════════════════════════════════════════
-    // 关系图谱 (带拖拽、缩放、过滤)
+    // 关系图谱 (保留，未作改动)
     // ════════════════════════════════════════════════════════════════
     const Graph = {
       panel: $('#graph-panel'),
@@ -1729,13 +1712,13 @@
       _startOffY: 0,
 
       _typeColors: {
-        '夫妻': '#c4954a', '父子': '#6b8c5c', '父女': '#6b8c5c', '母子': '#6b8c5c', '母女': '#6b8c5c',
-        '情人': '#b8860b', '情侣': '#9b6b9e', '恋人': '#9b6b9e', '恋人（未成）': '#9b6b9e', '恋人（近亲）': '#9b6b9e',
-        '孪生兄弟': '#5c7a8a', '兄弟': '#5c7a8a', '朋友': '#5c7a8a', '朋友/战友': '#5c7a8a',
-        '姐妹/情敌': '#cc6655', '师生': '#6b8c8c'
+        '夫妻': '#c4954a', '亲子': '#6b8c5c',
+        '情人': '#b8860b', '恋人': '#9b6b9e',
+        '手足': '#5c7a8a', '战友': '#5c7a8a',
+        '师生': '#6b8c8c'
       },
       _typeDash: {
-        '情人': '5,3', '情侣': '4,3', '恋人': '4,3', '恋人（未成）': '4,3', '恋人（近亲）': '4,2'
+        '情人': '5,3', '恋人': '4,3'
       },
 
       _getFilteredRelations() {
@@ -1752,40 +1735,47 @@
         const oy = this._offsetY;
 
         const layers = [
-          { name: 'gen0', items: ['梅尔基亚德斯'], yOff: 0.06 },
-          { name: 'gen1', items: ['何塞·阿尔卡蒂奥·布恩迪亚', '乌尔苏拉·伊瓜兰'], yOff: 0.18 },
-          { name: 'gen1b', items: ['庇拉尔·特尔内拉'], yOff: 0.30 },
-          { name: 'gen2', items: ['何塞·阿尔卡蒂奥', '奥雷里亚诺·布恩迪亚上校', '阿玛兰妲·布恩迪亚', '丽贝卡·布恩迪亚'], yOff: 0.42 },
-          { name: 'gen2b', items: ['蕾梅黛丝·摩斯科特', '皮埃特罗·克雷斯皮', '赫里内勒多·马尔克斯上校'], yOff: 0.54 },
-          { name: 'gen3', items: ['阿尔卡蒂奥', '桑塔索菲亚·德拉·彼达', '美人儿蕾梅黛丝'], yOff: 0.66 },
-          { name: 'gen4', items: ['奥雷里亚诺第二', '何塞·阿尔卡蒂奥第二', '佩特拉·科特斯', '费尔南达·德尔·卡皮奥'], yOff: 0.78 },
-          { name: 'gen5', items: ['梅梅', '阿玛兰妲·乌尔苏拉', '马乌里肖·巴比伦', '加斯通'], yOff: 0.88 },
-          { name: 'gen6', items: ['奥雷里亚诺·巴比伦'], yOff: 0.97 }
+          { name: 'gen0', items: ['梅尔基亚德斯'], yOff: 0.04 },
+          { name: 'gen1', items: ['何塞·阿尔卡蒂奥·布恩迪亚', '乌尔苏拉·伊瓜兰'], yOff: 0.14 },
+          { name: 'gen1b', items: ['庇拉尔·特尔内拉'], yOff: 0.24 },
+          { name: 'gen2', items: ['何塞·阿尔卡蒂奥', '奥雷里亚诺·布恩迪亚上校', '阿玛兰妲·布恩迪亚', '丽贝卡·布恩迪亚'], yOff: 0.36 },
+          { name: 'gen2b', items: ['蕾梅黛丝·摩斯科特', '皮埃特罗·克雷斯皮', '赫里内勒多·马尔克斯上校'], yOff: 0.46 },
+          { name: 'gen3', items: ['阿尔卡蒂奥', '桑塔索菲亚·德拉·彼达', '美人儿蕾梅黛丝'], yOff: 0.58 },
+          { name: 'gen4', items: ['奥雷里亚诺第二', '何塞·阿尔卡蒂奥第二', '佩特拉·科特斯', '费尔南达·德尔·卡皮奥'], yOff: 0.70 },
+          { name: 'gen5', items: ['梅梅', '阿玛兰妲·乌尔苏拉', '马乌里肖·巴比伦', '加斯通'], yOff: 0.82 },
+          { name: 'gen6', items: ['奥雷里亚诺·巴比伦'], yOff: 0.93 }
         ];
 
         const positions = {};
-        const nodeW = 100 * scale, nodeH = 34 * scale;
-        const gapX = 14 * scale;
+        const gapX = 28 * scale;
+        const fontSize = 14 * scale;
+        const labelFontSize = 16 * scale;
+        const hotRadius = 20 * scale;
 
         layers.forEach(layer => {
           const items = layer.items;
           if (!items || !items.length) return;
           const y = H * layer.yOff * scale + oy;
-          const totalW = items.length * (nodeW + gapX) - gapX;
+          const totalW = items.length * (gapX + fontSize * 6) - gapX;
           const startX = Math.max(20 * scale, (W - totalW) / 2 + ox);
           items.forEach((name, i) => {
-            positions[name] = {
-              x: startX + i * (nodeW + gapX) + nodeW / 2,
-              y: y
-            };
+            const x = startX + i * (gapX + fontSize * 6) + fontSize * 3;
+            positions[name] = { x: x, y: y };
           });
         });
 
         const rels = this._getFilteredRelations();
-        let svgContent = `<defs><filter id="glow"><feGaussianBlur stdDeviation="${1.5*scale}"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
-          <rect width="100%" height="100%" fill="#0d0a06"/>`;
+        let svgContent = `<defs>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="${1.5*scale}"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="shadow">
+            <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.8"/>
+          </filter>
+        </defs>
+        <rect width="100%" height="100%" fill="#0d0a06"/>`;
 
-        // 连线
         rels.forEach(rel => {
           const from = positions[rel.from];
           const to = positions[rel.to];
@@ -1794,29 +1784,35 @@
           const dash = this._typeDash[rel.type] || 'none';
           const midY = (from.y + to.y) / 2;
           svgContent += `<path d="M${from.x},${from.y} C${from.x},${midY} ${to.x},${midY} ${to.x},${to.y}" 
-            fill="none" stroke="${color}" stroke-width="${1.2*scale}" stroke-dasharray="${dash}" opacity="0.7"/>`;
-          const mx = (from.x + to.x) / 2;
-          const my = (from.y + to.y) / 2 - 10 * scale;
-          svgContent += `<text x="${mx}" y="${my}" fill="${color}" font-size="${8*scale}" text-anchor="middle" font-family="Georgia,serif" opacity="0.8">${rel.type}</text>`;
+            fill="none" stroke="${color}" stroke-width="${1.4*scale}" stroke-dasharray="${dash}" opacity="0.5"/>`;
         });
 
-        // 节点
+        rels.forEach(rel => {
+          const from = positions[rel.from];
+          const to = positions[rel.to];
+          if (!from || !to) return;
+          const color = this._typeColors[rel.type] || '#888';
+          const mx = (from.x + to.x) / 2;
+          const my = (from.y + to.y) / 2 - 12 * scale;
+          svgContent += `<text x="${mx}" y="${my}" fill="${color}" font-size="${labelFontSize}" font-weight="bold" 
+            text-anchor="middle" font-family="Georgia,serif" opacity="0.9" filter="url(#shadow)">${rel.type}</text>`;
+        });
+
         Object.entries(positions).forEach(([name, pos]) => {
           const ch = DATA.characters.find(c => c.name === name);
           const display = ch ? (ch.alias || name) : name;
           const isCore = ['何塞·阿尔卡蒂奥·布恩迪亚', '乌尔苏拉·伊瓜兰', '奥雷里亚诺·布恩迪亚上校'].includes(name);
-          const fill = isCore ? '#8b6914' : '#2d4a3e';
-          const stroke = isCore ? '#c4954a' : '#4a6a4a';
-          const x = pos.x - nodeW / 2;
-          const y = pos.y - nodeH / 2;
+          const color = isCore ? '#f0d080' : '#e8d5a3';
           const safeName = escape(name);
-          svgContent += `<g class="graph-node" style="cursor:pointer" data-name="${safeName}"
-            onmouseover="this.querySelector('rect').setAttribute('fill','${isCore ? '#c4954a' : '#4a7a4a'}')"
-            onmouseout="this.querySelector('rect').setAttribute('fill','${fill}')"
-            onclick="event.stopPropagation(); Graph.openPopup('${safeName}')">
-            <rect x="${x}" y="${y}" width="${nodeW}" height="${nodeH}" rx="${4*scale}" fill="${fill}" stroke="${stroke}" stroke-width="${1*scale}" opacity="0.92" filter="url(#glow)"/>
-            <text x="${pos.x}" y="${pos.y + 3*scale}" fill="#e8d5a3" font-size="${9.5*scale}" text-anchor="middle" font-family="Georgia,'Noto Serif SC',serif" letter-spacing="${0.3*scale}">${display}</text>
-          </g>`;
+          svgContent += `<circle cx="${pos.x}" cy="${pos.y}" r="${hotRadius}" fill="rgba(255,255,255,0)" 
+            style="cursor:pointer" 
+            onclick="event.stopPropagation(); Graph.openPopup('${safeName}')"
+            onmouseover="this.setAttribute('fill','rgba(255,255,255,0.08)')"
+            onmouseout="this.setAttribute('fill','rgba(255,255,255,0)')"/>`;
+          svgContent += `<text x="${pos.x}" y="${pos.y + 4*scale}" fill="${color}" font-size="${fontSize}" font-weight="bold" 
+            text-anchor="middle" font-family="Georgia,'Noto Serif SC',serif" letter-spacing="${0.3*scale}" 
+            filter="url(#shadow)" style="cursor:pointer"
+            onclick="event.stopPropagation(); Graph.openPopup('${safeName}')">${display}</text>`;
         });
 
         svgContent += `<text x="${W/2}" y="${H-10}" fill="#5c4a2a" font-size="${9*scale}" text-anchor="middle" font-family="Georgia,serif" letter-spacing="${1.5*scale}" opacity="0.5">拖拽移动 · 滚轮缩放 · 点击节点查看详情</text>`;
@@ -1864,7 +1860,6 @@
         $('#graphPopupClose').addEventListener('click', (e) => { e.stopPropagation(); this.closePopup(); });
         $('#graph-popup-overlay').addEventListener('click', (e) => { if (e.target === e.currentTarget) this.closePopup(); });
 
-        // 拖拽
         this.svg.addEventListener('mousedown', (e) => {
           if (e.target.closest('.graph-node')) return;
           this._isDragging = true;
@@ -1889,7 +1884,6 @@
           }
         });
 
-        // 触摸拖拽
         let touchStartX, touchStartY, touchOffX, touchOffY;
         this.svg.addEventListener('touchstart', (e) => {
           if (e.target.closest('.graph-node')) return;
@@ -1907,7 +1901,6 @@
           this._render();
         }, { passive: true });
 
-        // 滚轮缩放
         this.svg.addEventListener('wheel', (e) => {
           e.preventDefault();
           const delta = e.deltaY > 0 ? -0.08 : 0.08;
@@ -1946,6 +1939,39 @@
     };
 
     // ════════════════════════════════════════════════════════════════
+    // 引入动画
+    // ════════════════════════════════════════════════════════════════
+    function runIntro() {
+      const overlay = document.getElementById('intro-overlay');
+      const title = overlay.querySelector('.intro-title');
+      const sub = overlay.querySelector('.intro-sub');
+      const light = overlay.querySelector('.intro-light');
+
+      setTimeout(() => {
+        title.classList.add('show');
+        sub.classList.add('show');
+      }, 1200);
+
+      setTimeout(() => {
+        light.classList.add('show');
+      }, 3000);
+
+      setTimeout(() => {
+        document.getElementById('top-bar').classList.add('show');
+        document.getElementById('text-container').classList.add('show');
+        document.getElementById('bottom-bar').classList.add('show');
+        document.getElementById('sound-controls').classList.add('show');
+      }, 4500);
+
+      setTimeout(() => {
+        overlay.classList.add('hide');
+        setTimeout(() => {
+          overlay.style.display = 'none';
+        }, 2000);
+      }, 6000);
+    }
+
+    // ════════════════════════════════════════════════════════════════
     // 启动
     // ════════════════════════════════════════════════════════════════
     document.addEventListener('DOMContentLoaded', () => {
@@ -1956,23 +1982,24 @@
       SoundUI.init();
       Story.init();
 
-      // 书签按钮
       $('#btnBookmark').addEventListener('click', () => Story.toggleBookmark());
 
-      // 自动播放
-      $('#btnAutoPlay').addEventListener('click', () => Story.toggleAutoPlay());
+      document.getElementById('click-left').addEventListener('click', (e) => {
+        e.stopPropagation();
+        Story.goPrev();
+      });
+      document.getElementById('click-right').addEventListener('click', (e) => {
+        e.stopPropagation();
+        Story.goNext();
+      });
 
-      // 打字机
-      $('#btnTypewriter').addEventListener('click', () => Story.toggleTypewriter());
-
-      // 键盘快捷键
       document.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowLeft') { e.preventDefault(); Story.goPrev(); }
         if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); Story.goNext(); }
         if (e.key === 'b' && !e.ctrlKey && !e.metaKey) { Story.toggleBookmark(); }
-        if (e.key === 't' && !e.ctrlKey && !e.metaKey) { Story.toggleTypewriter(); }
-        if (e.key === 'p' && !e.ctrlKey && !e.metaKey) { Story.toggleAutoPlay(); }
       });
+
+      runIntro();
     });
   </script>
 </body>
