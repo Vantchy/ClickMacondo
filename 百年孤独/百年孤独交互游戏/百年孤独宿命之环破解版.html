@@ -1048,37 +1048,334 @@ input[type="range"] {
 }
 
 /* ================================================================
-   十、响应式 — 移动端
-   ================================================================ */
-@media (max-width: 768px) {
-  #book-area {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto;
-  }
-  #spine { display: none; }
-  #left-page {
-    padding: 20px 18px;
-    max-height: 55vh;
-    border-bottom: 1px solid rgba(196,149,74,0.1);
-  }
-  #right-page {
-    padding: 20px 18px;
-    max-height: 45vh;
-  }
-  #top-bar {
-    padding: 0 10px;
-    gap: 6px;
-  }
-  .top-btn { font-size: 0.6rem; padding: 4px 8px; }
-  #progress-label { font-size: 0.6rem; }
-  #bottom-bar { gap: 6px; }
-  .bottom-btn { font-size: 0.62rem; padding: 5px 10px; }
-  .scene-title { font-size: 1rem; }
-  .narrative-paragraph { font-size: 0.95rem; line-height: 1.7; }
+	   十、响应式 — 移动端
+	   ================================================================ */
 
-  .save-slot { flex-wrap: wrap; gap: 8px; }
-  .save-slot-number { min-width: auto; font-size: 0.85rem; }
-  .save-slot-actions { width: 100%; justify-content: flex-end; }
+	/* --- 平板及以下 (≤768px) --- */
+	@media (max-width: 768px) {
+	  :root {
+	    --topbar-h: 42px;
+	    --bottombar-h: 48px;
+	  }
+
+	  /* 允许 body 使用动态视口，避免 iOS Safari 地址栏挤压 */
+	  body {
+	    height: 100dvh;
+	    height: -webkit-fill-available;
+	    overflow: hidden;
+	  }
+
+	  /* 书页区域 —— 单栏连续滚屏 */
+	  #book-area {
+	    grid-template-columns: 1fr;
+	    grid-template-rows: auto;
+	    overflow-y: auto;
+	    overflow-x: hidden;
+	    -webkit-overflow-scrolling: touch;
+	  }
+	  #spine { display: none; }
+	  #left-page {
+	    padding: 18px 15px;
+	    max-height: none;
+	    overflow: visible;
+	    border-bottom: 2px solid rgba(196,149,74,0.12);
+	  }
+	  #right-page {
+	    padding: 18px 15px;
+	    max-height: none;
+	    overflow: visible;
+	  }
+
+	  /* 顶部栏 —— 允许换行 */
+	  #top-bar {
+	    padding: 4px 8px;
+	    gap: 5px;
+	    height: auto;
+	    min-height: var(--topbar-h);
+	    flex-wrap: wrap;
+	    justify-content: center;
+	  }
+	  #top-bar .top-item { gap: 5px; }
+	  .top-btn { font-size: 0.6rem; padding: 4px 10px; letter-spacing: 0.02em; }
+	  #chapter-select { font-size: 0.58rem; padding: 4px 8px; max-width: 85px; }
+	  #progress-label { font-size: 0.58rem; white-space: normal; text-align: center; }
+	  #fate-display { font-size: 0.65rem; gap: 3px; }
+	  #fate-icon { font-size: 0.85rem; }
+	  #fate-value { font-size: 0.9rem; min-width: 18px; }
+
+	  /* 底部栏 */
+	  #bottom-bar {
+	    gap: 6px;
+	    padding: 6px 10px 10px;
+	    height: auto;
+	    min-height: var(--bottombar-h);
+	  }
+	  .bottom-btn { font-size: 0.6rem; padding: 5px 9px; gap: 3px; letter-spacing: 0.03em; }
+
+	  /* ---- 左页叙事区 ---- */
+	  .scene-title { font-size: 0.98rem; margin-bottom: 12px; padding-bottom: 8px; }
+	  .speaker-label { font-size: 0.88rem; margin-bottom: 4px; }
+	  .narrative-paragraph { font-size: 0.9rem; line-height: 1.72; text-indent: 1.5em; margin-bottom: 10px; }
+	  .narrative-quote { font-size: 0.85rem; margin-left: 6px; padding: 6px 12px; line-height: 1.65; }
+	  .transition-text { font-size: 0.82rem; margin-top: 14px; padding-top: 10px; line-height: 1.6; }
+	  .memory-hint { font-size: 0.7rem; padding: 8px 12px; margin-top: 14px; }
+
+	  /* ---- 右页交互区 ---- */
+	  .right-section-title { font-size: 0.88rem; margin-bottom: 12px; }
+	  .choices-list { gap: 10px; }
+	  .choice-btn { padding: 14px 14px; font-size: 0.9rem; }
+	  .choice-btn .choice-label { font-size: 0.88rem; margin-bottom: 4px; }
+	  .choice-btn .choice-desc { font-size: 0.78rem; line-height: 1.4; }
+
+	  /* 结算面板 */
+	  .settlement-panel { padding: 15px 14px; }
+	  .settlement-summary { font-size: 0.82rem; line-height: 1.65; margin-bottom: 10px; }
+	  .settlement-table { font-size: 0.76rem; }
+	  .settlement-table th { font-size: 0.65rem; padding: 6px 7px; }
+	  .settlement-table td { font-size: 0.72rem; padding: 6px 7px; }
+	  .fate-summary { font-size: 0.8rem; margin-top: 10px; }
+	  .next-btn { width: 100%; font-size: 0.82rem; padding: 12px 18px; margin-top: 14px; }
+
+	  /* ---- 侧边栏 ---- */
+	  .sidebar-panel { width: 100vw; padding: 16px; }
+	  .sidebar-title { font-size: 0.95rem; }
+	  .sidebar-header { margin-bottom: 12px; padding-bottom: 8px; }
+	  .sidebar-close { width: 28px; height: 28px; font-size: 1rem; }
+
+	  /* 家族树 */
+	  .family-member { padding: 8px 10px; margin: 4px 0; }
+	  .family-member .fm-name { font-size: 0.8rem; }
+	  .family-member .fm-relation { font-size: 0.64rem; }
+	  .family-tree-connector { height: 10px; }
+
+	  /* 历史档案 */
+	  .archive-item { padding: 10px 12px; margin: 6px 0; }
+	  .archive-item .archive-title { font-size: 0.8rem; }
+	  .archive-item .archive-desc { font-size: 0.72rem; }
+	  .archive-item .archive-chapter { font-size: 0.6rem; }
+
+	  /* 个人简介 */
+	  .profile-section { margin-bottom: 14px; }
+	  .profile-section h4 { font-size: 0.72rem; }
+	  .profile-choice-log { font-size: 0.74rem; line-height: 1.7; }
+	  .profile-fate-level { font-size: 0.95rem; padding: 10px; }
+
+	  /* ---- 设置面板（模态框） ---- */
+	  .modal-panel { padding: 18px 16px; width: min(340px, 94vw); border-radius: 10px; }
+	  .modal-title { font-size: 0.88rem; margin-bottom: 12px; }
+	  .setting-label { font-size: 0.76rem; }
+	  .setting-row { padding: 7px 0; }
+	  .font-size-btn { font-size: 0.62rem; padding: 3px 8px; }
+	  input[type="range"] { width: 60px; }
+	  .modal-btn { font-size: 0.72rem; padding: 7px 16px; }
+
+	  /* ---- Toast 提示 ---- */
+	  #toast {
+	    bottom: 70px;
+	    font-size: 0.7rem;
+	    padding: 8px 16px;
+	    left: 10%;
+	    right: 10%;
+	    transform: translateX(0) translateY(20px);
+	    border-radius: 16px;
+	    text-align: center;
+	  }
+	  #toast.show { transform: translateX(0) translateY(0); }
+
+	  /* ---- 存档/读档面板 ---- */
+	  #saveload-overlay .modal-panel { width: min(480px, 96vw); }
+	  #saveload-current { font-size: 0.7rem; padding: 6px 10px; margin-bottom: 10px; }
+	  .save-slots-grid { max-height: 42vh; gap: 7px; }
+	  .save-slot { flex-wrap: wrap; gap: 6px; padding: 10px 12px; }
+	  .save-slot-number { min-width: auto; font-size: 0.8rem; }
+	  .save-slot-details { width: 100%; }
+	  .save-slot-actions { width: 100%; justify-content: flex-end; }
+	  .save-slot-chapter { font-size: 0.76rem; }
+	  .save-slot-round { font-size: 0.66rem; }
+	  .save-slot-time { font-size: 0.62rem; }
+	  .save-slot-empty-text { font-size: 0.72rem; }
+	  .slot-btn { font-size: 0.58rem; padding: 4px 9px; }
+
+	  /* ---- 动态封面 ---- */
+	  #cover-main-title { font-size: clamp(1.5rem, 7vw, 2.4rem); letter-spacing: 0.1em; }
+	  #cover-subtitle { font-size: clamp(0.75rem, 3.5vw, 1.1rem); letter-spacing: 0.15em; margin-bottom: 24px; }
+	  #cover-quote { font-size: 0.76rem; max-width: 88vw; padding: 12px 16px; line-height: 1.6; }
+	  #cover-hint { font-size: 0.68rem; bottom: 36px; }
+
+	  /* ---- 结尾致谢 ---- */
+	  .credits-title-lg { font-size: 1.15rem; }
+	  .credits-name { font-size: 0.85rem; }
+	  .credits-role { font-size: 0.66rem; }
+	  .credits-quote { font-size: 0.72rem; max-width: 88vw; }
+	  .credits-divider { margin: 18px auto; }
+	  #credits-restart { bottom: 28px; padding: 10px 22px; font-size: 0.74rem; }
+
+	  /* ---- 主菜单 ---- */
+	  #mainmenu-overlay { padding: 20px 12px 36px; }
+	  #mainmenu-content { max-width: 100%; }
+	  .mm-title { font-size: clamp(1.3rem, 6vw, 1.8rem); letter-spacing: 0.12em; }
+	  .mm-subtitle { font-size: clamp(0.65rem, 3vw, 0.9rem); letter-spacing: 0.2em; }
+	  .mm-title-wrap { margin-bottom: 18px; }
+	  .mm-btn { padding: 12px 14px; gap: 8px; border-radius: 6px; }
+	  .mm-btn-icon { font-size: 1.15rem; width: 26px; }
+	  .mm-btn-label { font-size: 0.8rem; }
+	  .mm-btn-hint { font-size: 0.62rem; }
+	  .mm-btn:hover { transform: none; }
+	  .mm-savecard { padding: 12px 14px; margin-bottom: 18px; }
+	  .mm-savecard-title { font-size: 0.7rem; }
+	  .mm-options { gap: 6px; margin-bottom: 14px; }
+	  .mm-footer { font-size: 0.64rem; }
+
+	  /* ---- 成就 & 书签 ---- */
+	  .achievement-card { padding: 10px 12px; gap: 8px; }
+	  .ach-icon { font-size: 1.3rem; width: 34px; }
+	  .ach-name { font-size: 0.76rem; }
+	  .ach-desc { font-size: 0.68rem; }
+	  .ach-status { font-size: 0.62rem; }
+	  .bookmark-card { padding: 10px 12px; gap: 8px; }
+	  .bookmark-title { font-size: 0.76rem; }
+	  .bookmark-desc { font-size: 0.66rem; }
+	  .bookmark-chapter { font-size: 0.6rem; }
+
+	  /* ---- 记忆碎片卡片 ---- */
+	  .memory-card { padding: 12px 14px; margin-top: 10px; }
+	  .memory-card-title { font-size: 0.76rem; }
+	  .memory-card-desc { font-size: 0.72rem; }
+
+	  /* ---- 标签 ---- */
+	  .tag-badge { font-size: 0.68rem; padding: 2px 9px; }
+	}
+
+	/* --- 小屏手机 (≤480px) --- */
+	@media (max-width: 480px) {
+	  :root {
+	    --topbar-h: 36px;
+	    --bottombar-h: 44px;
+	  }
+
+	  #left-page { padding: 14px 10px; }
+	  #right-page { padding: 14px 10px; }
+
+	  #top-bar { padding: 3px 4px; gap: 3px; }
+	  #top-bar .top-item { gap: 3px; }
+	  .top-btn { font-size: 0.52rem; padding: 3px 7px; }
+	  #chapter-select { font-size: 0.52rem; padding: 3px 5px; max-width: 70px; }
+	  #progress-label { font-size: 0.5rem; }
+	  #fate-display { font-size: 0.58rem; gap: 2px; }
+	  #fate-value { font-size: 0.8rem; min-width: 16px; }
+
+	  #bottom-bar { gap: 4px; padding: 5px 6px 8px; }
+	  .bottom-btn { font-size: 0.54rem; padding: 4px 7px; }
+
+	  /* 确保触摸目标足够大 (WCAG 2.5.5 推荐 ≥44px) */
+	  .choice-btn, .bottom-btn, .top-btn, .next-btn,
+	  .modal-btn, .mm-btn, .slot-btn, .sidebar-close {
+	    min-height: 40px;
+	  }
+
+	  /* 叙事区 */
+	  .scene-title { font-size: 0.88rem; margin-bottom: 10px; padding-bottom: 6px; }
+	  .speaker-label { font-size: 0.8rem; }
+	  .narrative-paragraph { font-size: 0.82rem; line-height: 1.6; text-indent: 1.2em; margin-bottom: 8px; }
+	  .narrative-quote { font-size: 0.78rem; padding: 5px 10px; line-height: 1.55; }
+	  .transition-text { font-size: 0.76rem; }
+	  .memory-hint { font-size: 0.65rem; }
+
+	  /* 交互区 */
+	  .right-section-title { font-size: 0.8rem; }
+	  .choice-btn { padding: 12px 10px; }
+	  .choice-btn .choice-label { font-size: 0.8rem; }
+	  .choice-btn .choice-desc { font-size: 0.72rem; }
+
+	  /* 结算 */
+	  .settlement-panel { padding: 12px 10px; }
+	  .settlement-summary { font-size: 0.76rem; }
+	  .settlement-table { font-size: 0.68rem; }
+	  .settlement-table th { font-size: 0.58rem; padding: 4px 5px; }
+	  .settlement-table td { font-size: 0.64rem; padding: 4px 5px; }
+	  .fate-summary { font-size: 0.74rem; }
+	  .next-btn { font-size: 0.76rem; padding: 10px 16px; }
+
+	  /* 侧边栏 */
+	  .sidebar-panel { padding: 12px; }
+	  .sidebar-title { font-size: 0.85rem; }
+	  .family-member { padding: 6px 8px; }
+	  .family-member .fm-name { font-size: 0.74rem; }
+	  .archive-item { padding: 8px 10px; }
+	  .archive-item .archive-title { font-size: 0.74rem; }
+	  .profile-section h4 { font-size: 0.66rem; }
+	  .profile-choice-log { font-size: 0.68rem; }
+	  .profile-fate-level { font-size: 0.85rem; }
+
+	  /* 模态框 */
+	  .modal-panel { padding: 14px 10px; width: 96vw; border-radius: 8px; }
+	  .modal-title { font-size: 0.8rem; }
+	  .setting-label { font-size: 0.7rem; }
+	  .font-size-btn { font-size: 0.56rem; padding: 2px 7px; }
+	  input[type="range"] { width: 50px; }
+	  .modal-btn { font-size: 0.66rem; padding: 6px 14px; }
+
+	  /* Toast */
+	  #toast {
+	    bottom: 60px;
+	    font-size: 0.64rem;
+	    padding: 7px 14px;
+	    left: 4%;
+	    right: 4%;
+	  }
+
+	  /* 存档面板 */
+	  #saveload-overlay .modal-panel { width: 98vw; }
+	  .save-slots-grid { max-height: 36vh; gap: 5px; }
+	  .save-slot { padding: 8px 10px; gap: 4px; }
+	  .save-slot-number { font-size: 0.7rem; }
+	  .save-slot-chapter { font-size: 0.7rem; }
+	  .save-slot-round { font-size: 0.6rem; }
+	  .save-slot-time { font-size: 0.56rem; }
+	  .slot-btn { font-size: 0.52rem; padding: 3px 7px; }
+
+	  /* 封面 */
+	  #cover-main-title { font-size: clamp(1.2rem, 8vw, 1.8rem); letter-spacing: 0.06em; }
+	  #cover-subtitle { font-size: clamp(0.65rem, 4vw, 0.9rem); letter-spacing: 0.1em; margin-bottom: 18px; }
+	  #cover-quote { font-size: 0.68rem; padding: 10px 12px; line-height: 1.5; }
+	  #cover-hint { font-size: 0.6rem; bottom: 26px; }
+
+	  /* 致谢 */
+	  .credits-title-lg { font-size: 1rem; }
+	  .credits-name { font-size: 0.76rem; }
+	  .credits-role { font-size: 0.6rem; }
+	  .credits-quote { font-size: 0.66rem; }
+	  #credits-restart { bottom: 20px; padding: 8px 18px; font-size: 0.66rem; }
+
+	  /* 主菜单 */
+	  #mainmenu-overlay { padding: 14px 8px 24px; }
+	  .mm-title { font-size: clamp(1.1rem, 7vw, 1.4rem); letter-spacing: 0.08em; }
+	  .mm-subtitle { font-size: clamp(0.58rem, 3.5vw, 0.78rem); }
+	  .mm-btn { padding: 10px 12px; gap: 6px; }
+	  .mm-btn-icon { font-size: 1rem; width: 22px; }
+	  .mm-btn-label { font-size: 0.72rem; }
+	  .mm-btn-hint { font-size: 0.56rem; }
+	  .mm-savecard { padding: 10px 12px; }
+	  .mm-savecard-title { font-size: 0.64rem; }
+
+	  /* 记忆碎片 */
+	  .memory-card { padding: 10px 10px; }
+	  .memory-card-title { font-size: 0.7rem; }
+	  .memory-card-desc { font-size: 0.66rem; }
+
+	  /* 成就 & 书签 */
+	  .achievement-card { padding: 8px 10px; gap: 6px; }
+	  .ach-icon { font-size: 1.1rem; width: 28px; }
+	  .ach-name { font-size: 0.7rem; }
+	  .ach-desc { font-size: 0.62rem; }
+	  .bookmark-card { padding: 8px 10px; gap: 6px; }
+	  .bookmark-title { font-size: 0.7rem; }
+	  .bookmark-desc { font-size: 0.6rem; }
+
+	  /* 标签 */
+	  .tag-badge { font-size: 0.62rem; padding: 2px 7px; }
+	}
+
 }
 
 /* ================================================================
