@@ -492,6 +492,11 @@ body {
   margin: 2px 4px;
 }
 
+.profile-tags .tag-badge {
+  color: #e0d8d2;
+  font-weight: 600;
+}
+
 .fate-summary {
   text-align: center;
   font-family: var(--font-title);
@@ -523,16 +528,17 @@ body {
   color: #b8893e;
 }
 
-/* 记忆碎片卡片 */
+/* 记忆碎片卡片 修复蓝白色冰低对比度问题 */
 .memory-card {
   position: relative;
   margin-top: 16px;
   padding: 16px 20px;
-  background: linear-gradient(135deg, rgba(184,137,62,0.15), rgba(10,8,4,0.55));
+  /* 原淡蓝冷渐变加深、弱化透光白雾 */
+  background: linear(135deg, rgba(184,137,0.18), rgba(8,6,4,0.65));
   border: 1px solid var(--gold);
   border-radius: 8px;
   animation: memorySlideIn 0.5s ease;
-  box-shadow: 0 0 20px rgba(184,137,62,0.08);
+  box-shadow: 0 0 16px rgba(184,137,62,0.12);
 }
 @keyframes memorySlideIn {
   from { transform: translateY(20px); opacity: 0; }
@@ -543,14 +549,16 @@ body {
   font-size: 0.85rem;
   color: var(--gold-light);
   letter-spacing: 0.08em;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
+  font-weight: 600; /* 加粗提升醒目度 */
 }
 .memory-card-desc {
   font-size: 0.82rem;
-  color: #d4c0a0;
-  line-height: 1.5;
+  color: #c8b290; /* 原#d4c0a0加深，解决淡字看不清 */
+  line-height: 1.6;
   font-style: italic;
 }
+
 
 /* ================================================================
    六、侧边栏（通用）
