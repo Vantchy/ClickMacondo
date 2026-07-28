@@ -1283,6 +1283,25 @@ function getCurrentChapterData() {
   return chapters['chapter' + GameState.chapter] || null;
 }
 
+/** 计算当前章节宿命值上限（所有选择中最高宿命之和） */
+function getChapterMaxFate() {
+  const chData = getCurrentChapterData();
+  if (!chData || !chData.scenes) return 10;
+  let maxFate = 0;
+  Object.values(chData.scenes).forEach(scene => {
+    if (scene.type === 'choice' && scene.choices) {
+      let roundMax = 0;
+      scene.choices.forEach(c => {
+        if (c.effects && c.effects.fate) {
+          roundMax = Math.max(roundMax, c.effects.fate);
+        }
+      });
+      maxFate += roundMax;
+    }
+  });
+  return maxFate || 10; // 兜底：至少10
+}
+
 /** 获取当前章节中所有记忆碎片 */
 function getCurrentChapterMemories() {
   const chData = getCurrentChapterData();
@@ -1328,6 +1347,183 @@ const CHAPTER_ORDER = [
   'chapter11', 'chapter12', 'chapter13', 'chapter14', 'chapter15',
   'chapter16', 'chapter17', 'chapter18', 'chapter19', 'chapter20', 'epilogue'
 ];
+
+/* ================================================================
+   人物关系数据库 — 精确关系、性别、别名、共同事件
+   ================================================================ */
+const CHARACTER_GENDERS = {
+  '何塞·阿尔卡蒂奥·布恩迪亚': '男', '乌尔苏拉·伊瓜兰': '女',
+  '何塞·阿尔卡蒂奥': '男', '奥雷里亚诺·布恩迪亚': '男',
+  '阿玛兰妲': '女', '丽贝卡': '女',
+  '蕾梅黛丝·摩斯科特': '女', '阿尔卡蒂奥': '男',
+  '奥雷里亚诺第二': '男', '何塞·阿尔卡蒂奥第二': '男',
+  '美人儿蕾梅黛丝': '女', '费尔南达·德尔·卡皮奥': '女',
+  '梅梅（雷纳塔·蕾梅黛丝·布恩迪亚）': '女',
+  '阿玛兰妲·乌尔苏拉': '女', '奥雷里亚诺（私生子）': '男',
+  '梅尔基亚德斯': '男', '普鲁登西奥·阿基拉尔': '男',
+  '皮埃特罗·克雷斯皮': '男', '阿波利纳尔·摩斯科特': '男',
+  '庇拉尔·特尔内拉': '女', '佩特拉·科特斯': '女',
+  '马乌里肖·巴比伦': '男', '加斯通': '男'
+};
+
+const CHARACTER_ALIASES = {
+  '奥雷里亚诺·布恩迪亚': ['奥雷里亚诺上校', '奥雷里亚诺·布恩迪亚上校', '布恩迪亚上校'],
+  '何塞·阿尔卡蒂奥·布恩迪亚': ['何塞·阿尔卡蒂奥·布恩迪亚'],
+  '何塞·阿尔卡蒂奥': ['何塞·阿尔卡蒂奥'],
+  '奥雷里亚诺第二': ['奥雷里亚诺第二'],
+  '奥雷里亚诺（私生子）': ['奥雷里亚诺', '私生子奥雷里亚诺'],
+  '梅梅（雷纳塔·蕾梅黛丝·布恩迪亚）': ['梅梅', '雷纳塔·蕾梅黛丝'],
+  '乌尔苏拉·伊瓜兰': ['乌尔苏拉'],
+  '蕾梅黛丝·摩斯科特': ['蕾梅黛丝'],
+  '美人儿蕾梅黛丝': ['美人儿蕾梅黛丝'],
+  '费尔南达·德尔·卡皮奥': ['费尔南达'],
+  '何塞·阿尔卡蒂奥第二': ['何塞·阿尔卡蒂奥第二'],
+  '梅尔基亚德斯': ['梅尔基亚德斯'],
+  '皮埃特罗·克雷斯皮': ['皮埃特罗·克雷斯皮', '皮埃特罗'],
+  '佩特拉·科特斯': ['佩特拉·科特斯', '佩特拉'],
+  '马乌里肖·巴比伦': ['马乌里肖·巴比伦', '马乌里肖'],
+  '庇拉尔·特尔内拉': ['庇拉尔·特尔内拉'],
+  '阿波利纳尔·摩斯科特': ['阿波利纳尔·摩斯科特', '摩斯科特'],
+  '普鲁登西奥·阿基拉尔': ['普鲁登西奥·阿基拉尔'],
+  '加斯通': ['加斯通'],
+  '阿玛兰妲': ['阿玛兰妲'],
+  '阿玛兰妲·乌尔苏拉': ['阿玛兰妲·乌尔苏拉'],
+  '丽贝卡': ['丽贝卡'],
+  '阿尔卡蒂奥': ['阿尔卡蒂奥']
+};
+
+function resolveCharacterName(input) {
+  if (familyTreeRegistry[input]) return input;
+  for (const [formal, aliases] of Object.entries(CHARACTER_ALIASES)) {
+    if (aliases.some(a => a === input || input.includes(a) || a.includes(input))) return formal;
+  }
+  return input;
+}
+
+const RELATION_DB = [
+  ['何塞·阿尔卡蒂奥·布恩迪亚', '乌尔苏拉·伊瓜兰', '夫妻',
+    '马孔多的共同建立者。他用一头骡子和一对山羊换两块磁铁时，她双手叉腰站在门口——一生都在用自己的方式守着他。'],
+  ['何塞·阿尔卡蒂奥·布恩迪亚', '梅尔基亚德斯', '至交挚友',
+    '吉卜赛人带来了磁铁、放大镜与冰块，也带来了何塞一生追逐的"看不见的东西"。他为放大镜用记忆做了交换——从此忘记了父亲的脸。'],
+  ['何塞·阿尔卡蒂奥·布恩迪亚', '何塞·阿尔卡蒂奥', '父子',
+    '长子十四岁跟吉卜赛人出走，归来时已成纹满世界地图的巨人。他蹲在栗树下，把面包掰成两半放在被绑住的父亲手中。'],
+  ['乌尔苏拉·伊瓜兰', '何塞·阿尔卡蒂奥', '母子',
+    '她追着吉卜赛篷车跑了几天几夜寻找出走的长子。当儿子归来，他已是一个她几乎认不出的巨人。'],
+  ['何塞·阿尔卡蒂奥·布恩迪亚', '奥雷里亚诺·布恩迪亚', '父子',
+    '父亲带他去看冰块的那个下午，成了上校一生最温暖的记忆。行刑队前，他想起的是覆在他手背上的父亲的手。'],
+  ['乌尔苏拉·伊瓜兰', '奥雷里亚诺·布恩迪亚', '母子',
+    '她在信上只写两个字——"别死"。他打了三十二场败仗，躲过无数次暗杀——从未忘记这两个字。'],
+  ['何塞·阿尔卡蒂奥·布恩迪亚', '阿玛兰妲', '父女',
+    '父亲的目光总在磁铁与放大镜之间。她学会嫉妒——一生在缝制裹尸布中缝补这份缺失。'],
+  ['乌尔苏拉·伊瓜兰', '阿玛兰妲', '母女',
+    '阿玛兰妲下毒时，乌尔苏拉冲进厨房打翻了那杯咖啡。她一生都在替女儿缝补她造成和承受的伤口。'],
+  ['何塞·阿尔卡蒂奥·布恩迪亚', '丽贝卡', '养父女',
+    '丽贝卡抱着父母的骨灰盒叩门。何塞侧身让她走进来——从此家里多了一个永远在墙角吃泥土的女孩。'],
+  ['乌尔苏拉·伊瓜兰', '丽贝卡', '养母女',
+    '她用草药和祈祷治好了养女的吃泥症。这个陌生女孩从此有了房间、衣服和一碗热汤。'],
+  ['丽贝卡', '皮埃特罗·克雷斯皮', '恋人（曾有婚约）',
+    '自动钢琴第一次奏响时丽贝卡爱上了弹琴的意大利人。他选择了她——但另一个女人的嫉妒让这场婚礼永未完成。'],
+  ['阿玛兰妲', '皮埃特罗·克雷斯皮', '暗恋与嫉妒',
+    '她在他的衬衫上缝了整整一个月的花——但他选择了丽贝卡。她发誓这场婚礼永远不会办成。'],
+  ['阿玛兰妲', '丽贝卡', '情敌姐妹',
+    '两人同时爱上了同一个弹钢琴的男人。阿玛兰妲在丽贝卡的咖啡里下了毒——乌尔苏拉冲进来打翻了杯子，裂痕从此无法愈合。'],
+  ['丽贝卡', '何塞·阿尔卡蒂奥', '夫妻',
+    '巨人归来那天，两人目光交汇——所有关于钢琴的琴声都沉默了。他们搬出老家，在村子另一头建立了自己的世界。'],
+  ['奥雷里亚诺·布恩迪亚', '蕾梅黛丝·摩斯科特', '夫妻',
+    '她举着糖苹果站在街对面——九岁。他对自己说"她"。十四岁时她从楼梯上摔下——带走了他这辈子唯一温柔的部分。'],
+  ['奥雷里亚诺·布恩迪亚', '阿波利纳尔·摩斯科特', '翁婿',
+    '他娶了镇长的女儿。当他拿起枪加入自由党，与岳父站到了政治的对立面——两种忠诚从未在同一张桌上坐下。'],
+  ['奥雷里亚诺·布恩迪亚', '庇拉尔·特尔内拉', '占卜关系',
+    '纸牌女人对六岁的他说："这孩子会死很多次。"她算对了——他躲过了无数次暗杀和行刑队。'],
+  ['何塞·阿尔卡蒂奥', '庇拉尔·特尔内拉', '露水情人',
+    '她用纸牌引诱了沉默如石的少年。他们的儿子阿尔卡蒂奥——布恩迪亚第三代由此开始。'],
+  ['何塞·阿尔卡蒂奥', '阿尔卡蒂奥', '父子',
+    '巨人多数时间在海上。阿尔卡蒂奥从未真正认识父亲——当他在马孔多成为暴君时，父亲只是远方传说。'],
+  ['奥雷里亚诺·布恩迪亚', '阿尔卡蒂奥', '叔侄',
+    '上校参战时将镇子交给侄子。侄子穿上军装变成暴君——上校收到消息时只说"权力不是用来报仇的"。'],
+  ['阿尔卡蒂奥', '奥雷里亚诺第二', '父子',
+    '双胞胎之一继承了布恩迪亚家的狂欢渴望——一顿能吃下一头牛。父亲被处决前从不知道儿子会成为这样的人。'],
+  ['阿尔卡蒂奥', '何塞·阿尔卡蒂奥第二', '父子',
+    '双胞胎中的另一个阴沉愤怒——亲眼目睹三千人大屠杀后，一生在试图让世界承认那场杀戮。'],
+  ['阿尔卡蒂奥', '美人儿蕾梅黛丝', '父女',
+    '她从不穿衣服。晾床单时风把她吹上了天空——父亲在坟墓里，永远不知道自己生下了马孔多最美的存在。'],
+  ['奥雷里亚诺第二', '费尔南达·德尔·卡皮奥', '夫妻',
+    '狂欢节上将她扛在肩头看世界全景。婚后她用祷告和窗帘把家捆成教堂——他逃到情妇那里，不是恨她，是无法在她的规矩里呼吸。'],
+  ['奥雷里亚诺第二', '佩特拉·科特斯', '情人（真爱）',
+    '佩特拉是他真正爱着的女人。四年大雨冲走所有财富，只有她陪他坐在屋顶上——手牵手，在雨声中不说什么。'],
+  ['奥雷里亚诺第二', '梅梅（雷纳塔·蕾梅黛丝·布恩迪亚）', '父女',
+    '他从未在规矩和钢琴课之间找到表达爱的方式——只是在每次出海后偷偷在她枕头下放一块糖。'],
+  ['费尔南达·德尔·卡皮奥', '梅梅（雷纳塔·蕾梅黛丝·布恩迪亚）', '母女',
+    '她为女儿规划了贵族婚姻与体面。但女儿爱上满手机油的学徒——她叫来警察，枪声打断了黄蝴蝶的翅膀。'],
+  ['梅梅（雷纳塔·蕾梅黛丝·布恩迪亚）', '马乌里肖·巴比伦', '恋人',
+    '黄蝴蝶总是跟着他。他们在后院棕榈树下幽会——直到子弹打断他的脊椎。他再没站起来——她将他的照片藏在内衬里，直到死。'],
+  ['费尔南达·德尔·卡皮奥', '马乌里肖·巴比伦', '仇敌',
+    '她叫来的警察开枪打中了学徒的脊椎。她用钱将他送去遥远医院——条件是永远不回来。黄蝴蝶从此离开了马孔多。'],
+  ['奥雷里亚诺第二', '阿玛兰妲·乌尔苏拉', '父女',
+    '女儿从布鲁塞尔归来时父亲已去世。她推开那扇门——看见腐烂的房子，和一个正在读羊皮卷的年轻人。'],
+  ['费尔南达·德尔·卡皮奥', '阿玛兰妲·乌尔苏拉', '母女',
+    '小女儿不像母亲。从欧洲回来后第一件事——把母亲拉了半辈子的窗帘全部扯下。'],
+  ['阿玛兰妲·乌尔苏拉', '加斯通', '夫妻',
+    '她带着欧洲丈夫回到马孔多——他不属于这里。他看着她一天天被房子和读羊皮卷的年轻人拉走，最后订了单程票——只给他自己。'],
+  ['梅梅（雷纳塔·蕾梅黛丝·布恩迪亚）', '奥雷里亚诺（私生子）', '母子（永未相见）',
+    '婴儿被放在篮子里送到家门口。梅梅在修道院度过余生——永远不知道儿子在走廊里独自长大，破解了全部羊皮卷。'],
+  ['马乌里肖·巴比伦', '奥雷里亚诺（私生子）', '父子（永未相见）',
+    '父亲在遥远医院病床上再没站起来——不知道儿子被取名为奥雷里亚诺，被锁在布恩迪亚家，被说成"捡来的"。'],
+  ['费尔南达·德尔·卡皮奥', '奥雷里亚诺（私生子）', '养祖母/囚禁者',
+    '她把婴儿藏在房子里——不让他出去，不让他上学，不让他知道自己是谁。他在被锁的房子里长大，然后发现了时间不会流逝的房间。'],
+  ['阿玛兰妲·乌尔苏拉', '奥雷里亚诺（私生子）', '恋人（近亲）',
+    '两个布恩迪亚在腐烂的马孔多相爱——在羊皮卷的注视下重复家族最古老的模式。他们的孩子是最后一个布恩迪亚——被蚂蚁带走。'],
+  ['何塞·阿尔卡蒂奥·布恩迪亚', '普鲁登西奥·阿基拉尔', '仇敌',
+    '斗鸡场上普鲁登西奥羞辱了乌尔苏拉。何塞用长矛刺穿他的喉咙——死者的灵魂从此在栗树下徘徊。'],
+  ['奥雷里亚诺·布恩迪亚', '梅尔基亚德斯', '精神导师与继承者',
+    '梅尔基亚德斯写下布恩迪亚家的一切——上校的曾孙最终破解了羊皮卷。他走后那间房间不再有灰尘——时间永远停留。'],
+  ['何塞·阿尔卡蒂奥第二', '奥雷里亚诺（私生子）', '引路人',
+    '最后记得三千人大屠杀的人把钥匙交给了梅梅的儿子——"你会知道的。"羊皮卷从见证者传到破解者手上。'],
+  ['奥雷里亚诺第二', '何塞·阿尔卡蒂奥第二', '孪生兄弟',
+    '双胞胎一模一样——连乌尔苏拉都分不清。一个选择笑声和盛宴，另一个选择愤怒与记忆。死后被装错棺材——命运最后的玩笑。'],
+  ['乌尔苏拉·伊瓜兰', '费尔南达·德尔·卡皮奥', '隔代婆媳',
+    '失明的乌尔苏拉仍然看穿了试图用规矩统治布恩迪亚家的女人。两人从未交谈——但每次擦肩都互相了解一切。'],
+  ['乌尔苏拉·伊瓜兰', '美人儿蕾梅黛丝', '曾祖孙',
+    '失明后用手摸到曾孙女的脸——手指停在那张完美脸上很久："你不属于这个世界。"后来风把她吹走了——她没有惊讶。']
+];
+
+function findRelation(name1, name2) {
+  const a = resolveCharacterName(name1);
+  const b = resolveCharacterName(name2);
+  for (const [ra, rb, label, event] of RELATION_DB) {
+    if ((ra === a && rb === b) || (ra === b && rb === a)) {
+      return [label, event];
+    }
+  }
+  return null;
+}
+
+function findRelationPath(name1, name2) {
+  const a = resolveCharacterName(name1);
+  const b = resolveCharacterName(name2);
+  if (a === b) return null;
+  const graph = {};
+  for (const [ra, rb, label] of RELATION_DB) {
+    if (!graph[ra]) graph[ra] = [];
+    if (!graph[rb]) graph[rb] = [];
+    graph[ra].push({ to: rb, label });
+    graph[rb].push({ to: ra, label });
+  }
+  if (!graph[a] || !graph[b]) return null;
+  const visited = new Set([a]);
+  const queue = [[a, []]];
+  while (queue.length > 0) {
+    const [current, edges] = queue.shift();
+    if (current === b) return edges;
+    for (const { to, label } of (graph[current] || [])) {
+      if (!visited.has(to)) {
+        visited.add(to);
+        queue.push([to, [...edges, { from: current, to, label }]]);
+      }
+    }
+  }
+  return null;
+}
 
 /** 获取章节显示标题（如 "第一章 · 宿命之环"） */
 function getChapterDisplayTitle(chapterId) {
@@ -1472,8 +1668,11 @@ const GameState = {
 
   getFateLevel() {
     const f = this.fateCounter;
-    if (f <= 3) return { level: '宿命抗争者', color: 'var(--fate-low)', desc: '你还在与命运搏斗。你相信自己可以改变方向。' };
-    if (f <= 7) return { level: '宿命追随者', color: 'var(--fate-mid)', desc: '你开始听见命运的低语。你偶尔会在夜里惊醒，感觉一切都已经被写好了。' };
+    const maxF = getChapterMaxFate();
+    const low = Math.ceil(maxF / 3);
+    const mid = Math.ceil(maxF * 2 / 3);
+    if (f <= low) return { level: '宿命抗争者', color: 'var(--fate-low)', desc: '你还在与命运搏斗。你相信自己可以改变方向。' };
+    if (f <= mid) return { level: '宿命追随者', color: 'var(--fate-mid)', desc: '你开始听见命运的低语。你偶尔会在夜里惊醒，感觉一切都已经被写好了。' };
     return { level: '宿命见证者', color: 'var(--fate-high)', desc: '你已经知道答案了。你只是还在走着看。' };
   },
 
@@ -1546,8 +1745,9 @@ const GameEngine = {
       } else {
         GameState.fateCounter += choice.effects.fate;
       }
-      // 限制宿命值在0-10之间
-      GameState.fateCounter = Math.min(10, Math.max(0, GameState.fateCounter));
+      // 限制宿命值不超过本章节最大值
+      const chMaxFate = getChapterMaxFate();
+      GameState.fateCounter = Math.min(chMaxFate, Math.max(0, GameState.fateCounter));
     }
 
     if (choice.effects.memory && !GameState.memories.includes(choice.effects.memory)) {
@@ -1685,17 +1885,82 @@ const GameEngine = {
     return this.switchToChapter(nextChapter);
   },
 
-  /** 遇到当前章节的家族成员 */
+  /** 遇到当前章节的家族成员（包括附身角色和场景中出现的说话者） */
   encounterChapterMembers() {
     const chData = getCurrentChapterData();
-    if (!chData || !chData.familyMembers) return;
-    chData.familyMembers.forEach(m => {
-      if (GameState.encounterCharacter(m.name)) {
-        setTimeout(() => {
-          showToast('🌳 ' + m.name + ' 已加入家族树');
-        }, 800);
+    if (!chData) return;
+    const newEncounters = [];
+
+    // 1. 附身角色 — 同时匹配注册表中的全名
+    if (chData.possessedCharacter) {
+      const possessed = chData.possessedCharacter;
+      const registryNames = Object.keys(familyTreeRegistry);
+      const matchedName = registryNames.find(rn =>
+        rn === possessed || rn.includes(possessed) || possessed.includes(rn)
+      );
+      const nameToEncounter = matchedName || possessed;
+      if (GameState.encounterCharacter(nameToEncounter)) {
+        newEncounters.push(nameToEncounter);
       }
-    });
+      // 如果匹配到了不同名，也把原名记上（避免重复扫描时遗漏）
+      if (matchedName && matchedName !== possessed && GameState.encounterCharacter(possessed)) {
+        // already tracked
+      }
+    }
+
+    // 2. 注册的家庭成员
+    if (chData.familyMembers) {
+      chData.familyMembers.forEach(m => {
+        if (GameState.encounterCharacter(m.name)) {
+          newEncounters.push(m.name);
+        }
+      });
+    }
+
+    // 3. 扫描所有场景中的说话者（leftPage.speaker），匹配家族树注册表
+    if (chData.scenes) {
+      const registryNames = Object.keys(familyTreeRegistry);
+      Object.values(chData.scenes).forEach(scene => {
+        if (scene.leftPage && scene.leftPage.speaker) {
+          const speaker = scene.leftPage.speaker;
+          if (speaker === '旁白') return;
+          // 查找所有匹配项
+          const matches = registryNames.filter(rn =>
+            rn === speaker || rn.includes(speaker) || speaker.includes(rn)
+          );
+          let matchedName = null;
+          if (matches.length === 1) {
+            matchedName = matches[0];
+          } else if (matches.length > 1) {
+            // 歧义消解：根据章节选择正确的人物
+            // '奥雷里亚诺'：第1-7章指上校(gen2)，第15-20章指私生子(gen6)
+            matchedName = matches.find(rn => {
+              const gen = familyTreeRegistry[rn].generation;
+              if (chData.chapterNumber <= 7 && gen === 2) return true;
+              if (chData.chapterNumber >= 15 && gen === 6) return true;
+              return false;
+            });
+            if (!matchedName) matchedName = matches[0]; // fallback
+          }
+          if (matchedName && GameState.encounterCharacter(matchedName)) {
+            if (!newEncounters.includes(matchedName)) {
+              newEncounters.push(matchedName);
+            }
+          }
+        }
+      });
+    }
+
+    // 批量通知
+    if (newEncounters.length > 0) {
+      setTimeout(() => {
+        if (newEncounters.length === 1) {
+          showToast('🌳 ' + newEncounters[0] + ' 已加入家族树');
+        } else {
+          showToast('🌳 ' + newEncounters.length + ' 位人物已加入家族树');
+        }
+      }, 800);
+    }
   },
 
   /** 从序章跳转到指定章节 */
@@ -1976,7 +2241,8 @@ const Renderer = {
         // 宿命值
         const fateLevel = GameState.getFateLevel();
         html += `<div class="fate-summary" style="color: ${fateLevel.color}">`;
-        html += `宿命值：${GameState.fateCounter} · ${fateLevel.level}`;
+        const chMaxF = getChapterMaxFate();
+        html += `宿命值：${GameState.fateCounter} / ${chMaxF} · ${fateLevel.level}`;
         html += `</div>`;
         html += `<div style="font-size:0.75rem;color:var(--gold-dim);text-align:center;margin-top:4px;">${fateLevel.desc}</div>`;
 
@@ -2016,9 +2282,12 @@ const Renderer = {
             const enterLabel = '进入' + nextChapterData.title;
             html += `<button class="next-btn" onclick="GameEngine.goToNextChapter();Renderer.render();populateChapterSelect();">${enterLabel}</button>`;
             html += `<div style="text-align:center;margin-top:16px;font-style:italic;color:var(--gold-dim);font-size:0.85rem;">`;
+            // 引入语句：使用章节副标题作为叙事钩子
             const nextMeta = CHAPTER_META[nextChapterId];
             if (nextMeta && nextMeta.subtitle) {
-              html += `<p>${nextMeta.shortName} · ${nextMeta.subtitle}</p>`;
+              const possessed = nextChapterData.possessedCharacter || '未知';
+              html += `<p>你将附身于 <strong style="color:var(--gold-light);">${possessed}</strong></p>`;
+              html += `<p style="margin-top:4px;">— ${nextMeta.subtitle}</p>`;
             }
             html += `</div>`;
           } else {
@@ -2259,7 +2528,8 @@ const SidebarManager = {
     html += '<div class="profile-section">';
     html += '<h4>宿命值</h4>';
     html += `<div class="profile-fate-level" style="color:${fateLevel.color};border:1px solid ${fateLevel.color};">`;
-    html += `⭐ ${GameState.fateCounter} / 10 — ${fateLevel.level}`;
+    const chMaxFate = getChapterMaxFate();
+    html += `⭐ ${GameState.fateCounter} / ${chMaxFate} — ${fateLevel.level}`;
     html += `</div>`;
     html += `<p class="profile-choice-log" style="text-align:center;margin-top:6px;">${fateLevel.desc}</p>`;
     html += '</div>';
@@ -2305,18 +2575,21 @@ const SidebarManager = {
     const panel = document.getElementById('sidebar-relations');
     if (!overlay || !panel) return;
 
-    // 填充人物下拉框
-    const allMembers = familyTreeToArray();
-    const members = allMembers.filter(m => GameState.encounteredCharacters.includes(m.name));
+    // 使用全量家族树注册表（不限于已遇到人物）
+    const allNames = Object.keys(familyTreeRegistry);
+    const members = allNames.map(n => familyTreeRegistry[n]);
     members.sort((a, b) => a.generation - b.generation);
 
     const sel1 = document.getElementById('relation-char1');
     const sel2 = document.getElementById('relation-char2');
     if (!sel1 || !sel2) return;
 
-    const optionsHTML = members.map(m =>
-      `<option value="${m.name}">${m.name}（${m.relation}）</option>`
-    ).join('');
+    const GEN_LABELS = {0:'外部', 1:'第一代', 2:'第二代', 3:'第三代', 4:'第四代', 5:'第五代', 6:'第六代'};
+    const optionsHTML = members.map(m => {
+      const genLabel = GEN_LABELS[m.generation] || ('第'+m.generation+'代');
+      const encountered = GameState.encounteredCharacters.includes(m.name) ? '' : '（未遇到）';
+      return `<option value="${m.name}">${m.name} — ${genLabel}${encountered}</option>`;
+    }).join('');
     sel1.innerHTML = optionsHTML;
     sel2.innerHTML = optionsHTML;
 
@@ -2333,59 +2606,56 @@ const SidebarManager = {
   },
 
   queryRelation() {
-    const name1 = document.getElementById('relation-char1').value;
-    const name2 = document.getElementById('relation-char2').value;
+    const raw1 = document.getElementById('relation-char1').value;
+    const raw2 = document.getElementById('relation-char2').value;
     const resultDiv = document.getElementById('relation-result');
-    if (!name1 || !name2 || !resultDiv) return;
+    if (!raw1 || !raw2 || !resultDiv) return;
 
-    if (name1 === name2) {
+    if (raw1 === raw2) {
       resultDiv.innerHTML = '<div style="color:var(--gold-dim);text-align:center;padding:12px;font-style:italic;">请选择两个不同的人物</div>';
       return;
     }
 
-    // 查找两人共同出现的章节
-    const commonChapters = [];
-    const sortedChapterIds = Object.keys(chapters).sort((a, b) => chapters[a].chapterNumber - chapters[b].chapterNumber);
-    sortedChapterIds.forEach(chId => {
-      const ch = chapters[chId];
-      if (!ch.familyMembers) return;
-      const names = ch.familyMembers.map(m => m.name);
-      if (names.includes(name1) && names.includes(name2)) {
-        commonChapters.push(ch.title);
-      }
-    });
+    const name1 = resolveCharacterName(raw1);
+    const name2 = resolveCharacterName(raw2);
 
-    // 查找关系
-    const member1 = familyTreeRegistry[name1];
-    const member2 = familyTreeRegistry[name2];
-    let relationText = '';
-    if (member1 && member2) {
-      if (member1.generation === member2.generation) {
-        relationText = '同代人物';
-      } else if (member1.generation < member2.generation) {
-        const diff = member2.generation - member1.generation;
-        const relLabels = { 1: '上一代/下一代', 2: '祖辈/孙辈', 3: '曾祖辈/曾孙辈', 4: '高祖辈/玄孙辈' };
-        relationText = relLabels[diff] || ('相差' + diff + '代');
-      } else {
-        const diff = member1.generation - member2.generation;
-        const relLabels = { 1: '上一代/下一代', 2: '祖辈/孙辈', 3: '曾祖辈/曾孙辈', 4: '高祖辈/玄孙辈' };
-        relationText = relLabels[diff] || ('相差' + diff + '代');
-      }
-    } else {
-      relationText = '未知（家族树中信息不完整）';
-    }
+    // 直接关系
+    const direct = findRelation(name1, name2);
+
+    // 查找路径
+    const path = findRelationPath(name1, name2);
 
     let html = '<div style="padding:12px;background:rgba(184,137,62,0.08);border:1px solid rgba(184,137,62,0.2);border-radius:8px;">';
-    html += '<div style="font-family:var(--font-title);font-size:0.85rem;color:var(--gold-light);margin-bottom:8px;">关系判定</div>';
-    html += '<div style="font-size:0.82rem;color:#d0c0a0;line-height:1.6;">' + name1 + ' 与 ' + name2 + '：<strong>' + relationText + '</strong></div>';
-    if (commonChapters.length > 0) {
-      html += '<div style="margin-top:10px;font-size:0.75rem;color:var(--gold-dim);">共同出现的章节：</div>';
-      commonChapters.forEach(ch => {
-        html += '<div style="font-size:0.78rem;color:#c0b090;margin:2px 0;">· ' + ch + '</div>';
-      });
+    html += '<div style="font-family:var(--font-title);font-size:0.85rem;color:var(--gold-light);margin-bottom:10px;">🔗 关系查询结果</div>';
+
+    if (direct) {
+      const [label, event] = direct;
+      html += '<div style="margin-bottom:12px;">';
+      html += '<div style="font-size:0.9rem;color:var(--gold-light);margin-bottom:4px;"><strong>' + name1 + '</strong> 与 <strong>' + name2 + '</strong></div>';
+      html += '<div style="font-size:1rem;color:#e8d0a0;margin:6px 0;letter-spacing:0.04em;">' + label + '</div>';
+      html += '<div style="font-size:0.8rem;color:#c0b090;line-height:1.7;margin-top:8px;padding-top:8px;border-top:1px solid rgba(184,137,62,0.15);">' + event + '</div>';
+      html += '</div>';
+    } else if (path && path.length > 0) {
+      // 无直接关系，通过中间人关联
+      html += '<div style="margin-bottom:12px;">';
+      html += '<div style="font-size:0.9rem;color:var(--gold-light);margin-bottom:6px;"><strong>' + name1 + '</strong> 与 <strong>' + name2 + '</strong></div>';
+      html += '<div style="font-size:0.78rem;color:var(--gold-dim);margin-bottom:8px;">无直接记录的关系，通过以下链路关联：</div>';
+      // 用模糊代称描述路径
+      const pathDescParts = [];
+      for (let i = 0; i < path.length; i++) {
+        const edge = path[i];
+        const fromGender = CHARACTER_GENDERS[edge.from] || '未知';
+        const toGender = CHARACTER_GENDERS[edge.to] || '未知';
+        const fromRef = (i === 0) ? name1 : ('其' + (fromGender === '男' ? '丈夫' : fromGender === '女' ? '妻子' : '伴侣'));
+        const toRef = (i === path.length - 1) ? name2 : ('其' + (toGender === '男' ? '丈夫' : toGender === '女' ? '妻子' : '伴侣'));
+        pathDescParts.push(fromRef + '与' + toRef + '为' + edge.label);
+      }
+      html += '<div style="font-size:0.78rem;color:#c0b090;line-height:1.8;">' + pathDescParts.join('；') + '</div>';
+      html += '</div>';
     } else {
-      html += '<div style="margin-top:10px;font-size:0.75rem;color:var(--gold-dim);font-style:italic;">两人未在同一章节中共同出现（可能因序章跳转尚未遇到）</div>';
+      html += '<div style="color:var(--gold-dim);text-align:center;padding:12px;font-style:italic;">未找到两人之间的关联路径。<br>他们可能来自完全不同的时代与谱系。</div>';
     }
+
     html += '</div>';
     resultDiv.innerHTML = html;
   }
