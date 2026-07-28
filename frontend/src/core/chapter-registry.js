@@ -35,25 +35,6 @@ function getCurrentChapterData() {
   return chapters[chapterNumToId(GameState.chapter)] || null;
 }
 
-/** 计算当前章节宿命值上限（所有选择中最高宿命之和） */
-function getChapterMaxFate() {
-  const chData = getCurrentChapterData();
-  if (!chData || !chData.scenes) return 10;
-  let maxFate = 0;
-  Object.values(chData.scenes).forEach(scene => {
-    if (scene.type === 'choice' && scene.choices) {
-      let roundMax = 0;
-      scene.choices.forEach(c => {
-        if (c.effects && c.effects.fate) {
-          roundMax = Math.max(roundMax, c.effects.fate);
-        }
-      });
-      maxFate += roundMax;
-    }
-  });
-  return maxFate || 10; // 兜底：至少10
-}
-
 /** 获取当前章节中所有记忆碎片 */
 function getCurrentChapterMemories() {
   const chData = getCurrentChapterData();

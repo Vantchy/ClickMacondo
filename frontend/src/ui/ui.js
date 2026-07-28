@@ -148,7 +148,6 @@ function updateBigSave() {
     totalPlayMinutes: (getBigSave()?.totalPlayMinutes || 0),
     lastPlayed: new Date().toLocaleString('zh-CN'),
     chaptersCompleted: Object.keys(GameState.completedChapters).filter(k => GameState.completedChapters[k]).length,
-    totalFateCurrent: GameState.fateCounter,
     totalTags: GameState.tags.length,
     totalMemories: GameState.memories.length,
     currentChapter: GameState.chapter,
@@ -199,7 +198,7 @@ function refreshBigSaveCard() {
     card.innerHTML = `
       <div>📖 当前进度：<strong style="color:var(--gold-light);">${save.currentChapterTitle || '未知'}</strong></div>
       <div>👤 附身角色：${save.possessedChar || '—'}</div>
-      <div>⭐ 宿命值：${save.totalFateCurrent || 0}　🏷️ 标签：${save.totalTags || 0}　💎 记忆：${save.totalMemories || 0}</div>
+      <div>🏷️ 标签：${save.totalTags || 0}　💎 记忆：${save.totalMemories || 0}</div>
       <div>📅 上次游玩：${save.lastPlayed || '—'}　⏱️ 累计时长：${timeStr}</div>
       <div>📚 已完成章节：${save.chaptersCompleted || 0} / 21</div>
     `;
@@ -337,20 +336,8 @@ function closeArchiveBookmarks() {
 }
 
 /* ---- 终章评价 ---- */
-function calculateTotalFate() {
-  let total = 0;
-  for (let i = 1; i <= 20; i++) {
-    total += GameState.fateCounter;
-  }
-  const tagFate = GameState.tags.length * 1.5;
-  const memFate = GameState.memories.length * 0.5;
-  return Math.round(GameState.fateCounter + tagFate + memFate);
-}
-
 function getEndingEvaluation() {
-  const total = calculateTotalFate();
   const chaptersDone = Object.keys(GameState.completedChapters).length;
-  const tags = GameState.tags.length;
   const memories = GameState.memories.length;
 
   if (chaptersDone <= 5) {
@@ -360,31 +347,31 @@ function getEndingEvaluation() {
       quote: '你只翻开了羊皮卷的前几页——马孔多的故事还很长。当你准备好时，栗树下的老人仍在等你。',
     };
   }
-  if (total <= 10) {
+  if (memories <= 3) {
     return {
-      title: '宿命抗争者',
-      color: 'var(--fate-low)',
-      quote: '你走过了马孔多的街道，但从未真正走进任何一扇门。百年孤独不是关于命运——是关于在命运面前，你是否还敢选择去爱。',
+      title: '匆匆过客',
+      color: 'var(--gold-dim)',
+      quote: '你走过了马孔多的街道，但未曾拾起一片落叶。有些故事，需要停下来才能听见。',
     };
   }
-  if (total <= 20) {
+  if (memories <= 7) {
     return {
-      title: '命运的共行者',
-      color: 'var(--fate-mid)',
-      quote: '你在宿命与自由之间找到了自己的步伐。你知道有些事早已写好在羊皮卷上——但你仍然选择了用自己的手去触碰每一块冰、每一只蝴蝶、每一个在走廊尽头等着你的人。',
+      title: '马孔多的旅人',
+      color: 'var(--gold)',
+      quote: '你在故事之间找到了自己的步伐。你知道有些事早已写好在羊皮卷上——但你仍然选择了用自己的手去触碰每一块冰、每一只蝴蝶。',
     };
   }
-  if (total <= 30) {
+  if (memories <= 12) {
     return {
       title: '羊皮卷的合著者',
-      color: 'var(--fate-high)',
+      color: 'var(--gold-light)',
       quote: '你已经不是读者了——你是这卷羊皮纸上的最后一个名字。梅尔基亚德斯写下了一切，但他没有写你会怎么读。你用自己的选择在每一个句号之间种下了新的逗号。',
     };
   }
   return {
     title: '百年孤独的见证者',
     color: 'var(--gold-light)',
-    quote: '你活过了一百年。不是作为布恩迪亚——是作为你自己。你记得磁铁的刮擦声、冰块的融化、枪口的硝烟、黄蝴蝶的翅膀、四年大雨的每一滴水。马孔多被飓风抹去了——但它在你的记忆里比任何现实都更坚固。这是羊皮卷无法预言的——一个读者把一本书活成了自己的生命。',
+    quote: '你活过了一百年。不是作为布恩迪亚——是作为你自己。马孔多被飓风抹去了——但它在你的记忆里比任何现实都更坚固。这是羊皮卷无法预言的——一个读者把一本书活成了自己的生命。',
   };
 }
 

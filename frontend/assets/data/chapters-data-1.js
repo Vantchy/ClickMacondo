@@ -85,7 +85,7 @@ registerChapter({
           label: '拖着磁铁走进丛林',
           description: '你不回答她。你扛起磁铁，走进密林，一寸一寸地走，寻找黄金……',
           nextScene: 'round1_a_narrative',
-          effects: { tags: ['执着勘探者'], fate: 2, memory: null, relationshipEffects: { '乌尔苏拉·伊瓜兰': -10, '梅尔基亚德斯': 5 }, characterFlags: { 'obsession_path': 1 } },
+          effects: { tags: ['执着勘探者'], memory: null, relationshipEffects: { '乌尔苏拉·伊瓜兰': -10, '梅尔基亚德斯': 5 }, characterFlags: { 'obsession_path': 1 } },
           emotionalCost: '乌尔苏拉会在门口站到天黑——从这天起，她不再等你回家吃饭',
           emotionalGain: '你在密林深处发现了那副盔甲里的骷髅和那绺黑发——某种比黄金更重的东西',
           alternativeNarrative: '若你把磁铁还给梅尔基亚德斯——乌尔苏拉会握住你的手。铜镜会挂在门后，你会每天在镜子里看见她的脸。但你永远不会知道密林深处埋着什么。'
@@ -95,7 +95,7 @@ registerChapter({
           label: '把磁铁还给梅尔基亚德斯',
           description: '你看着乌尔苏拉红肿的眼睛，把磁铁放回吉卜赛人的面前……',
           nextScene: 'round1_b_narrative',
-          effects: { tags: ['家庭的守望者'], fate: 1, memory: null, relationshipEffects: { '乌尔苏拉·伊瓜兰': 15, '梅尔基亚德斯': -5 }, characterFlags: { 'ursula_cared': 1 } },
+          effects: { tags: ['家庭的守望者'], memory: null, relationshipEffects: { '乌尔苏拉·伊瓜兰': 15, '梅尔基亚德斯': -5 }, characterFlags: { 'ursula_cared': 1 } },
           emotionalCost: '你放弃了磁铁能唤出黄金的那个可能性——某种狂热从你眼睛里熄灭了',
           emotionalGain: '乌尔苏拉端出那碗汤时没有看你——但她的手在你手背上停了一秒',
           alternativeNarrative: '若你拖着磁铁走进丛林——你会在密林里迷路三天。乌尔苏拉会把晚饭热了三遍，然后在第四天凌晨把碗收进橱柜。你不会知道那天晚上她哭了。'
@@ -105,7 +105,7 @@ registerChapter({
           label: '把磁铁卖给村里的其他人',
           description: '你以双倍价格把磁铁卖给商人，用金币换回了骡子和山羊……',
           nextScene: 'round1_c_narrative',
-          effects: { tags: ['精明的妥协者'], fate: 1, memory: null, antiFate: true, relationshipEffects: { '乌尔苏拉·伊瓜兰': 5, '梅尔基亚德斯': -10 }, characterFlags: { 'anti_fate_choice': 1 } },
+          effects: { tags: ['精明的妥协者'], memory: null, relationshipEffects: { '乌尔苏拉·伊瓜兰': 5, '梅尔基亚德斯': -10 }, characterFlags: { 'anti_fate_choice': 1 } },
           emotionalCost: '梅尔基亚德斯收回了那面铜镜——也收回了你本想看到的那块冰',
           emotionalGain: '金币在桌上叮当作响。乌尔苏拉数了三遍——她笑了，那是几个月来的第一次',
           alternativeNarrative: '若你把磁铁还给梅尔基亚德斯——他不会从箱底取出铜镜。你不会在镜子里看见自己狂热的脸。但你会知道：在吉卜赛老人的眼中，你不是一个商人。'
@@ -246,7 +246,7 @@ registerChapter({
           label: '用乌尔苏拉的金币购买',
           description: '跑回家，撬开床底的木匣，取出她父亲一辈子积蓄的三枚金币……',
           nextScene: 'round2_a_narrative',
-          effects: { tags: ['科学与牺牲'], fate: 2, memory: null, relationshipEffects: { '乌尔苏拉·伊瓜兰': -15 }, characterFlags: { 'betrayed_ursula_trust': 1 } },
+          effects: { tags: ['科学与牺牲'], memory: null, relationshipEffects: { '乌尔苏拉·伊瓜兰': -15 }, characterFlags: { 'betrayed_ursula_trust': 1 } },
           emotionalCost: '金币是乌尔苏拉父亲的遗产——她留着"等真正需要时"。你今天证明了：你不是那个"真正需要"',
           alternativeNarrative: '若你用记忆交换——你将失去父亲的脸。你将永远无法在脑海里画出那个教会你骑马的男人的面容。但乌尔苏拉的金币还在床底——这让她在多年后的饥荒中多撑了三个月。'
         },
@@ -255,7 +255,7 @@ registerChapter({
           label: '与梅尔基亚德斯交易——用你的"记忆"',
           description: '你买不起放大镜。但你有一件东西可以交换：你父亲的面容记忆……',
           nextScene: 'round2_b_narrative',
-          effects: { tags: ['代价与收获', '失去面容的人'], fate: 3, memory: null, relationshipEffects: { '梅尔基亚德斯': 10 }, characterFlags: { 'paid_with_memory': 1 } },
+          effects: { tags: ['代价与收获', '失去面容的人'], memory: null, relationshipEffects: { '梅尔基亚德斯': 10 }, characterFlags: { 'paid_with_memory': 1 } },
           emotionalCost: '你失去的是父亲的脸——他的眉毛、他的胡茬、他笑时的皱纹。你记得他存在过，但再也看不见他',
           emotionalGain: '你得到了这面能点燃一切的镜子——代价已付，从此没有人能说你是一个不敢付出的人',
           alternativeNarrative: '若你偷了乌尔苏拉的金币——你不会失去记忆。但多年以后你照镜子时，你会看见的不是自己——是那个床底木匣被撬开的下午，铜锁在月光下反着冷光。'
@@ -265,7 +265,7 @@ registerChapter({
           label: '先向乌尔苏拉坦白，再决定',
           description: '你走回院子，把一切告诉她。她从床底取出木匣，把金币倒在桌上……',
           nextScene: 'round2_c_narrative',
-          effects: { tags: ['清醒的狂热者'], fate: 1, memory: null, relationshipEffects: { '乌尔苏拉·伊瓜兰': 10 }, characterFlags: { 'ursula_cared': 1 } },
+          effects: { tags: ['清醒的狂热者'], memory: null, relationshipEffects: { '乌尔苏拉·伊瓜兰': 10 }, characterFlags: { 'ursula_cared': 1 } },
           alternativeNarrative: '若你用记忆交换放大镜——梅尔基亚德斯会欣然应允。但你会在多年后的某个黄昏发现你画不出乌尔苏拉年轻时的脸——不是因为你老了，是因为你用来交换的东西不只是你父亲的面容。'
         }
       ],
@@ -412,7 +412,7 @@ registerChapter({
           label: '带他们去看冰块',
           description: '挤进人群最前面，把两个孩子拉到身前。奥雷里亚诺伸手去摸冰块……',
           nextScene: 'round3_a_narrative',
-          effects: { tags: ['冰块的导师'], fate: 2, memory: null, relationshipEffects: { '奥雷里亚诺·布恩迪亚': 15, '何塞·阿尔卡蒂奥': -5 }, characterFlags: { 'showed_ice': 1 } },
+          effects: { tags: ['冰块的导师'], memory: null, relationshipEffects: { '奥雷里亚诺·布恩迪亚': 15, '何塞·阿尔卡蒂奥': -5 }, characterFlags: { 'showed_ice': 1 } },
           alternativeNarrative: '若你带他们去看纸牌——庇拉尔会翻出那张"死神"。奥雷里亚诺会记住的不是冰块的触感，而是她翻牌时突然停顿的手指。'
         },
         {
@@ -420,7 +420,7 @@ registerChapter({
           label: '带他们去看吉卜赛女人的纸牌',
           description: '绕开冰块的帐篷，来到庇拉尔·特尔内拉的旧纸牌面前……',
           nextScene: 'round3_b_narrative',
-          effects: { tags: ['命运的揭示者'], fate: 2, memory: null, relationshipEffects: { '奥雷里亚诺·布恩迪亚': 5, '庇拉尔·特尔内拉': 10 }, characterFlags: { 'heard_prophecy': 1 } },
+          effects: { tags: ['命运的揭示者'], memory: null, relationshipEffects: { '奥雷里亚诺·布恩迪亚': 5, '庇拉尔·特尔内拉': 10 }, characterFlags: { 'heard_prophecy': 1 } },
           alternativeNarrative: '若你带他们去看冰块——奥雷里亚诺会在行刑队前想起你的手覆在他手背上的温度。他不会知道庇拉尔曾预言了他的死——他只会记得冰在烧。'
         },
         {
@@ -428,7 +428,7 @@ registerChapter({
           label: '带他们去看望远镜',
           description: '每人五个里亚尔，可以看到村子另一头的女人，仿佛近在咫尺……',
           nextScene: 'round3_c_narrative',
-          effects: { tags: ['观看者'], fate: 1, memory: null, relationshipEffects: { '何塞·阿尔卡蒂奥': 10, '奥雷里亚诺·布恩迪亚': 5 } },
+          effects: { tags: ['观看者'], memory: null, relationshipEffects: { '何塞·阿尔卡蒂奥': 10, '奥雷里亚诺·布恩迪亚': 5 } },
           alternativeNarrative: '若你带他们去看冰——奥雷里亚诺会摸到时间。若你带他们去看纸牌——何塞·阿尔卡蒂奥会听到关于自己远行的预言。你选了望远镜——他们看见的是此刻，不是未来。'
         }
       ],
@@ -558,7 +558,7 @@ registerChapter({
           label: '独自出发，寻找大海',
           description: '带上星盘、六分仪、干粮和磁铁，在黎明前离开家门……',
           nextScene: 'round4_a_narrative',
-          effects: { tags: ['远行者'], fate: 2, memory: '不是海的海', relationshipEffects: { '乌尔苏拉·伊瓜兰': -20 }, characterFlags: { 'left_alone': 1 } },
+          effects: { tags: ['远行者'], memory: '不是海的海', relationshipEffects: { '乌尔苏拉·伊瓜兰': -20 }, characterFlags: { 'left_alone': 1 } },
           emotionalCost: '你推开家门的时候天还没亮。乌尔苏拉在假装睡着——你知道她在假装，她也知道你知道',
           emotionalGain: '你看见了海。它不是你想象的样子——但它是你的。只有你一个人看过它',
           alternativeNarrative: '若你说服全家一起迁徙——乌尔苏拉会背着你最小的儿子，在丛林里走二十三天。你不会一个人看见海——但你会永远记得她把孩子交给你的那一刻：她信任你，胜过信任任何地图。'
@@ -568,7 +568,7 @@ registerChapter({
           label: '说服全家一起迁徙',
           description: '画地图、算路程，承诺"到了海边我们就建一所更大的房子"……',
           nextScene: 'round4_b_narrative',
-          effects: { tags: ['同行者'], fate: 1, memory: '一只手', relationshipEffects: { '乌尔苏拉·伊瓜兰': 10, '何塞·阿尔卡蒂奥': 5, '奥雷里亚诺·布恩迪亚': 5 }, characterFlags: { 'ursula_cared': 1, 'family_together': 1 } },
+          effects: { tags: ['同行者'], memory: '一只手', relationshipEffects: { '乌尔苏拉·伊瓜兰': 10, '何塞·阿尔卡蒂奥': 5, '奥雷里亚诺·布恩迪亚': 5 }, characterFlags: { 'ursula_cared': 1, 'family_together': 1 } },
           alternativeNarrative: '若你独自离开——你会在十天后推开同一扇门。桌上的汤已经凉了。乌尔苏拉没有问你去哪——她的沉默比任何问题都更沉。'
         },
         {
@@ -576,7 +576,7 @@ registerChapter({
           label: '留下——但建造一座"看不见的城市"',
           description: '在院子里挖坑，用黏土建造一个只属于想象的世界……',
           nextScene: 'round4_c_narrative',
-          effects: { tags: ['造梦者'], fate: 2, memory: '泥土中的马孔多', antiFate: true, relationshipEffects: { '乌尔苏拉·伊瓜兰': 5 }, characterFlags: { 'built_city': 1, 'anti_fate_choice': 1 } },
+          effects: { tags: ['造梦者'], memory: '泥土中的马孔多', relationshipEffects: { '乌尔苏拉·伊瓜兰': 5 }, characterFlags: { 'built_city': 1, 'anti_fate_choice': 1 } },
           emotionalCost: '你用黏土建造的城市永远无法住人。你抬头看天的时候，阳光刺眼——你分不清天空和泥土哪个更真实',
           emotionalGain: '这座看不见的城市是你一个人的。没有人能夺走它——不是飓风，不是时间，不是命运',
           alternativeNarrative: '若你独自出发去找海——你会看见灰白的海浪翻腾如洗碗水。你会转身走回马孔多，推开同一扇门。乌尔苏拉会在桌旁等你——她的眼睛比海更深。'
@@ -700,21 +700,21 @@ registerChapter({
           label: '把奥雷里亚诺的手放在冰块上，和他一起感受',
           description: '你走到奥雷里亚诺身后，把自己的手覆在他的手上……',
           nextScene: 'round5_a_narrative',
-          effects: { tags: ['冰上的手'], fate: 2, memory: '覆手' }
+          effects: { tags: ['冰上的手'], memory: '覆手' }
         },
         {
           id: 'r5_b',
           label: '退后一步，让他们父子独自面对',
           description: '你从人群中退出来，站在帐篷入口处，只是看着……',
           nextScene: 'round5_b_narrative',
-          effects: { tags: ['旁观者'], fate: 1, memory: '一步之遥', antiFate: true }
+          effects: { tags: ['旁观者'], memory: '一步之遥',}
         },
         {
           id: 'r5_c',
           label: '把冰块举起来，让全村人都在它的光里',
           description: '你抓住冰块的边缘，把它举过头顶，让蓝白色的光洒在所有人的脸上……',
           nextScene: 'round5_c_narrative',
-          effects: { tags: ['举冰者'], fate: 2, memory: '蓝白色的光' }
+          effects: { tags: ['举冰者'], memory: '蓝白色的光' }
         }
       ],
       settlement: 'round5_settlement'
@@ -829,7 +829,7 @@ registerChapter({
         summary: '第一章完结。你在五轮选择中确定了与"疯狂"的关系——是拥抱它，还是与它搏斗。',
         isChapterEnd: true,
         nextLabel: '进入第二章 · 失眠症',
-        fateForecast: '失眠症正在河对岸的印第安村落里蔓延。它还有一章就会抵达马孔多。届时人们将开始忘记事物的名字——先是名词，然后是动词，最后是"我是谁"。',
+        
         emotionalCost: '多年以后，当你站在栗树下——被绑在树干上，胡子拖到地面——你将会回想起这个下午。这个你第一次合上羊皮卷的下午。你不知道自己离那个栗树下的黄昏，还有多少步。'
       }
     }

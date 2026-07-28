@@ -86,21 +86,21 @@ registerChapter({
           id: 'era_a', label: '建村之初',
           description: '降临在建村之初，附身于何塞·阿尔卡蒂奥·布恩迪亚。从吉卜赛人到冰块，完整经历马孔多的百年命运。',
           nextScene: 'era_a_narrative',
-          effects: { tags: ['从头开始'], fate: 0, memory: null, targetChapter: 1 },
+          effects: { tags: ['从头开始'], memory: null, targetChapter: 1 },
           alternativeNarrative: '若你选择从家族鼎盛开始——你将错过磁铁在手中嗡鸣的那个早晨。何塞·阿尔卡蒂奥·布恩迪亚会独自拖着磁铁走进丛林，乌尔苏拉站在门口，手叉着腰——这个画面永远只存在于羊皮卷的前几页。'
         },
         {
           id: 'era_b', label: '家族鼎盛',
           description: '降临在家族最辉煌的时刻，附身于奥雷里亚诺。见证失眠症瘟疫、丽贝卡的到来与钢琴曲的忧伤。',
           nextScene: 'era_b_narrative',
-          effects: { tags: ['中途降临'], fate: 0, memory: null, targetChapter: 2 },
+          effects: { tags: ['中途降临'], memory: null, targetChapter: 2 },
           alternativeNarrative: '若你选择从建村之初开始——你将赤脚踩在马孔多最初的泥地上。那二十多间芦竹房子在河岸边排开时，还没有人知道失眠症、战争和香蕉公司会长成后来那么多的鬼魂。'
         },
         {
           id: 'era_c', label: '战争年代',
           description: '降临在战争爆发的前夜，附身于奥雷里亚诺上校。站在自由党和保守党之间，手握一封信和一把枪。',
           nextScene: 'era_c_narrative',
-          effects: { tags: ['战争降临者'], fate: 0, memory: null, targetChapter: 5 },
+          effects: { tags: ['战争降临者'], memory: null, targetChapter: 5 },
           alternativeNarrative: '若你选择从战争年代开始——你将直接从枪口下理解"孤独"的含义。但你将错过冰块、失眠症和自动钢琴——那些让战争之所以成为战争的事物。'
         }
       ],
@@ -172,7 +172,7 @@ registerChapter({
         summary: '序章完成。你选择了进入马孔多的时代。这不是选择的结束——而是所有选择的开始。羊皮卷已经翻开。你准备好了吗？',
         isChapterEnd: true,
         nextLabel: '进入你的时代',
-        fateForecast: '梅尔基亚德斯在羊皮卷第一页的空白处写道："一百年后，飓风将从同一个方向吹来——带走一切。你此刻的选择，决定你在飓风中站在哪里。"'
+        
       }
     }
   },
@@ -222,9 +222,9 @@ registerChapter({
         transition: '你选择——'
       },
       choices: [
-        { id: 'ch2_r1_a', label: '埋葬普鲁登西奥', description: '在栗树下挖一个坑，给他一个体面的坟墓。但死人的灵魂不会轻易安息……', nextScene: 'ch2_r1a', effects: { tags: ['罪与埋葬'], fate: 2, memory: '栗树下的声音' } },
-        { id: 'ch2_r1_b', label: '拖出村子埋葬', description: '用旧蓆裹住尸体，拖到河对岸的密林里，埋在吉贝树下，矛尖朝下。', nextScene: 'ch2_r1b', effects: { tags: ['远离血债'], fate: 1, memory: null } },
-        { id: 'ch2_r1_c', label: '告知全村人', description: '把村民们叫来，公开承认你做了什么，接受他们的审判。', nextScene: 'ch2_r1c', effects: { tags: ['公开忏悔者'], fate: 2, memory: '村庄的审判' } }
+        { id: 'ch2_r1_a', label: '埋葬普鲁登西奥', description: '在栗树下挖一个坑，给他一个体面的坟墓。但死人的灵魂不会轻易安息……', nextScene: 'ch2_r1a', effects: { tags: ['罪与埋葬'], memory: '栗树下的声音' } },
+        { id: 'ch2_r1_b', label: '拖出村子埋葬', description: '用旧蓆裹住尸体，拖到河对岸的密林里，埋在吉贝树下，矛尖朝下。', nextScene: 'ch2_r1b', effects: { tags: ['远离血债'], memory: null } },
+        { id: 'ch2_r1_c', label: '告知全村人', description: '把村民们叫来，公开承认你做了什么，接受他们的审判。', nextScene: 'ch2_r1c', effects: { tags: ['公开忏悔者'], memory: '村庄的审判' } }
       ],
       settlement: 'ch2_r1_settlement'
     },
@@ -248,9 +248,9 @@ registerChapter({
         transition: '你选择——'
       },
       choices: [
-        { id: 'ch2_r2_a', label: '用标签标记一切', description: '在每件物品上写下名字：桌子、椅子、门、奶牛——你必须阻止遗忘。', nextScene: 'ch2_r2a', effects: { tags: ['标记者'], fate: 2, memory: '标签上的墨水' } },
-        { id: 'ch2_r2_b', label: '寻找梅尔基亚德斯', description: '吉卜赛人知道一切。也许他知道如何治愈失眠症。骑上骡子去找他。', nextScene: 'ch2_r2b', effects: { tags: ['求索者'], fate: 2, memory: null } },
-        { id: 'ch2_r2_c', label: '接受遗忘', description: '也许遗忘不是诅咒——也许它是一种释放。让记忆自己选择留下还是离开。', nextScene: 'ch2_r2c', effects: { tags: ['接受遗忘者'], fate: 1, memory: '遗忘的平静', antiFate: true } }
+        { id: 'ch2_r2_a', label: '用标签标记一切', description: '在每件物品上写下名字：桌子、椅子、门、奶牛——你必须阻止遗忘。', nextScene: 'ch2_r2a', effects: { tags: ['标记者'], memory: '标签上的墨水' } },
+        { id: 'ch2_r2_b', label: '寻找梅尔基亚德斯', description: '吉卜赛人知道一切。也许他知道如何治愈失眠症。骑上骡子去找他。', nextScene: 'ch2_r2b', effects: { tags: ['求索者'], memory: null } },
+        { id: 'ch2_r2_c', label: '接受遗忘', description: '也许遗忘不是诅咒——也许它是一种释放。让记忆自己选择留下还是离开。', nextScene: 'ch2_r2c', effects: { tags: ['接受遗忘者'], memory: '遗忘的平静',} }
       ],
       settlement: 'ch2_r2_settlement'
     },
@@ -274,9 +274,9 @@ registerChapter({
         transition: '你选择——'
       },
       choices: [
-        { id: 'ch2_r3_a', label: '带她去教堂祈祷', description: '也许她的痛苦需要的是救赎，而不是隐藏。带她去见镇上的神父。', nextScene: 'ch2_r3a', effects: { tags: ['信仰的引路人'], fate: 1, memory: null } },
-        { id: 'ch2_r3_b', label: '陪她一起吃泥土', description: '你蹲在她身边，把手伸进骨灰盒，拿起一小块泥土放进嘴里。', nextScene: 'ch2_r3b', effects: { tags: ['共苦者'], fate: 2, memory: '泥土的味道' } },
-        { id: 'ch2_r3_c', label: '把骨灰盒锁起来', description: '你不能让她继续这样下去。把盒子拿走，告诉她：从现在开始，这里就是你的家。', nextScene: 'ch2_r3c', effects: { tags: ['剪断脐带者'], fate: 2, memory: null } }
+        { id: 'ch2_r3_a', label: '带她去教堂祈祷', description: '也许她的痛苦需要的是救赎，而不是隐藏。带她去见镇上的神父。', nextScene: 'ch2_r3a', effects: { tags: ['信仰的引路人'], memory: null } },
+        { id: 'ch2_r3_b', label: '陪她一起吃泥土', description: '你蹲在她身边，把手伸进骨灰盒，拿起一小块泥土放进嘴里。', nextScene: 'ch2_r3b', effects: { tags: ['共苦者'], memory: '泥土的味道' } },
+        { id: 'ch2_r3_c', label: '把骨灰盒锁起来', description: '你不能让她继续这样下去。把盒子拿走，告诉她：从现在开始，这里就是你的家。', nextScene: 'ch2_r3c', effects: { tags: ['剪断脐带者'], memory: null } }
       ],
       settlement: 'ch2_r3_settlement'
     },
@@ -300,9 +300,9 @@ registerChapter({
         transition: '你选择——'
       },
       choices: [
-        { id: 'ch2_r4_a', label: '自己先喝下药水', description: '承受代价——忘记你最快乐的一天，然后把这药分给全村人。', nextScene: 'ch2_r4a', effects: { tags: ['牺牲者'], fate: 3, memory: '失去温度的一天' } },
-        { id: 'ch2_r4_b', label: '让全镇投票决定', description: '你不能替别人做这个决定。把全村人叫来，把药瓶和代价都摆在桌上。', nextScene: 'ch2_r4b', effects: { tags: ['民主者'], fate: 1, memory: null } },
-        { id: 'ch2_r4_c', label: '拒绝——寻找别的办法', description: '"一定有别的方法。"你把药瓶还给梅尔基亚德斯。你不想用记忆换清醒。', nextScene: 'ch2_r4c', effects: { tags: ['不屈者'], fate: 1, memory: null, antiFate: true } }
+        { id: 'ch2_r4_a', label: '自己先喝下药水', description: '承受代价——忘记你最快乐的一天，然后把这药分给全村人。', nextScene: 'ch2_r4a', effects: { tags: ['牺牲者'], memory: '失去温度的一天' } },
+        { id: 'ch2_r4_b', label: '让全镇投票决定', description: '你不能替别人做这个决定。把全村人叫来，把药瓶和代价都摆在桌上。', nextScene: 'ch2_r4b', effects: { tags: ['民主者'], memory: null } },
+        { id: 'ch2_r4_c', label: '拒绝——寻找别的办法', description: '"一定有别的方法。"你把药瓶还给梅尔基亚德斯。你不想用记忆换清醒。', nextScene: 'ch2_r4c', effects: { tags: ['不屈者'], memory: null,} }
       ],
       settlement: 'ch2_r4_settlement'
     },
@@ -327,9 +327,9 @@ registerChapter({
         transition: '你选择——'
       },
       choices: [
-        { id: 'ch2_r5_a', label: '让他留在栗树下', description: '绑住他——不是为了惩罚，是为了保护。让他在树下度过最后的岁月。', nextScene: 'ch2_r5a', effects: { tags: ['守护者'], fate: 3, memory: '栗树下的绳结' } },
-        { id: 'ch2_r5_b', label: '带他去河边', description: '你不信他疯了。解开他的绳子，带他去河边——也许他只是需要看见更大的东西。', nextScene: 'ch2_r5b', effects: { tags: ['解放者'], fate: 2, memory: '河边的午后' } },
-        { id: 'ch2_r5_c', label: '和他一起画圆圈', description: '你蹲在他身边，拿起另一根树枝。你和他一起画——磁铁、放大镜、冰块。', nextScene: 'ch2_r5c', effects: { tags: ['同行至终点'], fate: 2, memory: '画在泥土中的永恒' } }
+        { id: 'ch2_r5_a', label: '让他留在栗树下', description: '绑住他——不是为了惩罚，是为了保护。让他在树下度过最后的岁月。', nextScene: 'ch2_r5a', effects: { tags: ['守护者'], memory: '栗树下的绳结' } },
+        { id: 'ch2_r5_b', label: '带他去河边', description: '你不信他疯了。解开他的绳子，带他去河边——也许他只是需要看见更大的东西。', nextScene: 'ch2_r5b', effects: { tags: ['解放者'], memory: '河边的午后' } },
+        { id: 'ch2_r5_c', label: '和他一起画圆圈', description: '你蹲在他身边，拿起另一根树枝。你和他一起画——磁铁、放大镜、冰块。', nextScene: 'ch2_r5c', effects: { tags: ['同行至终点'], memory: '画在泥土中的永恒' } }
       ],
       settlement: 'ch2_r5_settlement'
     },

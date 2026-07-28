@@ -106,7 +106,6 @@ const SidebarManager = {
     const content = document.getElementById('profile-content');
     if (!overlay || !panel || !content) return;
 
-    const fateLevel = GameState.getFateLevel();
     const chapterData = getCurrentChapterData();
     const chapterTitle = chapterData ? chapterData.title : '未知章节';
     const possessedChar = chapterData ? chapterData.possessedCharacter || '未知角色' : '未知角色';
@@ -117,16 +116,6 @@ const SidebarManager = {
     html += '<h4>当前状态</h4>';
     html += `<p class="profile-choice-log">附身角色：<strong>${possessedChar}</strong></p>`;
     html += `<p class="profile-choice-log">章节进度：${chapterTitle} · 第${Math.max(0, GameState.round)}轮</p>`;
-    html += '</div>';
-
-    // 宿命值
-    html += '<div class="profile-section">';
-    html += '<h4>宿命值</h4>';
-    html += `<div class="profile-fate-level" style="color:${fateLevel.color};border:1px solid ${fateLevel.color};">`;
-    const chMaxFate = getChapterMaxFate();
-    html += `⭐ ${GameState.fateCounter} / ${chMaxFate} — ${fateLevel.level}`;
-    html += `</div>`;
-    html += `<p class="profile-choice-log" style="text-align:center;margin-top:6px;">${fateLevel.desc}</p>`;
     html += '</div>';
 
     // 已获得标签

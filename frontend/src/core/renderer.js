@@ -147,30 +147,6 @@ const Renderer = {
           }
         }
 
-        // 宿命值
-        const fateLevel = GameState.getFateLevel();
-        html += `<div class="fate-summary" style="color: ${fateLevel.color}">`;
-        const chMaxF = getChapterMaxFate();
-        html += `宿命值：${GameState.fateCounter} / ${chMaxF} · ${fateLevel.level}`;
-        html += `</div>`;
-        html += `<div style="font-size:0.75rem;color:var(--gold-dim);text-align:center;margin-top:4px;">${fateLevel.desc}</div>`;
-
-        // 记忆碎片
-        if (GameState.choiceLog.length > 0) {
-          const lastChoice = GameState.choiceLog[GameState.choiceLog.length - 1];
-          if (lastChoice && lastChoice.memory && memoryRegistry[lastChoice.memory]) {
-            const mem = memoryRegistry[lastChoice.memory];
-            html += `<div class="memory-card">`;
-            html += `<div class="memory-card-title">💎 ${mem.title}</div>`;
-            html += `<div class="memory-card-desc">${mem.description}</div>`;
-            // 可玩性增强：显示碎片解锁提示
-            if (mem.unlockHint) {
-              html += `<div style="font-size:0.72rem;color:var(--gold-dim);margin-top:6px;font-style:italic;border-top:1px dotted rgba(184,137,62,0.15);padding-top:6px;">🔑 ${mem.unlockHint}</div>`;
-            }
-            html += `</div>`;
-          }
-        }
-
         // 可玩性增强：展示"羊皮卷的另一页"（未选选项的叙事）
         html += this._renderAlternativeNarratives();
 
@@ -180,13 +156,6 @@ const Renderer = {
         // 可玩性增强：展示情感结算
         html += this._renderEmotionalCost();
 
-        // 可玩性增强：展示命运预告（如果结算数据中有 fateForecast）
-        if (st.fateForecast) {
-          html += `<div class="fate-forecast">`;
-          html += `<div class="fate-forecast-label">🔮 命运预告</div>`;
-          html += `<div class="fate-forecast-text">${st.fateForecast}</div>`;
-          html += `</div>`;
-        }
 
         // 下一步按钮
         if (st.nextScene) {
@@ -265,7 +234,6 @@ const Renderer = {
   /* 更新顶部栏 */
   updateTopBar(scene) {
     const progressLabel = document.getElementById('progress-label');
-    const fateValue = document.getElementById('fate-value');
     const moodLabel = document.getElementById('mood-label');
     const chapterData = getCurrentChapterData();
     const chapterTitle = chapterData ? chapterData.title : '未知章节';
@@ -296,22 +264,6 @@ const Renderer = {
       moodLabel.textContent = moodText;
     }
 
-    if (fateValue) {
-      const oldValue = parseInt(fateValue.textContent) || 0;
-      const newValue = GameState.fateCounter;
-      fateValue.textContent = newValue;
-
-      // 颜色
-      const fateLevel = GameState.getFateLevel();
-      fateValue.style.color = fateLevel.color;
-
-      // 跳动动画（仅当值改变时）
-      if (oldValue !== newValue) {
-        fateValue.classList.remove('pulse');
-        void fateValue.offsetWidth; // 触发回流
-        fateValue.classList.add('pulse');
-      }
-    }
   },
 
   /* 更新书签/进度指示 */
@@ -426,11 +378,11 @@ function handleChoice(choiceId) {
   if (result) {
     // 先渲染分支叙事（左页）+ 继续按钮（右页）
     Renderer.render();
-    // 检查是否解锁记忆碎片
-    if (result.effects.memory) {
+    // 检查是否解锁记忆碎片 — 右下角弹窗
+    if (result.effects.memory && memoryRegistry[result.effects.memory]) {
       setTimeout(() => {
-        showToast(`💎 解锁记忆碎片：「${result.effects.memory}」`);
-      }, 600);
+        showMemoryPopup(memoryRegistry[result.effects.memory]);
+      }, 500);
     }
   }
 }
@@ -553,4 +505,27 @@ function handleExplorationContinue(nextSceneId) {
   // 跳转到下一个场景
   GameEngine.goToScene(nextSceneId);
   Renderer.render();
+}
+
+/* ---- 记忆碎片弹窗（右下角滑入/滑出） ---- */
+let memoryPopupTimer = null;
+function showMemoryPopup(mem) {
+  const popup = document.getElementById('memory-popup');
+  if (!popup || !mem) return;
+
+  document.getElementById('memory-popup-title').textContent = mem.title;
+  document.getElementById('memory-popup-desc').textContent = mem.description;
+
+  // 清除之前的计时器，先隐藏再重新触发
+  if (memoryPopupTimer) clearTimeout(memoryPopupTimer);
+  popup.classList.remove('show');
+  void popup.offsetWidth; // 触发回流，确保动画重新播放
+
+  // 滑入
+  popup.classList.add('show');
+
+  // 4 秒后滑出
+  memoryPopupTimer = setTimeout(() => {
+    popup.classList.remove('show');
+  }, 4500);
 }

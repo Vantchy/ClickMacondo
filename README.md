@@ -38,3 +38,6 @@ ClickMacondo/
 - 模块化 JS 架构（按依赖顺序通过 `<script>` 标签加载）
 - localStorage 存档系统
 - Web Audio API 音效引擎
+
+## 作者
+**Vantchy** & **Corrofea**

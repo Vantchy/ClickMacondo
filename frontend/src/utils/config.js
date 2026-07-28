@@ -231,10 +231,6 @@ const ACHIEVEMENTS = [
     cond: s => s.memories.length >= 5 },
   { id:'ach_memory_master', icon:'💠', name:'记忆大师', desc:'累计解锁10枚记忆碎片。',
     cond: s => s.memories.length >= 10 },
-  { id:'ach_fate_low', icon:'🕊️', name:'命运的低语', desc:'有一章结束时宿命值处于低档（抗争者）。',
-    cond: s => { return true; } },
-  { id:'ach_fate_high', icon:'👁️', name:'宿命的重量', desc:'有一章结束时钟形值处于高档（见证者）。',
-    cond: s => { return true; } },
   { id:'ach_war', icon:'⚔️', name:'战争的回声', desc:'完成第五章——经历奥雷里亚诺上校的战争与爱情。',
     cond: s => s.isChapterCompleted(5) },
   { id:'ach_rain', icon:'🌧️', name:'四年大雨', desc:'完成第十一章——在马孔多的泥泞中重新站立。',
@@ -253,8 +249,6 @@ const ACHIEVEMENTS = [
     cond: s => s.isChapterCompleted(20) },
   { id:'ach_all_tags', icon:'🏅', name:'标签收集者', desc:'累计获得15个以上的标签。',
     cond: s => s.tags.length >= 15 },
-  { id:'ach_rebel', icon:'🔥', name:'反抗者之路', desc:'在任意章节中累计反抗值超过3。',
-    cond: s => s.antiFateCounter >= 3 },
   { id:'ach_three_eras', icon:'🔮', name:'三种视角', desc:'分别通过序章的三个时代入口进入过马孔多。',
     cond: s => (s._eraVisited || []).length >= 3 },
   /* 可玩性增强：新成就 */
@@ -262,12 +256,6 @@ const ACHIEVEMENTS = [
     cond: s => (s._altNarrativeSeen || false) },
   { id:'ach_clue_finder', icon:'🔍', name:'线索猎人', desc:'使用一条线索碎片解锁了隐藏选项。',
     cond: s => (s._secretOptionChosen || false) },
-  { id:'ach_rebel_ending', icon:'🔥', name:'宿命反抗者', desc:'以反抗者的身份抵达终章——你改写了一行羊皮卷。',
-    cond: s => s._endingType === 'rebel' },
-  { id:'ach_witness_ending', icon:'👁️', name:'宿命见证者', desc:'以见证者的身份抵达终章——你理解了命运的必然。',
-    cond: s => s._endingType === 'witness' },
-  { id:'ach_bystander_ending', icon:'🍂', name:'宿命旁观者', desc:'以旁观者的身份抵达终章——你只是路过这百年。',
-    cond: s => s._endingType === 'bystander' },
   { id:'ach_bond_master', icon:'🤝', name:'羁绊之人', desc:'与任意角色的关系值达到至交（≥85）。',
     cond: s => Object.values(s.relationships || {}).some(v => v >= 85) },
   { id:'ach_explorer', icon:'🗺️', name:'马孔多的探索者', desc:'在探索场景中发现过所有热点。',
@@ -282,18 +270,18 @@ const ACHIEVEMENTS = [
 const ENDING_DEFS = {
   rebel: {
     id: 'rebel',
-    title: '宿命反抗者',
-    color: 'var(--fate-low)',
+    title: '反抗者',
+    color: 'var(--gold)',
     condition: function(state) {
-      return state.antiFateCounter >= 5 && state.getFateLevel().level === '宿命抗争者';
+      return state.tags.includes('不屈者') || state.tags.includes('解放者') || state.tags.includes('反抗者');
     },
     initialScene: 'epilogue_rebel',
-    summary: '你用尽全力与命运搏斗。飓风中你抓住一块羊皮卷碎片——上面有一行字，不是梅尔基亚德斯写的。是你自己写的。'
+    summary: '你从未屈服。飓风中你抓住一块羊皮卷碎片——上面有一行字，不是梅尔基亚德斯写的。是你自己写的。'
   },
   witness: {
     id: 'witness',
     title: '宿命见证者',
-    color: 'var(--fate-high)',
+    color: 'var(--gold-light)',
     condition: function(state) {
       return state.memories.length >= 10;
     },
@@ -303,7 +291,7 @@ const ENDING_DEFS = {
   bystander: {
     id: 'bystander',
     title: '宿命旁观者',
-    color: 'var(--fate-mid)',
+    color: 'var(--gold-dim)',
     condition: function(state) {
       return true; // 默认兜底结局
     },

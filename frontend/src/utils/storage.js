@@ -56,8 +56,7 @@ const StorageManager = {
           chapter: GameState.chapter,
           round: GameState.round,
           sceneTitle: scene ? (scene.title || '未知场景') : '未知场景',
-          sceneId: GameState.currentScene,
-          fateCounter: GameState.fateCounter
+          sceneId: GameState.currentScene
         }
       };
       localStorage.setItem(this.SLOT_PREFIX + slotNum, JSON.stringify(saveData));
@@ -144,8 +143,7 @@ const SaveLoadPanel = {
     const sceneTitle = scene ? (scene.title || '') : '';
     container.innerHTML = '当前进度：<strong>' + chTitle + '</strong>'
       + (GameState.round > 0 ? ' · 第' + GameState.round + '轮' : '')
-      + (sceneTitle ? ' — ' + sceneTitle : '')
-      + '　⭐ ' + GameState.fateCounter;
+      + (sceneTitle ? ' — ' + sceneTitle : '');
   },
 
   /** 渲染6个存档槽位 */
@@ -165,7 +163,7 @@ const SaveLoadPanel = {
         html += '<div class="save-slot-number">存档 ' + numCN + '</div>';
         html += '<div class="save-slot-details">';
         html += '<div class="save-slot-chapter">' + info.chapterTitle + '</div>';
-        html += '<div class="save-slot-round">第' + info.round + '轮 · ' + info.sceneTitle + '　⭐ ' + info.fateCounter + '</div>';
+        html += '<div class="save-slot-round">第' + info.round + '轮 · ' + info.sceneTitle + '</div>';
         html += '<div class="save-slot-time">' + info.timestamp + '</div>';
         html += '</div>';
         html += '<div class="save-slot-actions">';

@@ -18,7 +18,6 @@ const GameEngine = {
       choiceId: choiceId,
       label: choice.label,
       tags: choice.effects.tags,
-      fate: choice.effects.fate,
       memory: choice.effects.memory,
       targetChapter: choice.effects.targetChapter || null
     });
@@ -28,17 +27,6 @@ const GameEngine = {
       choice.effects.tags.forEach(t => {
         if (!GameState.tags.includes(t)) GameState.tags.push(t);
       });
-    }
-
-    if (choice.effects.fate) {
-      if (choice.effects.antiFate) {
-        GameState.antiFateCounter += choice.effects.fate;
-      } else {
-        GameState.fateCounter += choice.effects.fate;
-      }
-      // 限制宿命值不超过本章节最大值
-      const chMaxFate = getChapterMaxFate();
-      GameState.fateCounter = Math.min(chMaxFate, Math.max(0, GameState.fateCounter));
     }
 
     if (choice.effects.memory && !GameState.memories.includes(choice.effects.memory)) {
@@ -139,8 +127,6 @@ const GameEngine = {
         GameState.history = [chapterData.initialScene];
         GameState.choices = [];
         GameState.choiceLog = [];
-        GameState.fateCounter = 0;
-        GameState.antiFateCounter = 0;
         StorageManager.autoSave();
         this.encounterChapterMembers();
         return true;
@@ -162,8 +148,6 @@ const GameEngine = {
         GameState.history = [chapterData.initialScene];
         GameState.choices = [];
         GameState.choiceLog = [];
-        GameState.fateCounter = 0;
-        GameState.antiFateCounter = 0;
         StorageManager.autoSave();
         this.encounterChapterMembers();
         return true;

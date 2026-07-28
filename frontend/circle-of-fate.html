@@ -215,11 +215,6 @@
       <span id="mood-label" class="mood-label"></span>
     </div>
     <div class="top-item">
-      <div id="fate-display">
-        <span id="fate-icon">⭐</span>
-        <span>宿命值：</span>
-        <span id="fate-value" style="color: var(--fate-low)">0</span>
-      </div>
       <button class="top-btn" id="btn-menu" title="主菜单">📜</button>
       <button class="top-btn" id="btn-story-viewer" title="故事画卷" onclick="window.location.href='../story-viewer/story-explorer.html'">🖼️</button>
       <button class="top-btn" id="btn-settings" title="设置">⚙️</button>
@@ -333,6 +328,13 @@
       <button class="modal-btn modal-btn-primary" id="btn-close-settings">关闭</button>
     </div>
   </div>
+</div>
+
+<!-- 记忆碎片弹窗（右下角滑入） -->
+<div id="memory-popup">
+  <div id="memory-popup-icon">💎</div>
+  <div id="memory-popup-title"></div>
+  <div id="memory-popup-desc"></div>
 </div>
 
 <!-- Toast 提示 -->
