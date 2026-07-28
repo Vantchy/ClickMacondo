@@ -52,10 +52,20 @@ const GameEngine = {
       GameState._secretOptionChosen = true;
     }
 
+    // 锁定选择：记录当前场景选择了哪个选项（回退后不可更改）
+    GameState.sceneChoices[GameState.currentScene] = choiceId;
+
     // 先跳转到分支叙事
     const nextSceneId = choice.nextScene;
+
+    // 截断历史：如果在回看中做了新选择，丢弃"未来"分支
+    if (GameState.historyIndex < GameState.history.length - 1) {
+      GameState.history = GameState.history.slice(0, GameState.historyIndex + 1);
+    }
+
     GameState.history.push(nextSceneId);
     GameState.currentScene = nextSceneId;
+    GameState.historyIndex = GameState.history.length - 1;
     GameState.round = scene.round;
 
     // 自动存档
@@ -65,8 +75,13 @@ const GameEngine = {
   },
 
   goToScene(sceneId) {
+    // 截断历史
+    if (GameState.historyIndex < GameState.history.length - 1) {
+      GameState.history = GameState.history.slice(0, GameState.historyIndex + 1);
+    }
     GameState.history.push(sceneId);
     GameState.currentScene = sceneId;
+    GameState.historyIndex = GameState.history.length - 1;
     const chapterData = getCurrentChapterData();
     const scene = chapterData ? chapterData.scenes[sceneId] : null;
     if (scene) {
@@ -347,5 +362,50 @@ const GameEngine = {
   /** 可玩性增强：重置探索场景热点计数（进入新探索场景时调用） */
   resetExplorationProgress() {
     GameState._hotspotsFound = 0;
+  },
+
+  /** 翻页：回到历史中的上一页 */
+  navigateBack() {
+    if (GameState.historyIndex <= 0) return false;
+    GameState.historyIndex--;
+    GameState.currentScene = GameState.history[GameState.historyIndex];
+    return true;
+  },
+
+  /** 翻页：前往历史中的下一页，或在末端继续推进 */
+  navigateForward() {
+    if (GameState.historyIndex < GameState.history.length - 1) {
+      // 仍在历史中——前进到下一页
+      GameState.historyIndex++;
+      GameState.currentScene = GameState.history[GameState.historyIndex];
+      return true;
+    }
+    // 已在历史末端——检查是否可以自然推进
+    const scene = this.getCurrentScene();
+    if (!scene) return false;
+    // 选项页必须手动选择，不允许键盘跳过
+    if (scene.type === 'choice') return false;
+    // 叙事页有 nextScene
+    if (scene.type === 'narrative' && scene.nextScene) {
+      this.goToScene(scene.nextScene);
+      return true;
+    }
+    // 结算页（章末/轮末）— 用空格或右箭头继续
+    if (scene.type === 'settlement' && scene.settlement) {
+      const st = scene.settlement;
+      if (st.isFinalEnd) return false; // 终章致谢需手动点击
+      if (st.nextScene) {
+        if (st.isChapterEnd) GameState.markChapterCompleted(GameState.chapter);
+        this.goToScene(st.nextScene);
+        return true;
+      }
+      if (st.isChapterEnd) {
+        // 无 nextScene 的章末 — 调用标准章节推进
+        this.goToNextChapter();
+        return true;
+      }
+      return false;
+    }
+    return false;
   }
 };

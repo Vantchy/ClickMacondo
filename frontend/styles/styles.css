@@ -383,6 +383,33 @@ body {
   transform: translateY(0);
   box-shadow: 0 2px 8px rgba(0,0,0,0.12);
 }
+/* 已锁定的选择（回退查看时）：高亮已选 */
+.choice-btn.choice-chosen {
+  border-color: var(--gold);
+  border-width: 2px;
+  background: rgba(232, 200, 112, 0.12);
+  cursor: default;
+}
+.choice-btn.choice-chosen:hover {
+  background: rgba(232, 200, 112, 0.12);
+  transform: none;
+  box-shadow: none;
+}
+.choice-btn.choice-chosen .choice-label {
+  color: var(--gold-light);
+}
+/* 未选选项（锁定模式下灰显） */
+.choice-btn.choice-dimmed {
+  opacity: 0.45;
+  cursor: default;
+  pointer-events: none;
+  filter: grayscale(0.3);
+}
+.choice-btn.choice-dimmed:hover {
+  background: rgba(250, 243, 232, 0.94);
+  transform: none;
+  box-shadow: none;
+}
 .choice-btn .choice-label {
   display: block;
   font-weight: 600;

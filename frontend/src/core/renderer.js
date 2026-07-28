@@ -98,16 +98,24 @@ const Renderer = {
       let html = '';
 
       if (scene.type === 'choice' && scene.choices) {
+        const lockedChoiceId = GameState.sceneChoices[scene.id];
+        const isLocked = !!lockedChoiceId;
+
         // 选项模式 — 可玩性增强：根据记忆碎片过滤选项
         const visibleChoices = GameEngine.filterChoicesByMemories
           ? GameEngine.filterChoicesByMemories(scene)
           : scene.choices;
 
-        html += `<div class="right-section-title">做出你的选择</div>`;
+        html += `<div class="right-section-title">${isLocked ? '你的选择' : '做出你的选择'}</div>`;
         html += `<div class="choices-list">`;
         visibleChoices.forEach(choice => {
+          const isChosen = isLocked && choice.id === lockedChoiceId;
           const isSecret = choice.isSecretOption || choice.requiredMemory;
-          const secretClass = isSecret ? ' secret-option' : '';
+          let btnClass = 'choice-btn';
+          if (isSecret) btnClass += ' secret-option';
+          if (isChosen) btnClass += ' choice-chosen';
+          else if (isLocked) btnClass += ' choice-dimmed';
+
           // 情感成本标记
           let costGainHtml = '';
           if (choice.emotionalCost) {
@@ -116,12 +124,14 @@ const Renderer = {
           if (choice.emotionalGain) {
             costGainHtml += `<span class="choice-gain">✦ 获得：${choice.emotionalGain}</span>`;
           }
+
+          const onclickAttr = isLocked ? '' : `onclick="handleChoice('${choice.id}')"`;
           html += `
-            <button class="choice-btn${secretClass}" data-choice-id="${choice.id}" onclick="handleChoice('${choice.id}')">
-              <span class="choice-label">${choice.label}</span>
+            <div class="${btnClass}" data-choice-id="${choice.id}" ${onclickAttr}>
+              <span class="choice-label">${isChosen ? '▶ ' : ''}${choice.label}</span>
               <span class="choice-desc">${choice.description}</span>
               ${costGainHtml}
-            </button>`;
+            </div>`;
         });
         html += `</div>`;
       } else if (scene.type === 'settlement' && scene.settlement) {

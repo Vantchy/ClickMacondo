@@ -144,6 +144,27 @@ function init() {
         if (scene.choices[idx]) handleChoice(scene.choices[idx].id);
       }
     }
+
+    // 翻页：左右箭头 / 空格
+    // 封面或主菜单显示时不响应翻页；输入框聚焦时不拦截
+    const cover = document.getElementById('cover-overlay');
+    if (cover && !cover.classList.contains('hidden')) return;
+    const mainMenu = document.getElementById('mainmenu-overlay');
+    if (mainMenu && mainMenu.classList.contains('open')) return;
+    const tag = document.activeElement ? document.activeElement.tagName : '';
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      if (GameEngine.navigateBack()) Renderer.render();
+    }
+    if (e.key === 'ArrowRight' || e.key === ' ') {
+      e.preventDefault();
+      if (GameEngine.navigateForward()) {
+        Renderer.render();
+        populateChapterSelect();
+      }
+    }
   });
 
   console.log('《百年孤独 · 宿命之环》已就绪');

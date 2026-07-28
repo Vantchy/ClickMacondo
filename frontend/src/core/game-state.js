@@ -10,7 +10,9 @@ const GameState = {
   tags: [],
   memories: [],
   history: [],
+  historyIndex: 0,
   choices: [],
+  sceneChoices: {},     // { sceneId: choiceId } — 锁定已做过的选择，回退不可更改
   choiceLog: [],
   completedChapters: {},
   encounteredCharacters: [],
@@ -28,7 +30,9 @@ const GameState = {
     this.tags = [];
     this.memories = [];
     this.history = ['void_awakening'];
+    this.historyIndex = 0;
     this.choices = [];
+    this.sceneChoices = {};
     this.choiceLog = [];
     this.completedChapters = {};
     this.encounteredCharacters = [];
@@ -121,8 +125,10 @@ const GameState = {
       tags: [...this.tags],
       memories: [...this.memories],
       history: [...this.history],
+      historyIndex: this.historyIndex,
       choices: [...this.choices],
       choiceLog: [...this.choiceLog],
+      sceneChoices: {...this.sceneChoices},
       completedChapters: {...this.completedChapters},
       encounteredCharacters: [...this.encounteredCharacters],
       _eraVisited: [...(this._eraVisited || [])],
@@ -141,8 +147,10 @@ const GameState = {
     this.tags = data.tags || [];
     this.memories = data.memories || [];
     this.history = data.history || [];
+    this.historyIndex = data.historyIndex !== undefined ? data.historyIndex : (this.history.length > 0 ? this.history.length - 1 : 0);
     this.choices = data.choices || [];
     this.choiceLog = data.choiceLog || [];
+    this.sceneChoices = data.sceneChoices || {};
     this.completedChapters = data.completedChapters || {};
     this.encounteredCharacters = data.encounteredCharacters || [];
     this._eraVisited = data._eraVisited || [];
