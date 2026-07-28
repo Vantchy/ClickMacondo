@@ -134,12 +134,21 @@ function init() {
         showMainMenu();
       }
     }
+    // 选择页：数字键选中，再按确认；空格确认
+    const choiceScene = GameEngine.getCurrentScene();
+    const isChoicePage = choiceScene && choiceScene.type === 'choice' && choiceScene.choices && !GameState.sceneChoices[choiceScene.id];
     if (e.key === '1' || e.key === '2' || e.key === '3') {
-      const scene = GameEngine.getCurrentScene();
-      if (scene && scene.type === 'choice' && scene.choices) {
+      if (isChoicePage) {
+        e.preventDefault();
         const idx = parseInt(e.key) - 1;
-        if (scene.choices[idx]) handleChoice(scene.choices[idx].id);
+        if (choiceScene.choices[idx]) selectChoice(choiceScene.choices[idx].id);
       }
+      return;
+    }
+    if (e.key === ' ' && isChoicePage && _selectedChoiceId) {
+      e.preventDefault();
+      confirmChoice();
+      return;
     }
 
     // 翻页：左右箭头 / 空格
@@ -162,6 +171,39 @@ function init() {
       }
     }
   });
+
+  // 进度条拖动跳转（按全书场景占比定位）
+  const progressBar = document.getElementById('reading-progress');
+  if (progressBar) {
+    let dragging = false;
+
+    function seekFromEvent(e) {
+      const rect = progressBar.getBoundingClientRect();
+      const rawPct = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+      const total = GameState.history.length - 1;
+      const idx = total > 0 ? Math.round((rawPct / 100) * total) : 0;
+      if (idx === GameState.historyIndex || idx < 0 || idx >= GameState.history.length) return;
+
+      GameState.historyIndex = idx;
+      GameState.currentScene = GameState.history[idx];
+      GameEngine._syncChapterForScene(GameState.currentScene);
+      Renderer.render();
+    }
+
+    progressBar.addEventListener('mousedown', function(e) {
+      dragging = true;
+      seekFromEvent(e);
+    });
+
+    document.addEventListener('mousemove', function(e) {
+      if (!dragging) return;
+      seekFromEvent(e);
+    });
+
+    document.addEventListener('mouseup', function() {
+      dragging = false;
+    });
+  }
 
   console.log('《百年孤独 · 宿命之环》已就绪');
 }

@@ -3,9 +3,45 @@
    依赖：js/game-state.js, js/game-engine.js, js/chapter-registry.js
    ================================================================ */
 
+/* ---- 两步确认选择（防误触） ---- */
+let _selectedChoiceId = null;
+
+/** 点击或按键选中一个选项 */
+function selectChoice(choiceId) {
+  const scene = GameEngine.getCurrentScene();
+  if (!scene || scene.type !== 'choice') return;
+  // 锁定模式下不可选择
+  if (GameState.sceneChoices[scene.id]) return;
+
+  if (_selectedChoiceId === choiceId) {
+    // 再次点击同一选项 → 确认
+    confirmChoice();
+  } else {
+    // 首次选中 → 高亮
+    _selectedChoiceId = choiceId;
+    Renderer._highlightChoice(choiceId);
+  }
+}
+
+/** 确认当前选中的选项 */
+function confirmChoice() {
+  if (!_selectedChoiceId) return;
+  const id = _selectedChoiceId;
+  _selectedChoiceId = null;
+  handleChoice(id);
+}
+
+/** 清除选中状态 */
+function clearChoiceSelection() {
+  _selectedChoiceId = null;
+  const prev = document.querySelector('.choice-selected');
+  if (prev) prev.classList.remove('choice-selected');
+}
+
 const Renderer = {
   /* 渲染整个页面 */
   render() {
+    clearChoiceSelection();
     const scene = GameEngine.getCurrentScene();
     if (!scene) return;
     this.renderLeftPage(scene);
@@ -125,9 +161,10 @@ const Renderer = {
             costGainHtml += `<span class="choice-gain">✦ 获得：${choice.emotionalGain}</span>`;
           }
 
-          const onclickAttr = isLocked ? '' : `onclick="handleChoice('${choice.id}')"`;
+          const onclickAttr = isLocked ? '' : `onclick="selectChoice('${choice.id}')"`;
+          const selectedClass = (!isLocked && _selectedChoiceId === choice.id) ? ' choice-selected' : '';
           html += `
-            <div class="${btnClass}" data-choice-id="${choice.id}" ${onclickAttr}>
+            <div class="${btnClass}${selectedClass}" data-choice-id="${choice.id}" ${onclickAttr}>
               <span class="choice-label">${isChosen ? '▶ ' : ''}${choice.label}</span>
               <span class="choice-desc">${choice.description}</span>
               ${costGainHtml}
@@ -274,10 +311,18 @@ const Renderer = {
       moodLabel.textContent = moodText;
     }
 
-    // 阅读进度条（全局故事线占比）
+    // 阅读进度条 + 页码
     const progressFill = document.getElementById('reading-progress-fill');
-    if (progressFill) {
-      progressFill.style.width = getGlobalProgress() + '%';
+    const progressThumb = document.getElementById('reading-progress-thumb');
+    const pageIndicator = document.getElementById('page-indicator');
+    const pageCount = GameState.history.length;
+    const currentPage = GameState.historyIndex + 1;
+    const pct = pageCount > 1 ? ((currentPage - 1) / (pageCount - 1)) * 100 : 0;
+    if (progressFill) progressFill.style.width = pct + '%';
+    if (progressThumb) progressThumb.style.left = pct + '%';
+    if (pageIndicator) {
+      const gp = getGlobalProgress();
+      pageIndicator.textContent = '第 ' + currentPage + ' / ' + pageCount + ' 页　·　全书 ' + gp + '%';
     }
 
   },
@@ -382,6 +427,15 @@ const Renderer = {
     html += '<div class="emotional-cost-text">' + scene.settlement.emotionalCost + '</div>';
     html += '</div>';
     return html;
+  },
+
+  /** 高亮指定选项（两步确认的第一步） */
+  _highlightChoice(choiceId) {
+    document.querySelectorAll('.choice-btn').forEach(el => {
+      el.classList.remove('choice-selected');
+    });
+    const target = document.querySelector('.choice-btn[data-choice-id="' + choiceId + '"]');
+    if (target) target.classList.add('choice-selected');
   }
 };
 
@@ -390,6 +444,7 @@ let _explorationState = {}; // { hotspotId: true } — 当前探索场景已发�
 
 /* ---- 全局事件处理函数 ---- */
 function handleChoice(choiceId) {
+  clearChoiceSelection();
   const result = GameEngine.selectChoice(choiceId);
   if (result) {
     // 先渲染分支叙事（左页）+ 继续按钮（右页）

@@ -136,15 +136,18 @@ const GameEngine = {
 
       // 序章跳转：允许跳转到时代选择的目标章节
       if (isFromPrologue) {
+        console.log('switchToChapter prologue: preserveHistory=' + preserveHistory + ', historyLen=' + GameState.history.length);
         GameState.chapter = chapterNum;
         GameState.currentScene = chapterData.initialScene;
         GameState.round = 0;
         if (preserveHistory) {
           GameState.history.push(chapterData.initialScene);
           GameState.historyIndex = GameState.history.length - 1;
+          console.log('switchToChapter prologue: pushed, new len=' + GameState.history.length + ', idx=' + GameState.historyIndex);
         } else {
           GameState.history = [chapterData.initialScene];
           GameState.historyIndex = 0;
+          console.log('switchToChapter prologue: reset, len=1, idx=0');
         }
         GameState.choices = [];
         GameState.choiceLog = [];
@@ -389,6 +392,7 @@ const GameEngine = {
 
   /** 翻页：回到历史中的上一页 */
   navigateBack() {
+    console.log('navigateBack: index=' + GameState.historyIndex + ', len=' + GameState.history.length + ', cur=' + GameState.currentScene);
     if (GameState.historyIndex <= 0) return false;
     GameState.historyIndex--;
     const prevId = GameState.history[GameState.historyIndex];
@@ -396,6 +400,7 @@ const GameEngine = {
     this._syncChapterForScene(prevId);
     const chData = getCurrentChapterData();
     const prevScene = chData ? chData.scenes[prevId] : null;
+    console.log('navigateBack: -> ' + prevId + ', chapter=' + GameState.chapter + ', found=' + !!prevScene);
     if (prevScene) GameState.round = prevScene.round || 0;
     return true;
   },
