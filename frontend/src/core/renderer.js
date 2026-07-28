@@ -274,6 +274,12 @@ const Renderer = {
       moodLabel.textContent = moodText;
     }
 
+    // 阅读进度条（全局故事线占比）
+    const progressFill = document.getElementById('reading-progress-fill');
+    if (progressFill) {
+      progressFill.style.width = getGlobalProgress() + '%';
+    }
+
   },
 
   /* 更新书签/进度指示 */

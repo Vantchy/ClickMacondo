@@ -35,6 +35,38 @@ function getCurrentChapterData() {
   return chapters[chapterNumToId(GameState.chapter)] || null;
 }
 
+/** 计算当前页面在全部故事线中的全局进度百分比 */
+function getGlobalProgress() {
+  let totalRounds = 0;
+  let position = 0;
+
+  for (const chId of CHAPTER_ORDER) {
+    const chData = chapters[chId];
+    if (!chData || !chData.scenes) continue;
+    const meta = CHAPTER_META[chId];
+    const chNum = meta ? meta.num : 0;
+
+    // 统计本章最大轮次
+    let chMaxRound = 0;
+    for (const scene of Object.values(chData.scenes)) {
+      if (scene.round > chMaxRound) chMaxRound = scene.round;
+    }
+
+    if (chNum < GameState.chapter) {
+      // 已完成的章节：计入全部轮次
+      position += chMaxRound;
+    } else if (chNum === GameState.chapter) {
+      // 当前章节：计入已到达的轮次
+      position += Math.min(GameState.round, chMaxRound);
+    }
+    // 未到达的章节不计入 position
+
+    totalRounds += chMaxRound;
+  }
+
+  return totalRounds > 0 ? Math.min(100, Math.round((position / totalRounds) * 100)) : 0;
+}
+
 /** 根据场景 ID 反查其所属章节号（跨章导航必需） */
 function getChapterForScene(sceneId) {
   for (const [chId, chData] of Object.entries(chapters)) {
