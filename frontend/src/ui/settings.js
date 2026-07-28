@@ -58,8 +58,8 @@ const SettingsPanel = {
       clearAchievements();
       GameState.currentScene = 'void_awakening';
       GameState.history = ['void_awakening'];
+      GameState.historyIndex = 0;
       GameState.chapter = 0;
-      populateChapterSelect();
       Renderer.render();
       GameEngine.encounterChapterMembers();
       showCover();

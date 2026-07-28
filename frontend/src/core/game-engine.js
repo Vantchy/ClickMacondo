@@ -8,6 +8,9 @@ const GameEngine = {
     const scene = this.getCurrentScene();
     if (!scene || scene.type !== 'choice') return null;
 
+    // 已锁定——回退查看时不可重新选择
+    if (GameState.sceneChoices[scene.id]) return null;
+
     const choice = scene.choices.find(c => c.id === choiceId);
     if (!choice) return null;
 
@@ -107,8 +110,10 @@ const GameEngine = {
     return chapterData ? chapterData.scenes[chapterData.id + '_end'] : null;
   },
 
-  /** 切换到指定章节（用于章节选择器跳转） */
-  switchToChapter(chapterNum) {
+  /** 切换到指定章节（用于章节选择器跳转）
+   *  @param {boolean} preserveHistory - true=自然推进时保留跨章历史，false/undefined=跳转时重置
+   */
+  switchToChapter(chapterNum, preserveHistory) {
     const chapterId = chapterNumToId(chapterNum);
     const chapterData = chapters[chapterId];
     if (!chapterData) return false;
@@ -116,20 +121,15 @@ const GameEngine = {
     if (chapterNum !== GameState.chapter) {
       const isFromPrologue = (GameState.chapter === 0);
 
-      // 已完成章节 → 进入查看模式（跳到章末结算）
+      // 已完成章节 → 进入查看模式（跳到章末结算，保留回退链）
       if (GameState.isChapterCompleted(chapterNum) && chapterNum < GameState.chapter) {
         GameState.chapter = chapterNum;
         const endScene = chapterData.scenes[chapterData.id + '_end'];
-        if (endScene) {
-          GameState.currentScene = chapterData.id + '_end';
-          GameState.round = endScene.round || 99;
-          GameState.history = [chapterData.id + '_end'];
-          StorageManager.autoSave();
-          return true;
-        }
-        GameState.currentScene = chapterData.initialScene;
-        GameState.round = 0;
-        GameState.history = [chapterData.initialScene];
+        const targetScene = endScene ? (chapterData.id + '_end') : chapterData.initialScene;
+        GameState.currentScene = targetScene;
+        GameState.round = endScene ? (endScene.round || 99) : 0;
+        GameState.history.push(targetScene);
+        GameState.historyIndex = GameState.history.length - 1;
         StorageManager.autoSave();
         return true;
       }
@@ -139,7 +139,13 @@ const GameEngine = {
         GameState.chapter = chapterNum;
         GameState.currentScene = chapterData.initialScene;
         GameState.round = 0;
-        GameState.history = [chapterData.initialScene];
+        if (preserveHistory) {
+          GameState.history.push(chapterData.initialScene);
+          GameState.historyIndex = GameState.history.length - 1;
+        } else {
+          GameState.history = [chapterData.initialScene];
+          GameState.historyIndex = 0;
+        }
         GameState.choices = [];
         GameState.choiceLog = [];
         StorageManager.autoSave();
@@ -160,7 +166,14 @@ const GameEngine = {
         }
         GameState.currentScene = initialScene;
         GameState.round = 0;
-        GameState.history = [chapterData.initialScene];
+        if (preserveHistory) {
+          // 自然推进：追加到现有历史，保留跨章回溯能力
+          GameState.history.push(initialScene);
+          GameState.historyIndex = GameState.history.length - 1;
+        } else {
+          GameState.history = [initialScene];
+          GameState.historyIndex = 0;
+        }
         GameState.choices = [];
         GameState.choiceLog = [];
         StorageManager.autoSave();
@@ -180,6 +193,7 @@ const GameEngine = {
     GameState.currentScene = chapterData.initialScene;
     GameState.round = 0;
     GameState.history = [chapterData.initialScene];
+    GameState.historyIndex = 0;
     GameState.choices = [];
     GameState.choiceLog = [];
     StorageManager.autoSave();
@@ -217,7 +231,7 @@ const GameEngine = {
       GameState._allChaptersDone = allChaptersDone;
     }
 
-    return this.switchToChapter(nextChapter);
+    return this.switchToChapter(nextChapter, true);
   },
 
   /** 遇到当前章节的家族成员（包括附身角色和场景中出现的说话者） */
@@ -308,6 +322,7 @@ const GameEngine = {
     GameState.currentScene = chapterData.initialScene;
     GameState.round = 0;
     GameState.history = [chapterData.initialScene];
+    GameState.historyIndex = 0;
     GameState.choices = [];
     GameState.choiceLog = [];
     StorageManager.autoSave();
@@ -364,11 +379,24 @@ const GameEngine = {
     GameState._hotspotsFound = 0;
   },
 
+  /** 同步 chapter 到 sceneId 所属章节 */
+  _syncChapterForScene(sceneId) {
+    const ch = getChapterForScene(sceneId);
+    if (ch !== null && ch !== GameState.chapter) {
+      GameState.chapter = ch;
+    }
+  },
+
   /** 翻页：回到历史中的上一页 */
   navigateBack() {
     if (GameState.historyIndex <= 0) return false;
     GameState.historyIndex--;
-    GameState.currentScene = GameState.history[GameState.historyIndex];
+    const prevId = GameState.history[GameState.historyIndex];
+    GameState.currentScene = prevId;
+    this._syncChapterForScene(prevId);
+    const chData = getCurrentChapterData();
+    const prevScene = chData ? chData.scenes[prevId] : null;
+    if (prevScene) GameState.round = prevScene.round || 0;
     return true;
   },
 
@@ -377,14 +405,32 @@ const GameEngine = {
     if (GameState.historyIndex < GameState.history.length - 1) {
       // 仍在历史中——前进到下一页
       GameState.historyIndex++;
-      GameState.currentScene = GameState.history[GameState.historyIndex];
+      const nextId = GameState.history[GameState.historyIndex];
+      GameState.currentScene = nextId;
+      this._syncChapterForScene(nextId);
+      const chData = getCurrentChapterData();
+      const nextScene = chData ? chData.scenes[nextId] : null;
+      if (nextScene) GameState.round = nextScene.round || 0;
       return true;
     }
     // 已在历史末端——检查是否可以自然推进
     const scene = this.getCurrentScene();
     if (!scene) return false;
-    // 选项页必须手动选择，不允许键盘跳过
-    if (scene.type === 'choice') return false;
+    // 选项页：已锁定的自动推进，未选择的必须手动
+    if (scene.type === 'choice') {
+      const lockedId = GameState.sceneChoices[scene.id];
+      if (lockedId && scene.choices) {
+        const choice = scene.choices.find(c => c.id === lockedId);
+        if (choice && choice.nextScene) {
+          GameState.history.push(choice.nextScene);
+          GameState.currentScene = choice.nextScene;
+          GameState.historyIndex = GameState.history.length - 1;
+          this._syncChapterForScene(choice.nextScene);
+          return true;
+        }
+      }
+      return false;
+    }
     // 叙事页有 nextScene
     if (scene.type === 'narrative' && scene.nextScene) {
       this.goToScene(scene.nextScene);

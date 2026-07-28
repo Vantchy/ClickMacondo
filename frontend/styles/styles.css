@@ -137,23 +137,6 @@ body {
   color: #e8d0a0;
 }
 
-#chapter-select {
-  font-family: var(--font-ui);
-  font-size: 0.68rem;
-  color: var(--gold-dim);
-  background: rgba(10,8,4,0.55);
-  border: 1px solid rgba(184,137,62,0.22);
-  padding: 5px 12px;
-  border-radius: 20px;
-  cursor: pointer;
-  letter-spacing: 0.05em;
-  outline: none;
-}
-#chapter-select option {
-  background: #14100c;
-  color: #d4b070;
-}
-
 #progress-label {
   font-family: var(--font-ui);
   font-size: 0.7rem;
@@ -1105,7 +1088,6 @@ input[type="range"] {
   }
   #top-bar .top-item { gap: 5px; }
   .top-btn { font-size: 0.6rem; padding: 4px 10px; letter-spacing: 0.02em; }
-  #chapter-select { font-size: 0.58rem; padding: 4px 8px; max-width: 85px; }
   #progress-label { font-size: 0.58rem; white-space: normal; text-align: center; }
 
   /* 底部栏 */
@@ -1271,7 +1253,6 @@ input[type="range"] {
   #top-bar { padding: 3px 4px; gap: 3px; }
   #top-bar .top-item { gap: 3px; }
   .top-btn { font-size: 0.52rem; padding: 3px 7px; }
-  #chapter-select { font-size: 0.52rem; padding: 3px 5px; max-width: 70px; }
   #progress-label { font-size: 0.5rem; }
 
   #bottom-bar { gap: 4px; padding: 5px 6px 8px; }

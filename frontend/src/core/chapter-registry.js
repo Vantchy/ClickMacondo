@@ -35,6 +35,17 @@ function getCurrentChapterData() {
   return chapters[chapterNumToId(GameState.chapter)] || null;
 }
 
+/** 根据场景 ID 反查其所属章节号（跨章导航必需） */
+function getChapterForScene(sceneId) {
+  for (const [chId, chData] of Object.entries(chapters)) {
+    if (chData.scenes && chData.scenes[sceneId]) {
+      const meta = CHAPTER_META[chId];
+      return meta ? meta.num : 0;
+    }
+  }
+  return null; // 未找到
+}
+
 /** 获取当前章节中所有记忆碎片 */
 function getCurrentChapterMemories() {
   const chData = getCurrentChapterData();
@@ -61,76 +72,4 @@ function getChapterDisplayTitle(chapterId) {
   if (chData) return chData.title;
   if (meta) return meta.shortName + (meta.subtitle ? ' · ' + meta.subtitle : '');
   return chapterId;
-}
-
-/** 动态生成章节下拉菜单 — 显示所有已知章节，已注册数据的可用 */
-function populateChapterSelect() {
-  const select = document.getElementById('chapter-select');
-  if (!select) return;
-
-  select.innerHTML = '';
-  const currentChNum = GameState.chapter;
-
-  CHAPTER_ORDER.forEach(chId => {
-    const meta = CHAPTER_META[chId];
-    if (!meta) return;
-    const chData = chapters[chId]; // 可能为 null（尚未注册数据）
-    const displayTitle = getChapterDisplayTitle(chId);
-    const chNum = meta.num;
-
-    const option = document.createElement('option');
-    option.value = chNum;
-    option.dataset.chapterId = chId;
-    option.textContent = displayTitle;
-
-    // 判断章节状态
-    const isRegistered = !!chData;
-    const isCompleted = GameState.isChapterCompleted(chNum);
-    const isCurrent = (chNum === currentChNum);
-    const isNext = (chNum === currentChNum + 1);
-
-    // 未注册数据的章节禁用
-    if (!isRegistered) {
-      option.disabled = true;
-      option.textContent += '（敬请期待）';
-    }
-    // 已完成的章节（可查看）
-    else if (isCompleted && !isCurrent) {
-      option.textContent += ' ✓';
-    }
-    // 未到达且未完成的章节全部锁定（包括紧邻下一章）
-    else if (!isCurrent && !isCompleted) {
-      option.disabled = true;
-      option.textContent += ' 🔒';
-    }
-
-    if (isCurrent) {
-      option.selected = true;
-    }
-
-    select.appendChild(option);
-  });
-
-  // 切换章节事件（只绑定一次）
-  if (!select._chapterListenerAttached) {
-    select._chapterListenerAttached = true;
-    select.addEventListener('change', function(e) {
-      const targetChapter = parseInt(e.target.value);
-      if (targetChapter !== GameState.chapter) {
-        if (GameEngine.switchToChapter(targetChapter)) {
-          Renderer.render();
-          const chData = getCurrentChapterData();
-          const targetChId = chapterNumToId(targetChapter);
-          const targetChData = chapters[targetChId];
-          const isViewing = GameState.isChapterCompleted(targetChapter) && targetChapter < GameState.chapter;
-          if (isViewing) {
-            showToast('📖 正在查看 ' + (targetChData ? targetChData.title : '第' + targetChapter + '章') + ' 的结算数据');
-          } else {
-            showToast('已跳转至 ' + (targetChData ? targetChData.title : '第' + targetChapter + '章'));
-          }
-          populateChapterSelect();
-        }
-      }
-    });
-  }
 }

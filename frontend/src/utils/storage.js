@@ -219,7 +219,6 @@ const SaveLoadPanel = {
         if (confirm('确定要从存档 ' + this.CHINESE_NUMS[slotNum] + ' 读取吗？当前未保存的进度将丢失。')) {
           if (StorageManager.loadFromSlot(slotNum)) {
             StorageManager.autoSave(); // 同步自动存档
-            populateChapterSelect();
             Renderer.render();
             this.close();
             showToast('📂 已从存档 ' + this.CHINESE_NUMS[slotNum] + ' 读取');

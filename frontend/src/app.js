@@ -17,9 +17,6 @@ function init() {
     }
   }
 
-  // 动态生成章节选择器
-  populateChapterSelect();
-
   // 渲染初始场景
   Renderer.render();
 
@@ -162,7 +159,6 @@ function init() {
       e.preventDefault();
       if (GameEngine.navigateForward()) {
         Renderer.render();
-        populateChapterSelect();
       }
     }
   });

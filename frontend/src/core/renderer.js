@@ -186,7 +186,7 @@ const Renderer = {
             html += `</div>`;
           } else if (nextChapterData) {
             const enterLabel = '进入' + nextChapterData.title;
-            html += `<button class="next-btn" onclick="GameEngine.goToNextChapter();Renderer.render();populateChapterSelect();">${enterLabel}</button>`;
+            html += `<button class="next-btn" onclick="GameEngine.goToNextChapter();Renderer.render();">${enterLabel}</button>`;
             html += `<div style="text-align:center;margin-top:16px;font-style:italic;color:var(--gold-dim);font-size:0.85rem;">`;
             const nextMeta = CHAPTER_META[nextChapterId];
             if (nextMeta && nextMeta.subtitle) {

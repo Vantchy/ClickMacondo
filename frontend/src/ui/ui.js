@@ -95,7 +95,7 @@ function closeCredits() {
   GameState.chapter = 0;
   GameState.currentScene = 'void_awakening';
   GameState.history = ['void_awakening'];
-  populateChapterSelect();
+  GameState.historyIndex = 0;
   Renderer.render();
   GameEngine.encounterChapterMembers();
   showCover();
@@ -240,7 +240,6 @@ function continueFromMenu() {
   if (!loaded) { showToast('读档失败'); return; }
   hideMainMenu();
   document.getElementById('cover-overlay').classList.add('hidden');
-  populateChapterSelect();
   Renderer.render();
   updateBigSave();
   startPlayTimeTracking();
@@ -255,9 +254,9 @@ function startNewGame() {
   GameState.chapter = 0;
   GameState.currentScene = 'void_awakening';
   GameState.history = ['void_awakening'];
+  GameState.historyIndex = 0;
   hideMainMenu();
   document.getElementById('cover-overlay').classList.add('hidden');
-  populateChapterSelect();
   Renderer.render();
   GameEngine.encounterChapterMembers();
   updateBigSave();
