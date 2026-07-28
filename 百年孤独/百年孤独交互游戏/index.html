@@ -1080,13 +1080,530 @@ input[type="range"] {
   .save-slot-number { min-width: auto; font-size: 0.85rem; }
   .save-slot-actions { width: 100%; justify-content: flex-end; }
 }
+
+/* ================================================================
+   十一、开头动态封面
+   ================================================================ */
+#cover-overlay {
+  position: fixed; inset: 0; z-index: 100;
+  background: radial-gradient(ellipse at center, #1a1410 0%, #080604 70%);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  transition: opacity 0.8s ease, visibility 0.8s ease;
+  cursor: pointer;
+  overflow: hidden;
+}
+#cover-overlay.hidden {
+  opacity: 0; visibility: hidden; pointer-events: none;
+}
+
+/* 漂浮尘埃粒子 */
+.cover-particle {
+  position: absolute;
+  width: 2px; height: 2px;
+  background: var(--gold-dim);
+  border-radius: 50%;
+  animation: particleFloat linear infinite;
+  opacity: 0;
+}
+@keyframes particleFloat {
+  0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+  10%  { opacity: 0.8; }
+  90%  { opacity: 0.3; }
+  100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+}
+
+/* 主标题容器 */
+#cover-title-wrap {
+  position: relative; z-index: 2;
+  text-align: center;
+  opacity: 0;
+  animation: coverFadeIn 1.2s ease forwards;
+  animation-delay: 0.5s;
+}
+@keyframes coverFadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+#cover-main-title {
+  font-family: var(--font-title);
+  font-size: clamp(2.2rem, 5vw, 4rem);
+  color: var(--gold-light);
+  letter-spacing: 0.15em;
+  text-shadow: 0 0 40px rgba(232,200,112,0.3);
+  margin-bottom: 8px;
+}
+#cover-main-title .char {
+  display: inline-block;
+  opacity: 0;
+  animation: charAppear 0.6s ease forwards;
+}
+@keyframes charAppear {
+  from { opacity: 0; transform: translateY(-20px); filter: blur(4px); }
+  to   { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+#cover-subtitle {
+  font-family: var(--font-title);
+  font-size: clamp(1rem, 2.5vw, 1.6rem);
+  color: var(--gold-dim);
+  letter-spacing: 0.25em;
+  margin-bottom: 40px;
+  opacity: 0;
+  animation: coverFadeIn 1s ease forwards;
+  animation-delay: 2s;
+}
+
+#cover-quote {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: #8a7a60;
+  font-style: italic;
+  line-height: 1.8;
+  max-width: 500px;
+  padding: 20px 30px;
+  border-left: 1px solid rgba(184,137,62,0.2);
+  border-right: 1px solid rgba(184,137,62,0.2);
+  opacity: 0;
+  animation: coverFadeIn 1s ease forwards;
+  animation-delay: 2.8s;
+}
+
+#cover-hint {
+  position: absolute; bottom: 60px; z-index: 2;
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  color: var(--gold-dim);
+  letter-spacing: 0.1em;
+  opacity: 0;
+  animation: hintPulse 2s ease-in-out infinite;
+  animation-delay: 3.5s;
+}
+@keyframes hintPulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* ================================================================
+   十二、结尾致谢名单
+   ================================================================ */
+#credits-overlay {
+  position: fixed; inset: 0; z-index: 100;
+  background: #080604;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity 1s ease;
+  overflow: hidden;
+}
+#credits-overlay.show {
+  opacity: 1; visibility: visible; pointer-events: all;
+}
+
+#credits-scroll {
+  text-align: center;
+  animation: creditsRoll 25s linear forwards;
+}
+@keyframes creditsRoll {
+  0%   { transform: translateY(75vh); }
+  100% { transform: translateY(-120%); }
+}
+
+.credits-section {
+  margin: 36px 0;
+}
+.credits-role {
+  font-family: var(--font-title);
+  font-size: 0.75rem;
+  color: var(--gold-dim);
+  letter-spacing: 0.15em;
+  margin-bottom: 6px;
+}
+.credits-name {
+  font-family: var(--font-title);
+  font-size: 1.1rem;
+  color: var(--gold-light);
+  letter-spacing: 0.1em;
+}
+.credits-divider {
+  width: 60px; height: 1px;
+  background: rgba(184,137,62,0.25);
+  margin: 28px auto;
+}
+.credits-quote {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: #8a7a60;
+  font-style: italic;
+  line-height: 1.8;
+  max-width: 480px;
+  margin: 20px auto;
+}
+.credits-title-lg {
+  font-family: var(--font-title);
+  font-size: 1.6rem;
+  color: var(--gold-light);
+  letter-spacing: 0.2em;
+  margin-bottom: 6px;
+}
+.credits-subtitle-sm {
+  font-family: var(--font-title);
+  font-size: 0.8rem;
+  color: var(--gold-dim);
+  letter-spacing: 0.15em;
+}
+
+#credits-restart {
+  position: absolute; bottom: 50px; z-index: 5;
+  opacity: 0;
+  animation: coverFadeIn 1s ease forwards;
+  animation-delay: 26s;
+  font-family: var(--font-title);
+  font-size: 0.9rem;
+  color: var(--gold-light);
+  background: rgba(184,137,62,0.12);
+  border: 1px solid rgba(184,137,62,0.35);
+  padding: 12px 32px;
+  border-radius: 30px;
+  cursor: pointer;
+  letter-spacing: 0.1em;
+  transition: all 0.3s ease;
+}
+#credits-restart:hover {
+  background: rgba(184,137,62,0.28);
+  border-color: var(--gold);
+}
+
+/* ================================================================
+   十三、主菜单（全屏宿命感）
+   ================================================================ */
+#mainmenu-overlay {
+  position: fixed; inset: 0; z-index: 99;
+  background: radial-gradient(ellipse at 50% 30%, #1e1810 0%, #080604 70%);
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+  overflow-y: auto; overflow-x: hidden;
+  padding: 40px 20px 60px;
+}
+#mainmenu-overlay.open {
+  opacity: 1; visibility: visible; pointer-events: all;
+}
+
+#mainmenu-particles {
+  position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+}
+
+#mainmenu-content {
+  position: relative; z-index: 2;
+  max-width: 460px; width: 100%;
+  display: flex; flex-direction: column; align-items: center;
+  animation: mmFadeUp 0.8s ease forwards;
+}
+@keyframes mmFadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.mm-title-wrap { text-align: center; margin-bottom: 32px; }
+.mm-title {
+  font-family: var(--font-title);
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  color: var(--gold-light);
+  letter-spacing: 0.18em;
+  text-shadow: 0 0 36px rgba(232,200,112,0.25);
+}
+.mm-subtitle {
+  font-family: var(--font-title);
+  font-size: clamp(0.85rem, 2vw, 1.2rem);
+  color: var(--gold-dim);
+  letter-spacing: 0.3em;
+  margin-top: 6px;
+}
+
+/* 大存档卡片 */
+.mm-savecard {
+  width: 100%; margin-bottom: 28px;
+  padding: 18px 22px;
+  background: rgba(255,250,240,0.04);
+  border: 1px solid rgba(184,137,62,0.18);
+  border-radius: 10px;
+  text-align: center;
+}
+.mm-savecard-title {
+  font-family: var(--font-title);
+  font-size: 0.8rem; color: var(--gold-light);
+  letter-spacing: 0.1em; margin-bottom: 8px;
+}
+
+/* 菜单按钮 */
+.mm-options { width: 100%; display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+.mm-btn {
+  display: flex; align-items: center; gap: 14px;
+  width: 100%; padding: 14px 20px;
+  font-family: var(--font-title);
+  color: #c8b898; letter-spacing: 0.06em;
+  background: rgba(184,137,62,0.05);
+  border: 1px solid rgba(184,137,62,0.14);
+  border-radius: 8px; cursor: pointer;
+  transition: all 0.35s ease; text-align: left;
+}
+.mm-btn:hover {
+  background: rgba(184,137,62,0.15);
+  border-color: rgba(184,137,62,0.4);
+  color: #e8d0a0;
+  transform: translateX(4px);
+}
+.mm-btn-primary {
+  border-color: rgba(184,137,62,0.3);
+  background: rgba(184,137,62,0.1);
+}
+.mm-btn-icon { font-size: 1.4rem; flex-shrink: 0; width: 32px; text-align: center; }
+.mm-btn-label { font-size: 0.9rem; flex: 1; }
+.mm-btn-hint {
+  font-family: var(--font-body);
+  font-size: 0.7rem; color: var(--gold-dim); font-style: italic;
+  opacity: 0.7; letter-spacing: 0.03em;
+}
+.mm-btn-exit { border-color: rgba(160,120,100,0.15); color: #b09888; }
+.mm-btn-exit:hover { background: rgba(160,100,80,0.12); border-color: rgba(160,100,80,0.4); color: #c8a898; }
+.mm-btn:disabled { opacity: 0.35; pointer-events: none; filter: grayscale(0.4); }
+
+.mm-footer {
+  font-family: var(--font-body);
+  font-size: 0.72rem; color: #6a5a48; font-style: italic;
+  text-align: center; letter-spacing: 0.04em; margin-top: 8px;
+}
+
+/* 成就书签卡片 */
+.achievement-card {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 14px 16px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(184,137,62,0.15);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+.achievement-card.unlocked {
+  border-color: rgba(184,137,62,0.4);
+  background: rgba(184,137,62,0.06);
+}
+.achievement-card.locked {
+  opacity: 0.45; filter: grayscale(0.5);
+}
+.ach-icon {
+  font-size: 1.8rem; flex-shrink: 0; width: 44px; text-align: center;
+}
+.ach-info { flex:1; min-width:0; }
+.ach-name {
+  font-family: var(--font-title); font-size: 0.85rem;
+  color: #e8d0a0; letter-spacing: 0.04em; margin-bottom: 2px;
+}
+.ach-desc {
+  font-size: 0.75rem; color: #c0b090; line-height: 1.5; font-style: italic;
+}
+.ach-status {
+  font-size: 0.68rem; margin-top: 2px;
+}
+.ach-status.unlocked { color: var(--gold-light); }
+.ach-status.locked { color: var(--gold-dim); }
+
+/* 书签记忆卡 */
+.bookmark-card {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(184,137,62,0.12);
+  border-radius: 6px;
+}
+.bookmark-card.unlocked { border-color: rgba(184,137,62,0.35); }
+.bookmark-card.locked { opacity: 0.4; filter: grayscale(0.4); }
+.bookmark-icon { font-size: 1.3rem; flex-shrink: 0; }
+.bookmark-info { flex:1; }
+.bookmark-chapter { font-size: 0.65rem; color: var(--gold-dim); letter-spacing:0.08em; }
+.bookmark-title { font-family: var(--font-title); font-size:0.82rem; color:#e8d0a0; }
+.bookmark-desc { font-size:0.72rem; color:#c0b090; line-height:1.4; margin-top:2px; }
 </style>
 </head>
 <body>
 
 <!-- ================================================================
+     开头动态封面
+     ================================================================ -->
+<div id="cover-overlay">
+  <div id="cover-particles"></div>
+  <div id="cover-title-wrap">
+    <div id="cover-main-title"></div>
+    <div id="cover-subtitle">宿 命 之 环</div>
+    <div id="cover-quote">
+      "多年以后，面对行刑队，<br>奥雷里亚诺·布恩迪亚上校<br>将会回想起父亲带他去见识冰块的<br>那个遥远的下午。"
+    </div>
+  </div>
+  <div id="cover-hint">触 碰 羊 皮 卷 开 始</div>
+</div>
+
+<!-- ================================================================
+     结尾致谢名单
+     ================================================================ -->
+<div id="credits-overlay">
+  <div id="credits-scroll">
+    <div style="height:30vh;"></div>
+    <div class="credits-title-lg">百年孤独</div>
+    <div class="credits-subtitle-sm">宿 命 之 环</div>
+    <div class="credits-divider"></div>
+    <div class="credits-section">
+      <div class="credits-role">原　　著</div>
+      <div class="credits-name">加夫列尔·加西亚·马尔克斯</div>
+    </div>
+    <div class="credits-divider"></div>
+    <div class="credits-section">
+      <div class="credits-role">游 戏 设 计</div>
+      <div class="credits-name">Vantchy & Deepseek</div>
+    </div>
+    <div class="credits-section">
+      <div class="credits-role">剧 本 改 编</div>
+      <div class="credits-name">Vantchy & Deepseek</div>
+    </div>
+    <div class="credits-section">
+      <div class="credits-role">程 序 开 发</div>
+      <div class="credits-name">Vantchy & Deepseek</div>
+    </div>
+    <div class="credits-section">
+      <div class="credits-role">关 卡 设 计</div>
+      <div class="credits-name">Vantchy & Deepseek</div>
+    </div>
+    <div class="credits-section">
+      <div class="credits-role">叙 事 系 统</div>
+      <div class="credits-name">Vantchy & Deepseek</div>
+    </div>
+    <div class="credits-divider"></div>
+    <div class="credits-section">
+      <div class="credits-role">美 术 风 格</div>
+      <div class="credits-name">Vantchy & Deepseek</div>
+    </div>
+    <div class="credits-section">
+      <div class="credits-role">UI / UX 设 计</div>
+      <div class="credits-name">Vantchy & Deepseek</div>
+    </div>
+    <div class="credits-section">
+      <div class="credits-role">字 体 排 版</div>
+      <div class="credits-name">Vantchy & Deepseek</div>
+    </div>
+    <div class="credits-divider"></div>
+    <div class="credits-section">
+      <div class="credits-role">音 乐 设 计</div>
+      <div class="credits-name">Vantchy & Deepseek</div>
+    </div>
+    <div class="credits-section">
+      <div class="credits-role">测 试 调 试</div>
+      <div class="credits-name">Vantchy & Deepseek</div>
+    </div>
+    <div class="credits-section">
+      <div class="credits-role">特 别 鸣 谢</div>
+      <div class="credits-name">Claude Code · 百年孤独全体读者</div>
+    </div>
+    <div class="credits-divider"></div>
+    <div class="credits-quote">
+      "注定要一百年孤独的家族<br>不会有第二次机会在大地上出现。"
+    </div>
+    <div class="credits-quote" style="margin-top:8px;font-size:0.8rem;color:var(--gold-dim);">
+      感谢你来过马孔多。<br>羊皮卷已经合上——但你的名字，<br>已经写在了最后一页的空白处。
+    </div>
+    <div style="height:20vh;"></div>
+  </div>
+  <button id="credits-restart" onclick="closeCredits()">重 新 翻 开 羊 皮 卷</button>
+</div>
+
+<!-- ================================================================
+     主菜单（全屏宿命感页面）
+     ================================================================ -->
+<div id="mainmenu-overlay">
+  <div id="mainmenu-particles"></div>
+  <div id="mainmenu-content">
+    <div class="mm-title-wrap">
+      <div class="mm-title">百 年 孤 独</div>
+      <div class="mm-subtitle">宿 命 之 环</div>
+    </div>
+
+    <!-- 大存档记录卡片 -->
+    <div class="mm-savecard" id="mm-savecard">
+      <div class="mm-savecard-title">📜 羊皮卷档案</div>
+      <div id="mm-saveinfo" style="font-size:0.78rem;color:#c0b090;line-height:1.8;">
+        尚无游玩记录
+      </div>
+    </div>
+
+    <!-- 菜单选项 -->
+    <div class="mm-options">
+      <button class="mm-btn mm-btn-primary" id="mm-btn-continue" onclick="continueFromMenu()">
+        <span class="mm-btn-icon">📖</span>
+        <span class="mm-btn-label">继续阅读</span>
+        <span class="mm-btn-hint">— 从上次停下的地方 —</span>
+      </button>
+      <button class="mm-btn" onclick="startNewGame()">
+        <span class="mm-btn-icon">🕯️</span>
+        <span class="mm-btn-label">重新开始</span>
+        <span class="mm-btn-hint">— 翻开新的羊皮卷 —</span>
+      </button>
+      <button class="mm-btn" onclick="openAchievementsPage()">
+        <span class="mm-btn-icon">🏆</span>
+        <span class="mm-btn-label">成就书签</span>
+        <span class="mm-btn-hint">— 旅途中的印记 —</span>
+      </button>
+      <button class="mm-btn" onclick="openBookmarksPage()">
+        <span class="mm-btn-icon">💎</span>
+        <span class="mm-btn-label">记忆碎片集</span>
+        <span class="mm-btn-hint">— 散落在各章节的光 —</span>
+      </button>
+      <button class="mm-btn" onclick="SettingsPanel.open();">
+        <span class="mm-btn-icon">⚙️</span>
+        <span class="mm-btn-label">设置</span>
+        <span class="mm-btn-hint">— 字体与音量 —</span>
+      </button>
+      <button class="mm-btn mm-btn-exit" onclick="exitToCover()">
+        <span class="mm-btn-icon">🚪</span>
+        <span class="mm-btn-label">回到封面</span>
+        <span class="mm-btn-hint">— 不删除任何记录 —</span>
+      </button>
+    </div>
+
+    <div class="mm-footer">— 注定要一百年孤独的家族，不会有第二次机会在大地上出现 —</div>
+  </div>
+</div>
+
+<!-- ================================================================
+     成就书签页
+     ================================================================ -->
+<div class="modal-overlay" id="achievements-overlay">
+  <div class="modal-panel" style="width:min(560px,94vw);max-height:80vh;overflow-y:auto;">
+    <div class="modal-title">🏆 成就书签</div>
+    <div id="achievements-grid" style="display:flex;flex-direction:column;gap:10px;"></div>
+    <div class="modal-actions" style="margin-top:16px;">
+      <button class="modal-btn modal-btn-primary" onclick="closeAchievements()">返回</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================
+     记忆碎片书签集
+     ================================================================ -->
+<div class="modal-overlay" id="bookmarks-overlay">
+  <div class="modal-panel" style="width:min(560px,94vw);max-height:80vh;overflow-y:auto;">
+    <div class="modal-title">💎 记忆碎片集</div>
+    <div id="bookmarks-grid" style="display:flex;flex-direction:column;gap:8px;"></div>
+    <div class="modal-actions" style="margin-top:16px;">
+      <button class="modal-btn modal-btn-primary" onclick="closeArchiveBookmarks()">返回</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================
      背景层
      ================================================================ -->
+<!-- 背景音频 -->
+<audio id="bgm-audio" loop preload="none" style="display:none;">
+  <source src="https://upload.wikimedia.org/wikipedia/commons/transcoded/3/3e/Recuerdos_de_la_Alhambra.ogg/Recuerdos_de_la_Alhambra.ogg.mp3" type="audio/mpeg">
+</audio>
+
 <div id="book-bg"></div>
 <div id="book-texture"></div>
 <div id="vignette"></div>
@@ -1110,6 +1627,7 @@ input[type="range"] {
         <span>宿命值：</span>
         <span id="fate-value" style="color: var(--fate-low)">0</span>
       </div>
+      <button class="top-btn" id="btn-menu" title="主菜单">📜</button>
       <button class="top-btn" id="btn-settings" title="设置">⚙️</button>
     </div>
   </div>
@@ -1214,12 +1732,6 @@ input[type="range"] {
       <span class="setting-label">背景音乐音量</span>
       <div class="setting-control">
         <input type="range" id="volume-slider" min="0" max="100" value="30">
-      </div>
-    </div>
-    <div class="setting-row">
-      <span class="setting-label">音效</span>
-      <div class="setting-control">
-        <div class="toggle-switch on" id="toggle-sfx"></div>
       </div>
     </div>
     <div class="modal-actions">
@@ -1645,6 +2157,7 @@ const GameState = {
     this.choiceLog = [];
     this.completedChapters = {};
     this.encounteredCharacters = [];
+    this._eraVisited = [];
   },
 
   /** 记录遇到的人物 */
@@ -1689,7 +2202,8 @@ const GameState = {
       choices: [...this.choices],
       choiceLog: [...this.choiceLog],
       completedChapters: {...this.completedChapters},
-      encounteredCharacters: [...this.encounteredCharacters]
+      encounteredCharacters: [...this.encounteredCharacters],
+      _eraVisited: [...(this._eraVisited || [])]
     };
   },
 
@@ -1706,6 +2220,7 @@ const GameState = {
     this.choiceLog = data.choiceLog || [];
     this.completedChapters = data.completedChapters || {};
     this.encounteredCharacters = data.encounteredCharacters || [];
+    this._eraVisited = data._eraVisited || [];
   }
 };
 
@@ -1879,6 +2394,19 @@ const GameEngine = {
   goToNextChapter() {
     // 标记当前章节完成
     GameState.markChapterCompleted(GameState.chapter);
+    // 追踪时代访问（序章选择记录）
+    if (GameState.chapter === 0) {
+      const lastChoice = GameState.choiceLog.length > 0 ? GameState.choiceLog[GameState.choiceLog.length - 1] : null;
+      if (lastChoice && lastChoice.targetChapter) {
+        if (!GameState._eraVisited) GameState._eraVisited = [];
+        if (!GameState._eraVisited.includes(lastChoice.targetChapter)) {
+          GameState._eraVisited.push(lastChoice.targetChapter);
+        }
+      }
+    }
+    // 检查成就并通知
+    checkAchievements();
+    checkAndNotifyAchievements();
     // 检查是否有待处理的targetChapter（序章时代选择）
     const lastChoice = GameState.choiceLog.length > 0 ? GameState.choiceLog[GameState.choiceLog.length - 1] : null;
     const nextChapter = (lastChoice && lastChoice.targetChapter) ? lastChoice.targetChapter : GameState.chapter + 1;
@@ -1998,6 +2526,7 @@ const StorageManager = {
     try {
       const data = GameState.toJSON();
       localStorage.setItem(this.AUTO_KEY, JSON.stringify(data));
+      updateBigSave();
       return true;
     } catch (e) {
       console.warn('自动存档失败:', e);
@@ -2272,11 +2801,10 @@ const Renderer = {
           const nextChapterData = chapters[nextChapterId];
 
           if (st.isFinalEnd) {
-            // 终章结束——提供重新开始选项
-            html += `<button class="next-btn" onclick="GameEngine.resetGame();StorageManager.clearAll();GameState.chapter=0;GameState.currentScene='void_awakening';GameState.history=['void_awakening'];populateChapterSelect();Renderer.render();">${st.nextLabel || '重新开始'}</button>`;
+            // 终章结束——显示致谢名单
+            html += `<button class="next-btn" onclick="showEndingCredits()">${st.nextLabel || '查看致谢名单'}</button>`;
             html += `<div style="text-align:center;margin-top:16px;font-style:italic;color:var(--gold-dim);font-size:0.85rem;">`;
-            html += `<p>羊皮卷已经合上。感谢你来过马孔多。</p>`;
-            html += `<p>任何时候——你都可以重新翻开第一页。</p>`;
+            html += `<p>羊皮卷已经合上。你走过了百年的孤独。</p>`;
             html += `</div>`;
           } else if (nextChapterData) {
             const enterLabel = '进入' + nextChapterData.title;
@@ -2667,7 +3195,6 @@ const SidebarManager = {
 const SettingsPanel = {
   fontSize: 'medium',
   volume: 30,
-  sfx: true,
 
   open() {
     document.getElementById('settings-overlay').classList.add('open');
@@ -2679,7 +3206,6 @@ const SettingsPanel = {
 
   setFontSize(size) {
     this.fontSize = size;
-    const body = document.body;
     const sizes = { small: '14px', medium: '17px', large: '20px' };
     const narrativeSizes = { small: '0.9rem', medium: '1.05rem', large: '1.2rem' };
 
@@ -2687,7 +3213,6 @@ const SettingsPanel = {
       btn.classList.toggle('active', btn.dataset.size === size);
     });
 
-    // 更新叙事段落字体
     document.querySelectorAll('.narrative-paragraph').forEach(el => {
       el.style.fontSize = narrativeSizes[size];
     });
@@ -2700,33 +3225,34 @@ const SettingsPanel = {
 
   setVolume(val) {
     this.volume = val;
+    BGM.setVolume(val);
     localStorage.setItem('settings_volume', val);
-  },
-
-  toggleSfx() {
-    this.sfx = !this.sfx;
-    document.getElementById('toggle-sfx').classList.toggle('on', this.sfx);
-    localStorage.setItem('settings_sfx', this.sfx);
   },
 
   loadSettings() {
     this.fontSize = localStorage.getItem('settings_fontSize') || 'medium';
     this.volume = parseInt(localStorage.getItem('settings_volume') || '30');
-    this.sfx = localStorage.getItem('settings_sfx') !== 'false';
 
     this.setFontSize(this.fontSize);
-    document.getElementById('volume-slider').value = this.volume;
-    document.getElementById('toggle-sfx').classList.toggle('on', this.sfx);
+    const slider = document.getElementById('volume-slider');
+    if (slider) slider.value = this.volume;
+    BGM.setVolume(this.volume);
   },
 
   resetGame() {
     if (confirm('确定要重置游戏吗？所有进度和存档（包括全部6个存档位）将被清除，此操作不可撤销。')) {
       GameEngine.resetGame();
       StorageManager.clearAll();
+      clearAchievements();
+      GameState.currentScene = 'void_awakening';
+      GameState.history = ['void_awakening'];
+      GameState.chapter = 0;
       populateChapterSelect();
       Renderer.render();
+      GameEngine.encounterChapterMembers();
+      showCover();
       this.close();
-      showToast('游戏已重置，所有存档已清除');
+      showToast('游戏已重置');
     }
   }
 };
@@ -2863,9 +3389,515 @@ const SaveLoadPanel = {
     }
   }
 };
+
+/* ================================================================
+   十一·附录、开头封面与结尾致谢
+   ================================================================ */
+
+/** 生成封面漂浮粒子 */
+function spawnCoverParticles() {
+  const container = document.getElementById('cover-particles');
+  if (!container) return;
+  const count = 40;
+  for (let i = 0; i < count; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'cover-particle';
+    particle.style.left = Math.random() * 100 + '%';
+    particle.style.animationDuration = (6 + Math.random() * 10) + 's';
+    particle.style.animationDelay = Math.random() * 5 + 's';
+    particle.style.width = (1 + Math.random() * 3) + 'px';
+    particle.style.height = particle.style.width;
+    container.appendChild(particle);
+  }
+}
+
+/** 逐字动画标题 */
+function animateCoverTitle() {
+  const titleEl = document.getElementById('cover-main-title');
+  if (!titleEl) return;
+  const text = '百 年 孤 独';
+  const chars = text.split('');
+  titleEl.innerHTML = '';
+  chars.forEach((ch, i) => {
+    const span = document.createElement('span');
+    span.className = 'char';
+    span.textContent = ch;
+    span.style.animationDelay = (1.0 + i * 0.18) + 's';
+    titleEl.appendChild(span);
+  });
+}
+
+/** 显示开头封面 */
+function showCover() {
+  const cover = document.getElementById('cover-overlay');
+  if (!cover) return;
+  cover.classList.remove('hidden');
+  spawnCoverParticles();
+  animateCoverTitle();
+  // 点击封面进入主菜单
+  cover.onclick = function() {
+    cover.classList.add('hidden');
+    showMainMenu();
+  };
+}
+
+/** 显示结尾致谢名单 */
+function showCredits() {
+  const overlay = document.getElementById('credits-overlay');
+  if (!overlay) return;
+  // 重置动画
+  const scroll = document.getElementById('credits-scroll');
+  if (scroll) {
+    scroll.style.animation = 'none';
+    scroll.offsetHeight; // reflow
+    scroll.style.animation = 'creditsRoll 25s linear forwards';
+  }
+  overlay.classList.add('show');
+  // 25秒后可点重新开始
+  setTimeout(() => {
+    const btn = document.getElementById('credits-restart');
+    if (btn) btn.style.pointerEvents = 'all';
+  }, 26000);
+}
+
+/** 关闭致谢名单并重置游戏 */
+function closeCredits() {
+  document.getElementById('credits-overlay').classList.remove('show');
+  GameEngine.resetGame();
+  StorageManager.clearAll();
+  GameState.chapter = 0;
+  GameState.currentScene = 'void_awakening';
+  GameState.history = ['void_awakening'];
+  populateChapterSelect();
+  Renderer.render();
+  GameEngine.encounterChapterMembers();
+  showCover();
+  showToast('羊皮卷重新翻开');
+}
+
+/* ================================================================
+   背景音乐控制
+   ================================================================ */
+const BGM = {
+  audio: null,
+  _started: false,
+
+  init() {
+    this.audio = document.getElementById('bgm-audio');
+    if (this.audio) {
+      this.audio.volume = SettingsPanel.volume / 100;
+      // 首次用户交互后开始播放
+    }
+  },
+
+  tryPlay() {
+    if (!this.audio || this._started) return;
+    const p = this.audio.play();
+    if (p && p.then) {
+      p.then(() => { this._started = true; }).catch(() => {});
+    }
+  },
+
+  setVolume(v) {
+    if (this.audio) this.audio.volume = v / 100;
+  }
+};
+
+/* ================================================================
+   成就系统
+   ================================================================ */
+const ACHIEVEMENTS = [
+  { id:'ach_first_choice', icon:'🎲', name:'最初的抉择', desc:'在第一章中做出第一个选择。',
+    cond: s => s.choiceLog.length >= 1 },
+  { id:'ach_ch1_done', icon:'📖', name:'宿命之环', desc:'完成第一章「宿命之环」，迈入马孔多的故事。',
+    cond: s => s.isChapterCompleted(1) },
+  { id:'ach_insomnia', icon:'🌙', name:'失眠症患者', desc:'完成第二章——遗忘比失眠更可怕。',
+    cond: s => s.isChapterCompleted(2) },
+  { id:'ach_magnets', icon:'🧲', name:'磁铁与执着', desc:'在第一章中选择拖着磁铁走进丛林寻找黄金。',
+    cond: s => s.tags.includes('执着勘探者') },
+  { id:'ach_family_man', icon:'🍲', name:'家庭的守望者', desc:'在关键选择中把家人放在第一位。',
+    cond: s => s.tags.includes('家庭的守望者') || s.tags.includes('家族支柱') },
+  { id:'ach_memory_keeper', icon:'💎', name:'记忆收藏家', desc:'累计解锁5枚记忆碎片。',
+    cond: s => s.memories.length >= 5 },
+  { id:'ach_memory_master', icon:'💠', name:'记忆大师', desc:'累计解锁10枚记忆碎片。',
+    cond: s => s.memories.length >= 10 },
+  { id:'ach_fate_low', icon:'🕊️', name:'命运的低语', desc:'有一章结束时宿命值处于低档（抗争者）。',
+    cond: s => { return true; } }, // always achievable — checked at chapter end
+  { id:'ach_fate_high', icon:'👁️', name:'宿命的重量', desc:'有一章结束时钟形值处于高档（见证者）。',
+    cond: s => { return true; } },
+  { id:'ach_war', icon:'⚔️', name:'战争的回声', desc:'完成第五章——经历奥雷里亚诺上校的战争与爱情。',
+    cond: s => s.isChapterCompleted(5) },
+  { id:'ach_rain', icon:'🌧️', name:'四年大雨', desc:'完成第十一章——在马孔多的泥泞中重新站立。',
+    cond: s => s.isChapterCompleted(11) },
+  { id:'ach_massacre', icon:'🕯️', name:'不灭的记忆', desc:'完成第十章——亲眼见证三千人大屠杀，并选择不遗忘。',
+    cond: s => s.isChapterCompleted(10) },
+  { id:'ach_ursula', icon:'👵', name:'乌尔苏拉之眼', desc:'完成第十二章——在失明中看清了整个家族的百年。',
+    cond: s => s.isChapterCompleted(12) },
+  { id:'ach_butterfly', icon:'🦋', name:'黄蝴蝶', desc:'完成第十三章——目送蝴蝶永远离开马孔多。',
+    cond: s => s.isChapterCompleted(13) },
+  { id:'ach_love', icon:'💕', name:'禁忌之爱', desc:'完成第十七章——直面羊皮卷上关于你自己的句子。',
+    cond: s => s.isChapterCompleted(17) },
+  { id:'ach_ant', icon:'🐜', name:'蚂蚁的行军', desc:'完成第十九章——见证最后一个布恩迪亚被蚂蚁带走。',
+    cond: s => s.isChapterCompleted(19) },
+  { id:'ach_full_circle', icon:'🌪️', name:'百年闭环', desc:'完成全部二十章——见证马孔多从诞生到被飓风抹去。',
+    cond: s => s.isChapterCompleted(20) },
+  { id:'ach_all_tags', icon:'🏅', name:'标签收集者', desc:'累计获得15个以上的标签。',
+    cond: s => s.tags.length >= 15 },
+  { id:'ach_rebel', icon:'🔥', name:'反抗者之路', desc:'在任意章节中累计反抗值超过3。',
+    cond: s => s.antiFateCounter >= 3 },
+  { id:'ach_three_eras', icon:'🔮', name:'三种视角', desc:'分别通过序章的三个时代入口进入过马孔多。',
+    cond: s => (s._eraVisited || []).length >= 3 }
+];
+
+// 追踪访问过的时代
+GameState._eraVisited = GameState._eraVisited || [];
+
+function checkAchievements() {
+  const unlocked = getUnlockedAchievements();
+  return unlocked;
+}
+
+function getUnlockedAchievements() {
+  const unlocked = [];
+  ACHIEVEMENTS.forEach(ach => {
+    if (ach.cond(GameState)) unlocked.push(ach.id);
+  });
+  // 持久化
+  const stored = JSON.parse(localStorage.getItem('cien_anos_achievements') || '[]');
+  const merged = [...new Set([...stored, ...unlocked])];
+  localStorage.setItem('cien_anos_achievements', JSON.stringify(merged));
+  return merged;
+}
+
+function isAchievementUnlocked(achId) {
+  const stored = JSON.parse(localStorage.getItem('cien_anos_achievements') || '[]');
+  return stored.includes(achId);
+}
+
+function clearAchievements() {
+  localStorage.removeItem('cien_anos_achievements');
+}
+
+/* ================================================================
+   大存档记录（独立于6槽位小存档）
+   ================================================================ */
+const BIG_SAVE_KEY = 'cien_anos_big_save';
+
+function getBigSave() {
+  try {
+    const raw = localStorage.getItem(BIG_SAVE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch(e) { return null; }
+}
+
+function updateBigSave() {
+  const data = {
+    totalPlayMinutes: (getBigSave()?.totalPlayMinutes || 0),
+    lastPlayed: new Date().toLocaleString('zh-CN'),
+    chaptersCompleted: Object.keys(GameState.completedChapters).filter(k => GameState.completedChapters[k]).length,
+    totalFateCurrent: GameState.fateCounter,
+    totalTags: GameState.tags.length,
+    totalMemories: GameState.memories.length,
+    currentChapter: GameState.chapter,
+    currentChapterTitle: getCurrentChapterData()?.title || '未知',
+    possessedChar: getCurrentChapterData()?.possessedCharacter || '未知'
+  };
+  localStorage.setItem(BIG_SAVE_KEY, JSON.stringify(data));
+}
+
+// 每分钟更新一次游玩时间
+let playTimeInterval = null;
+function startPlayTimeTracking() {
+  if (playTimeInterval) return;
+  playTimeInterval = setInterval(() => {
+    const save = getBigSave() || { totalPlayMinutes: 0 };
+    save.totalPlayMinutes = (save.totalPlayMinutes || 0) + 1;
+    localStorage.setItem(BIG_SAVE_KEY, JSON.stringify(save));
+  }, 60000);
+}
+
+/* ================================================================
+   主菜单（全屏）
+   ================================================================ */
+function spawnMainMenuParticles() {
+  const container = document.getElementById('mainmenu-particles');
+  if (!container) return;
+  container.innerHTML = '';
+  for (let i = 0; i < 25; i++) {
+    const p = document.createElement('div');
+    p.className = 'cover-particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDuration = (8 + Math.random() * 14) + 's';
+    p.style.animationDelay = Math.random() * 6 + 's';
+    p.style.width = (1 + Math.random() * 2.5) + 'px';
+    p.style.height = p.style.width;
+    container.appendChild(p);
+  }
+}
+
+function refreshBigSaveCard() {
+  const card = document.getElementById('mm-saveinfo');
+  const continueBtn = document.getElementById('mm-btn-continue');
+  if (!card) return;
+  const save = getBigSave();
+  const hasAutosave = StorageManager.hasAutoSave();
+  if (save && hasAutosave) {
+    const hours = Math.floor((save.totalPlayMinutes || 0) / 60);
+    const mins = (save.totalPlayMinutes || 0) % 60;
+    const timeStr = hours > 0 ? hours + '小时' + mins + '分钟' : mins + '分钟';
+    card.innerHTML = `
+      <div>📖 当前进度：<strong style="color:var(--gold-light);">${save.currentChapterTitle || '未知'}</strong></div>
+      <div>👤 附身角色：${save.possessedChar || '—'}</div>
+      <div>⭐ 宿命值：${save.totalFateCurrent || 0}　🏷️ 标签：${save.totalTags || 0}　💎 记忆：${save.totalMemories || 0}</div>
+      <div>📅 上次游玩：${save.lastPlayed || '—'}　⏱️ 累计时长：${timeStr}</div>
+      <div>📚 已完成章节：${save.chaptersCompleted || 0} / 21</div>
+    `;
+    if (continueBtn) continueBtn.disabled = false;
+  } else if (hasAutosave) {
+    card.innerHTML = '<div style="color:#c0b090;">检测到游玩记录，但档案数据不完整</div>';
+    if (continueBtn) continueBtn.disabled = false;
+  } else {
+    card.innerHTML = '<div style="color:#6a5a48;font-style:italic;">尚无游玩记录<br>选择「重新开始」翻开羊皮卷的第一页</div>';
+    if (continueBtn) continueBtn.disabled = true;
+  }
+}
+
+function showMainMenu() {
+  const overlay = document.getElementById('mainmenu-overlay');
+  if (!overlay) return;
+  spawnMainMenuParticles();
+  refreshBigSaveCard();
+  overlay.classList.add('open');
+  // 重置动画
+  const content = document.getElementById('mainmenu-content');
+  if (content) {
+    content.style.animation = 'none';
+    content.offsetHeight;
+    content.style.animation = 'mmFadeUp 0.8s ease forwards';
+  }
+}
+
+function hideMainMenu() {
+  document.getElementById('mainmenu-overlay').classList.remove('open');
+}
+
+function continueFromMenu() {
+  if (!StorageManager.hasAutoSave()) {
+    showToast('没有可读取的存档');
+    return;
+  }
+  const loaded = StorageManager.autoLoad();
+  if (!loaded) { showToast('读档失败'); return; }
+  hideMainMenu();
+  document.getElementById('cover-overlay').classList.add('hidden');
+  populateChapterSelect();
+  Renderer.render();
+  updateBigSave();
+  startPlayTimeTracking();
+}
+
+function startNewGame() {
+  if (StorageManager.hasAutoSave()) {
+    if (!confirm('开始新游戏将覆盖所有进度（成就和书签保留）。确定继续？')) return;
+  }
+  GameEngine.resetGame();
+  StorageManager.clearAll();
+  GameState.chapter = 0;
+  GameState.currentScene = 'void_awakening';
+  GameState.history = ['void_awakening'];
+  hideMainMenu();
+  document.getElementById('cover-overlay').classList.add('hidden');
+  populateChapterSelect();
+  Renderer.render();
+  GameEngine.encounterChapterMembers();
+  updateBigSave();
+  startPlayTimeTracking();
+  showToast('羊皮卷已翻开——新的命运等待着你');
+}
+
+function exitToCover() {
+  hideMainMenu();
+  showCover();
+}
+
+function openMainMenu() {
+  updateBigSave();
+  refreshBigSaveCard();
+  showMainMenu();
+}
+
+function openAchievementsPage() {
+  const grid = document.getElementById('achievements-grid');
+  if (!grid) return;
+  const unlockedIds = getUnlockedAchievements();
+  let html = '';
+  ACHIEVEMENTS.forEach(ach => {
+    const unlocked = unlockedIds.includes(ach.id);
+    html += `
+      <div class="achievement-card ${unlocked ? 'unlocked' : 'locked'}">
+        <div class="ach-icon">${unlocked ? ach.icon : '🔒'}</div>
+        <div class="ach-info">
+          <div class="ach-name">${ach.name}</div>
+          <div class="ach-desc">${ach.desc}</div>
+          <div class="ach-status ${unlocked ? 'unlocked' : 'locked'}">${unlocked ? '✦ 已解锁' : '— 尚未达成'}</div>
+        </div>
+      </div>`;
+  });
+  grid.innerHTML = html || '<div style="color:var(--gold-dim);text-align:center;padding:20px;">暂无成就定义</div>';
+  document.getElementById('achievements-overlay').classList.add('open');
+}
+
+function closeAchievements() {
+  document.getElementById('achievements-overlay').classList.remove('open');
+}
+
+function openBookmarksPage() {
+  const grid = document.getElementById('bookmarks-grid');
+  if (!grid) return;
+  const sortedIds = Object.keys(chapters).sort((a, b) => chapters[a].chapterNumber - chapters[b].chapterNumber);
+  let html = '';
+  sortedIds.forEach(chId => {
+    const ch = chapters[chId];
+    if (!ch.memories || Object.keys(ch.memories).length === 0) return;
+    html += `<div style="font-family:var(--font-title);font-size:0.72rem;color:var(--gold-dim);margin:10px 0 4px;letter-spacing:0.06em;padding-bottom:3px;border-bottom:1px solid rgba(184,137,62,0.1);">${ch.title}</div>`;
+    Object.values(ch.memories).forEach(mem => {
+      const unlocked = GameState.memories.includes(mem.id);
+      html += `
+        <div class="bookmark-card ${unlocked ? 'unlocked' : 'locked'}">
+          <div class="bookmark-icon">${unlocked ? '💎' : '🔒'}</div>
+          <div class="bookmark-info">
+            <div class="bookmark-chapter">第${ch.chapterNumber}章</div>
+            <div class="bookmark-title">${mem.title}</div>
+            <div class="bookmark-desc">${unlocked ? mem.description : '尚未解锁……做出不同的选择来发现这段记忆。'}</div>
+          </div>
+        </div>`;
+    });
+  });
+  if (GameState.memories.length === 0) {
+    html = '<div style="color:var(--gold-dim);text-align:center;padding:20px;font-style:italic;">尚未收集任何记忆碎片。<br>在游戏中做出选择来收集它们。</div>' + html;
+  }
+  grid.innerHTML = html;
+  document.getElementById('bookmarks-overlay').classList.add('open');
+}
+
+function closeArchiveBookmarks() {
+  document.getElementById('bookmarks-overlay').classList.remove('open');
+}
+
+/* ================================================================
+   成就解锁通知
+   ================================================================ */
+let _lastAchievementCheck = [];
+
+function checkAndNotifyAchievements() {
+  const current = getUnlockedAchievements();
+  const newly = current.filter(id => !_lastAchievementCheck.includes(id));
+  _lastAchievementCheck = current;
+  newly.forEach(id => {
+    const ach = ACHIEVEMENTS.find(a => a.id === id);
+    if (ach) {
+      setTimeout(() => {
+        const toast = document.getElementById('toast');
+        if (toast) {
+          toast.innerHTML = `<span style="font-size:1.2rem;">${ach.icon}</span> 成就解锁：<strong>${ach.name}</strong>`;
+          toast.classList.add('show');
+          if (toast._timer) clearTimeout(toast._timer);
+          toast._timer = setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+      }, 1000);
+    }
+  });
+}
+
+// 初始化成就检查列表
+function initAchievementTracking() {
+  _lastAchievementCheck = getUnlockedAchievements();
+}
+
+/* ================================================================
+   终章评价系统
+   ================================================================ */
+function calculateTotalFate() {
+  let total = 0;
+  for (let i = 1; i <= 20; i++) {
+    // approximate: fate from each completed chapter
+    // use stored choiceLog per chapter from tags/memories
+    total += GameState.fateCounter; // current chapter's fate only
+  }
+  // 用标签数和记忆数近似
+  const tagFate = GameState.tags.length * 1.5;
+  const memFate = GameState.memories.length * 0.5;
+  return Math.round(GameState.fateCounter + tagFate + memFate);
+}
+
+function getEndingEvaluation() {
+  const total = calculateTotalFate();
+  const chaptersDone = Object.keys(GameState.completedChapters).length;
+  const tags = GameState.tags.length;
+  const memories = GameState.memories.length;
+
+  if (chaptersDone <= 5) {
+    return {
+      title: '浅尝辄止的旅人',
+      color: '#8a9a8a',
+      quote: '你只翻开了羊皮卷的前几页——马孔多的故事还很长。当你准备好时，栗树下的老人仍在等你。',
+    };
+  }
+  if (total <= 10) {
+    return {
+      title: '宿命抗争者',
+      color: 'var(--fate-low)',
+      quote: '你走过了马孔多的街道，但从未真正走进任何一扇门。百年孤独不是关于命运——是关于在命运面前，你是否还敢选择去爱。',
+    };
+  }
+  if (total <= 20) {
+    return {
+      title: '命运的共行者',
+      color: 'var(--fate-mid)',
+      quote: '你在宿命与自由之间找到了自己的步伐。你知道有些事早已写好在羊皮卷上——但你仍然选择了用自己的手去触碰每一块冰、每一只蝴蝶、每一个在走廊尽头等着你的人。',
+    };
+  }
+  if (total <= 30) {
+    return {
+      title: '羊皮卷的合著者',
+      color: 'var(--fate-high)',
+      quote: '你已经不是读者了——你是这卷羊皮纸上的最后一个名字。梅尔基亚德斯写下了一切，但他没有写你会怎么读。你用自己的选择在每一个句号之间种下了新的逗号。',
+    };
+  }
+  return {
+    title: '百年孤独的见证者',
+    color: 'var(--gold-light)',
+    quote: '你活过了一百年。不是作为布恩迪亚——是作为你自己。你记得磁铁的刮擦声、冰块的融化、枪口的硝烟、黄蝴蝶的翅膀、四年大雨的每一滴水。马孔多被飓风抹去了——但它在你的记忆里比任何现实都更坚固。这是羊皮卷无法预言的——一个读者把一本书活成了自己的生命。',
+  };
+}
+
+function showEndingCredits() {
+  const evalData = getEndingEvaluation();
+  // 修改致谢名单中的评价区
+  const scroll = document.getElementById('credits-scroll');
+  if (scroll) {
+    // 在滚动开头插入评价
+    const evalHTML = `
+      <div style="height:25vh;"></div>
+      <div style="font-family:var(--font-title);font-size:1rem;color:${evalData.color};letter-spacing:0.12em;margin-bottom:8px;">
+        — ${evalData.title} —
+      </div>
+      <div class="credits-quote" style="margin-bottom:40px;font-size:0.85rem;color:${evalData.color};">
+        ${evalData.quote}
+      </div>
+      <div class="credits-divider"></div>
+    `;
+    // 在开头插入
+    const existing = scroll.innerHTML;
+    scroll.innerHTML = evalHTML + existing.replace(/<div style="height:30vh;"><\/div>/, '<div style="height:5vh;"></div>');
+  }
+  showCredits();
+}
+
 function init() {
   // 加载设置
   SettingsPanel.loadSettings();
+  BGM.init();
 
   // 尝试读取自动存档
   const hasSave = StorageManager.hasAutoSave();
@@ -2882,25 +3914,52 @@ function init() {
   // 渲染初始场景
   Renderer.render();
 
-  // 全新开始：遇到初始章节人物
+  // 全新开始：遇到初始章节人物 + 显示封面
   if (!hasSave) {
     GameEngine.encounterChapterMembers();
+    showCover();
+  } else {
+    // 有存档：隐藏封面和主菜单，直接进入游戏
+    document.getElementById('cover-overlay').classList.add('hidden');
+    document.getElementById('mainmenu-overlay').classList.remove('open');
+    startPlayTimeTracking();
   }
 
-  // 设置按钮事件
+  // 初始化成就追踪
+  initAchievementTracking();
+
+  // === 事件绑定 ===
+
+  // 主菜单按钮（游戏内点退出）
+  document.getElementById('btn-menu').addEventListener('click', () => {
+    updateBigSave();
+    refreshBigSaveCard();
+    showMainMenu();
+  });
+  document.getElementById('mainmenu-overlay').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeMainMenu();
+  });
+  document.getElementById('achievements-overlay').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeAchievements();
+  });
+  document.getElementById('bookmarks-overlay').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeArchiveBookmarks();
+  });
+
+  // 设置
   document.getElementById('btn-settings').addEventListener('click', () => SettingsPanel.open());
   document.getElementById('btn-close-settings').addEventListener('click', () => SettingsPanel.close());
   document.getElementById('settings-overlay').addEventListener('click', (e) => {
     if (e.target === e.currentTarget) SettingsPanel.close();
   });
 
-  // 存档/读档面板事件
+  // 存档/读档
   document.getElementById('btn-close-saveload').addEventListener('click', () => SaveLoadPanel.close());
   document.getElementById('saveload-overlay').addEventListener('click', (e) => {
     if (e.target === e.currentTarget) SaveLoadPanel.close();
   });
 
-  // 字体大小按钮
+  // 字体大小
   document.querySelectorAll('.font-size-btn').forEach(btn => {
     btn.addEventListener('click', () => SettingsPanel.setFontSize(btn.dataset.size));
   });
@@ -2910,68 +3969,58 @@ function init() {
     SettingsPanel.setVolume(parseInt(e.target.value));
   });
 
-  // 音效开关
-  document.getElementById('toggle-sfx').addEventListener('click', () => {
-    SettingsPanel.toggleSfx();
-  });
-
   // 重置游戏
   document.getElementById('btn-reset-game').addEventListener('click', () => SettingsPanel.resetGame());
 
-  // 底部栏按钮 — 存档/读档改为打开槽位面板
-  document.getElementById('btn-save').addEventListener('click', () => {
-    SaveLoadPanel.open('save');
-  });
-
-  document.getElementById('btn-load').addEventListener('click', () => {
-    SaveLoadPanel.open('load');
-  });
-
+  // 底部栏
+  document.getElementById('btn-save').addEventListener('click', () => SaveLoadPanel.open('save'));
+  document.getElementById('btn-load').addEventListener('click', () => SaveLoadPanel.open('load'));
   document.getElementById('btn-family-tree').addEventListener('click', () => SidebarManager.openFamilyTree());
   document.getElementById('btn-archives').addEventListener('click', () => SidebarManager.openArchives());
   document.getElementById('btn-profile').addEventListener('click', () => SidebarManager.openProfile());
   document.getElementById('btn-relations').addEventListener('click', () => SidebarManager.openRelations());
 
-  // 侧边栏关闭按钮
+  // 侧边栏关闭
   document.getElementById('close-family').addEventListener('click', () => SidebarManager.closeFamilyTree());
   document.getElementById('close-archives').addEventListener('click', () => SidebarManager.closeArchives());
   document.getElementById('close-profile').addEventListener('click', () => SidebarManager.closeProfile());
   document.getElementById('close-relations').addEventListener('click', () => SidebarManager.closeRelations());
-
-  // 关系查询按钮
   document.getElementById('btn-query-relation').addEventListener('click', () => SidebarManager.queryRelation());
 
-  // 侧边栏遮罩点击关闭
+  // 侧边栏遮罩
   document.getElementById('sidebar-family-overlay').addEventListener('click', () => SidebarManager.closeFamilyTree());
   document.getElementById('sidebar-archives-overlay').addEventListener('click', () => SidebarManager.closeArchives());
   document.getElementById('sidebar-profile-overlay').addEventListener('click', () => SidebarManager.closeProfile());
   document.getElementById('sidebar-relations-overlay').addEventListener('click', () => SidebarManager.closeRelations());
 
+  // BGM：首次用户交互时开始播放
+  const startBGM = () => { BGM.tryPlay(); };
+  document.body.addEventListener('click', startBGM, { once: true });
+  document.body.addEventListener('keydown', startBGM, { once: true });
+
   // 键盘导航
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-      // 关闭所有侧边栏和设置
       SidebarManager.closeFamilyTree();
       SidebarManager.closeArchives();
       SidebarManager.closeProfile();
       SidebarManager.closeRelations();
       SettingsPanel.close();
       SaveLoadPanel.close();
+      hideMainMenu();
+      closeAchievements();
+      closeArchiveBookmarks();
     }
-    // 1/2/3 快捷选择
     if (e.key === '1' || e.key === '2' || e.key === '3') {
       const scene = GameEngine.getCurrentScene();
       if (scene && scene.type === 'choice' && scene.choices) {
         const idx = parseInt(e.key) - 1;
-        if (scene.choices[idx]) {
-          handleChoice(scene.choices[idx].id);
-        }
+        if (scene.choices[idx]) handleChoice(scene.choices[idx].id);
       }
     }
   });
 
   console.log('《百年孤独 · 宿命之环》已就绪');
-  console.log('按 1/2/3 键选择选项，按 Esc 关闭面板');
 }
 
 // 启动
