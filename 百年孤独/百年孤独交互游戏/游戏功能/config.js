@@ -256,5 +256,88 @@ const ACHIEVEMENTS = [
   { id:'ach_rebel', icon:'🔥', name:'反抗者之路', desc:'在任意章节中累计反抗值超过3。',
     cond: s => s.antiFateCounter >= 3 },
   { id:'ach_three_eras', icon:'🔮', name:'三种视角', desc:'分别通过序章的三个时代入口进入过马孔多。',
-    cond: s => (s._eraVisited || []).length >= 3 }
+    cond: s => (s._eraVisited || []).length >= 3 },
+  /* 可玩性增强：新成就 */
+  { id:'ach_alt_path', icon:'📜', name:'羊皮卷的另一页', desc:'在结算时阅读过一次"另一种可能"。',
+    cond: s => (s._altNarrativeSeen || false) },
+  { id:'ach_clue_finder', icon:'🔍', name:'线索猎人', desc:'使用一条线索碎片解锁了隐藏选项。',
+    cond: s => (s._secretOptionChosen || false) },
+  { id:'ach_rebel_ending', icon:'🔥', name:'宿命反抗者', desc:'以反抗者的身份抵达终章——你改写了一行羊皮卷。',
+    cond: s => s._endingType === 'rebel' },
+  { id:'ach_witness_ending', icon:'👁️', name:'宿命见证者', desc:'以见证者的身份抵达终章——你理解了命运的必然。',
+    cond: s => s._endingType === 'witness' },
+  { id:'ach_bystander_ending', icon:'🍂', name:'宿命旁观者', desc:'以旁观者的身份抵达终章——你只是路过这百年。',
+    cond: s => s._endingType === 'bystander' },
+  { id:'ach_bond_master', icon:'🤝', name:'羁绊之人', desc:'与任意角色的关系值达到至交（≥85）。',
+    cond: s => Object.values(s.relationships || {}).some(v => v >= 85) },
+  { id:'ach_explorer', icon:'🗺️', name:'马孔多的探索者', desc:'在探索场景中发现过所有热点。',
+    cond: s => (s._allHotspotsFound || false) },
+  { id:'ach_second_playthrough', icon:'🔄', name:'轮回之人', desc:'完成第二次通关——你再次回到了马孔多。',
+    cond: s => (s.playthroughCount || 0) >= 2 },
+  { id:'ach_marginalia_reader', icon:'✍️', name:'边缘的读者', desc:'累计阅读过10条边缘文字。',
+    cond: s => (s._marginaliaRead || 0) >= 10 }
 ];
+
+/* ---- 结局定义注册表（数据驱动，章节数据可覆盖） ---- */
+const ENDING_DEFS = {
+  rebel: {
+    id: 'rebel',
+    title: '宿命反抗者',
+    color: 'var(--fate-low)',
+    condition: function(state) {
+      return state.antiFateCounter >= 5 && state.getFateLevel().level === '宿命抗争者';
+    },
+    initialScene: 'epilogue_rebel',
+    summary: '你用尽全力与命运搏斗。飓风中你抓住一块羊皮卷碎片——上面有一行字，不是梅尔基亚德斯写的。是你自己写的。'
+  },
+  witness: {
+    id: 'witness',
+    title: '宿命见证者',
+    color: 'var(--fate-high)',
+    condition: function(state) {
+      return state.memories.length >= 10;
+    },
+    initialScene: 'epilogue_witness',
+    summary: '你理解了命运的必然。临终前，你与梅尔基亚德斯对坐，他合上羊皮卷——"你已经读完了。"'
+  },
+  bystander: {
+    id: 'bystander',
+    title: '宿命旁观者',
+    color: 'var(--fate-mid)',
+    condition: function(state) {
+      return true; // 默认兜底结局
+    },
+    initialScene: 'epilogue_bystander',
+    summary: '你只是一个在时间里走过的人。蚂蚁带走最后一个布恩迪亚时你站在门外——"我见证过，仅此而已。"'
+  }
+};
+
+/** 根据当前游戏状态决定终章结局类型 */
+function determineEnding(state) {
+  // 按优先级检查条件：反抗者 > 见证者 > 旁观者
+  if (ENDING_DEFS.rebel.condition(state)) return 'rebel';
+  if (ENDING_DEFS.witness.condition(state)) return 'witness';
+  return 'bystander';
+}
+
+/* ---- 附身角色情绪状态注册表（数据驱动，章节数据可扩展） ---- */
+const CHAPTER_MOODS = {};
+// 用法：章节数据中通过 registerChapter 注册时自动合并
+// 结构：{ chapterId: { sceneId: '情绪文案', ... } }
+// 也可以在 chapters-data 中通过 moods 字段直接定义
+
+/** 获取当前场景的情绪状态文案 */
+function getCurrentMood(chapterId, sceneId) {
+  const chapterMoods = CHAPTER_MOODS[chapterId];
+  if (!chapterMoods) return null;
+  return chapterMoods[sceneId] || null;
+}
+
+/** 注册章节情绪状态（由 registerChapter 内部调用） */
+function registerChapterMoods(chapterId, moods) {
+  if (!moods || Object.keys(moods).length === 0) return;
+  if (!CHAPTER_MOODS[chapterId]) {
+    CHAPTER_MOODS[chapterId] = {};
+  }
+  Object.assign(CHAPTER_MOODS[chapterId], moods);
+}

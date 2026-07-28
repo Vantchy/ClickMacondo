@@ -15,6 +15,11 @@ registerChapter({
   chapterNumber: 0,
   preview: '',
   nextLabel: '',
+  moods: {
+    'void_awakening': '悬浮于虚空 —— 没有身体，只有感知，如一粒尚未落定的尘埃',
+    'colors_unfold': '颜色正在展开 —— 你嗅到了河水、泥土和某种烧焦的甜腥味',
+    'era_choice': '站在时间的岔路口 —— 三卷羊皮纸摊开，每一页都是百年'
+  },
   scenes: {
     /* 虚无中醒来 */
     void_awakening: {
@@ -36,6 +41,7 @@ registerChapter({
           '他走向你，伸出手来。指尖所到之处，黑暗开始有了颜色。'
         ]
       },
+      marginalia: { text: '第一页第一行。读到这里时我停了下来——我不确定自己准备好面对这一百年的重量。', style: 'whisper' },
       choices: null, nextScene: 'colors_unfold'
     },
 
@@ -74,24 +80,28 @@ registerChapter({
         ],
         transition: '选择你要进入的时代——'
       },
+      marginalia: { text: '三个入口——三条通往同一间屋子的走廊。无论你从哪扇门进，栗树都在那里等你。', style: 'echo' },
       choices: [
         {
           id: 'era_a', label: '建村之初',
           description: '降临在建村之初，附身于何塞·阿尔卡蒂奥·布恩迪亚。从吉卜赛人到冰块，完整经历马孔多的百年命运。',
           nextScene: 'era_a_narrative',
-          effects: { tags: ['从头开始'], fate: 0, memory: null, targetChapter: 1 }
+          effects: { tags: ['从头开始'], fate: 0, memory: null, targetChapter: 1 },
+          alternativeNarrative: '若你选择从家族鼎盛开始——你将错过磁铁在手中嗡鸣的那个早晨。何塞·阿尔卡蒂奥·布恩迪亚会独自拖着磁铁走进丛林，乌尔苏拉站在门口，手叉着腰——这个画面永远只存在于羊皮卷的前几页。'
         },
         {
           id: 'era_b', label: '家族鼎盛',
           description: '降临在家族最辉煌的时刻，附身于奥雷里亚诺。见证失眠症瘟疫、丽贝卡的到来与钢琴曲的忧伤。',
           nextScene: 'era_b_narrative',
-          effects: { tags: ['中途降临'], fate: 0, memory: null, targetChapter: 2 }
+          effects: { tags: ['中途降临'], fate: 0, memory: null, targetChapter: 2 },
+          alternativeNarrative: '若你选择从建村之初开始——你将赤脚踩在马孔多最初的泥地上。那二十多间芦竹房子在河岸边排开时，还没有人知道失眠症、战争和香蕉公司会长成后来那么多的鬼魂。'
         },
         {
           id: 'era_c', label: '战争年代',
           description: '降临在战争爆发的前夜，附身于奥雷里亚诺上校。站在自由党和保守党之间，手握一封信和一把枪。',
           nextScene: 'era_c_narrative',
-          effects: { tags: ['战争降临者'], fate: 0, memory: null, targetChapter: 5 }
+          effects: { tags: ['战争降临者'], fate: 0, memory: null, targetChapter: 5 },
+          alternativeNarrative: '若你选择从战争年代开始——你将直接从枪口下理解"孤独"的含义。但你将错过冰块、失眠症和自动钢琴——那些让战争之所以成为战争的事物。'
         }
       ],
       settlement: 'prologue_end'
@@ -161,7 +171,8 @@ registerChapter({
       settlement: {
         summary: '序章完成。你选择了进入马孔多的时代。这不是选择的结束——而是所有选择的开始。羊皮卷已经翻开。你准备好了吗？',
         isChapterEnd: true,
-        nextLabel: '进入你的时代'
+        nextLabel: '进入你的时代',
+        fateForecast: '梅尔基亚德斯在羊皮卷第一页的空白处写道："一百年后，飓风将从同一个方向吹来——带走一切。你此刻的选择，决定你在飓风中站在哪里。"'
       }
     }
   },

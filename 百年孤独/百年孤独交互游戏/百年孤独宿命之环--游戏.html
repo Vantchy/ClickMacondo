@@ -205,8 +205,9 @@
     <div class="top-item">
       <select id="chapter-select"></select>
     </div>
-    <div class="top-item">
+    <div class="top-item" style="flex-direction:column;align-items:center;gap:0;">
       <span id="progress-label">序章</span>
+      <span id="mood-label" class="mood-label"></span>
     </div>
     <div class="top-item">
       <div id="fate-display">
@@ -349,9 +350,9 @@
      JavaScript 模块（按依赖顺序加载）
      ================================================================ -->
 <!-- 1. 无依赖的配置 -->
-<script src="js/config.js"></script>
+<script src="游戏功能/config.js"></script>
 <!-- 2. 章节注册（依赖 config） -->
-<script src="js/chapter-registry.js"></script>
+<script src="游戏功能/chapter-registry.js"></script>
 <!-- 3. 章节数据（依赖 chapter-registry 的 registerChapter） -->
 <script src="chapters-data-1.js"></script>
 <script src="chapters-data.js"></script>
@@ -360,23 +361,23 @@
 <script src="chapters-data-4.js"></script>
 <script src="chapters-data-5.js"></script>
 <!-- 4. 游戏状态（依赖 chapter-registry） -->
-<script src="js/game-state.js"></script>
+<script src="游戏功能/game-state.js"></script>
 <!-- 5. 成就系统（依赖 config + game-state） -->
-<script src="js/achievements.js"></script>
+<script src="游戏功能/achievements.js"></script>
 <!-- 6. UI 工具（函数定义，惰性调用） -->
-<script src="js/ui.js"></script>
+<script src="游戏功能/ui.js"></script>
 <!-- 7. 存档管理（依赖 game-state + ui） -->
-<script src="js/storage.js"></script>
+<script src="游戏功能/storage.js"></script>
 <!-- 8. 游戏引擎（依赖 game-state + storage + ui） -->
-<script src="js/game-engine.js"></script>
+<script src="游戏功能/game-engine.js"></script>
 <!-- 9. 渲染器（依赖 game-state + engine） -->
-<script src="js/renderer.js"></script>
+<script src="游戏功能/renderer.js"></script>
 <!-- 10. 侧边栏（依赖 game-state + chapter-registry） -->
-<script src="js/sidebar.js"></script>
+<script src="游戏功能/sidebar.js"></script>
 <!-- 11. 设置面板（依赖 engine + storage + achievements + ui） -->
-<script src="js/settings.js"></script>
+<script src="游戏功能/settings.js"></script>
 <!-- 12. 应用入口（依赖所有模块） -->
-<script src="js/app.js"></script>
+<script src="游戏功能/app.js"></script>
 
 </body>
 </html>

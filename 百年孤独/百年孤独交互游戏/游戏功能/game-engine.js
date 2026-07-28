@@ -45,6 +45,25 @@ const GameEngine = {
       GameState.memories.push(choice.effects.memory);
     }
 
+    // 可玩性增强：处理关系值变化
+    if (choice.effects.relationshipEffects) {
+      Object.entries(choice.effects.relationshipEffects).forEach(([charName, delta]) => {
+        GameState.adjustRelationship(charName, delta, choice.label);
+      });
+    }
+
+    // 可玩性增强：处理角色标记（跨章节条件追踪）
+    if (choice.effects.characterFlags) {
+      Object.entries(choice.effects.characterFlags).forEach(([flagName, amount]) => {
+        GameState.incrementFlag(flagName, amount);
+      });
+    }
+
+    // 可玩性增强：追踪秘密选项使用
+    if (choice.isSecretOption || choice.requiredMemory) {
+      GameState._secretOptionChosen = true;
+    }
+
     // 先跳转到分支叙事
     const nextSceneId = choice.nextScene;
     GameState.history.push(nextSceneId);
@@ -130,7 +149,15 @@ const GameEngine = {
       // 前进到紧邻的下一章（仅当当前章节已完成）
       if (chapterNum === GameState.chapter + 1 && GameState.isChapterCompleted(GameState.chapter)) {
         GameState.chapter = chapterNum;
-        GameState.currentScene = chapterData.initialScene;
+        // 可玩性增强：终章结局路由
+        let initialScene = chapterData.initialScene;
+        if (chapterNum === 21 && GameState._endingType && typeof ENDING_DEFS !== 'undefined') {
+          const endingDef = ENDING_DEFS[GameState._endingType];
+          if (endingDef && endingDef.initialScene && chapterData.scenes[endingDef.initialScene]) {
+            initialScene = endingDef.initialScene;
+          }
+        }
+        GameState.currentScene = initialScene;
         GameState.round = 0;
         GameState.history = [chapterData.initialScene];
         GameState.choices = [];
@@ -178,7 +205,19 @@ const GameEngine = {
     checkAndNotifyAchievements();
     // 检查是否有待处理的targetChapter（序章时代选择）
     const lastChoice = GameState.choiceLog.length > 0 ? GameState.choiceLog[GameState.choiceLog.length - 1] : null;
-    const nextChapter = (lastChoice && lastChoice.targetChapter) ? lastChoice.targetChapter : GameState.chapter + 1;
+    let nextChapter = (lastChoice && lastChoice.targetChapter) ? lastChoice.targetChapter : GameState.chapter + 1;
+
+    // 可玩性增强：终章结局路由
+    if (nextChapter === 21) {
+      const endingType = (typeof determineEnding === 'function') ? determineEnding(GameState) : 'bystander';
+      GameState._endingType = endingType;
+      // 标记游戏通关
+      GameState.markGameCompleted();
+      // 检查是否所有章节已完成（真结局条件之一）
+      const allChaptersDone = Object.keys(GameState.completedChapters).length >= 20;
+      GameState._allChaptersDone = allChaptersDone;
+    }
+
     return this.switchToChapter(nextChapter);
   },
 
@@ -241,6 +280,13 @@ const GameEngine = {
       });
     }
 
+    // 可玩性增强：为所有遇到的角色初始化关系值
+    if (GameState.encounteredCharacters && GameState.encounteredCharacters.length > 0) {
+      GameState.encounteredCharacters.forEach(name => {
+        GameState.initRelationship(name);
+      });
+    }
+
     // 批量通知
     if (newEncounters.length > 0) {
       setTimeout(() => {
@@ -272,5 +318,50 @@ const GameEngine = {
   resetGame() {
     GameState.reset();
     StorageManager.clearAll();
+  },
+
+  /** 可玩性增强：根据已收集的记忆碎片过滤可见选项
+   *  @param {object} scene — 选择场景对象
+   *  @returns {array} 过滤后的选项列表（仅保留条件满足的）
+   */
+  filterChoicesByMemories(scene) {
+    if (!scene || scene.type !== 'choice' || !scene.choices) return [];
+    return scene.choices.filter(choice => {
+      // 没有 requiredMemory 条件 → 总是可见
+      if (!choice.requiredMemory) return true;
+      // 有 requiredMemory 条件 → 检查是否持有
+      return GameState.memories.includes(choice.requiredMemory);
+    });
+  },
+
+  /** 可玩性增强：追踪边缘文字阅读 */
+  trackMarginaliaRead() {
+    if (!GameState._marginaliaRead) GameState._marginaliaRead = 0;
+    GameState._marginaliaRead++;
+  },
+
+  /** 可玩性增强：追踪探索场景热点发现 */
+  trackHotspotDiscovered() {
+    if (!GameState._hotspotsFound) GameState._hotspotsFound = 0;
+    GameState._hotspotsFound++;
+  },
+
+  /** 可玩性增强：追踪"另一种可能"已读 */
+  trackAltNarrativeSeen() {
+    GameState._altNarrativeSeen = true;
+  },
+
+  /** 可玩性增强：为探索场景检查热点发现进度 */
+  getExplorationProgress(requiredDiscoveries) {
+    return {
+      found: GameState._hotspotsFound || 0,
+      required: requiredDiscoveries || 0,
+      isComplete: (GameState._hotspotsFound || 0) >= (requiredDiscoveries || 1)
+    };
+  },
+
+  /** 可玩性增强：重置探索场景热点计数（进入新探索场景时调用） */
+  resetExplorationProgress() {
+    GameState._hotspotsFound = 0;
   }
 };

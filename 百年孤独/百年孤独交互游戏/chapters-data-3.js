@@ -307,6 +307,11 @@ registerChapter({
   initialScene: 'ch10_opening', possessedCharacter: '何塞·阿尔卡蒂奥第二', chapterNumber: 10,
   preview: '<p>第十一章 · 四年大雨、衰败开始</p>',
   nextLabel: '进入第十一章 · 四年大雨',
+  moods: {
+    'ch10_opening': '铁轨在震颤 —— 金属藤蔓正伸进马孔多的腹地，带来了工程师、合同和一种全新的孤独',
+    'ch10_r2_choice': '机枪架在三个制高点上 —— 三千人站在广场里，他们以为话语能保护自己。话语打不过子弹',
+    'ch10_r3_choice': '从尸体堆里爬出来 —— 浑身是血。你敲开第一扇门："三千人死了。"——"别胡说，什么都没发生。"'
+  },
   scenes: {
     ch10_opening: { id:'ch10_opening', type:'narrative', chapter:10, round:0, title:'铁轨伸进沼泽', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['第一样你感受到的不是光——是震动。地面在颤抖，规律地、像军队的行进步伐一样从东边传来。','你起身走到窗口。铁轨像一条金属藤蔓，从沼泽边缘伸进马孔多的腹地。河对岸的草地变成了工棚、碾磨厂和铁丝网——标牌上用英文写着：UNITED FRUIT COMPANY — PRIVATE PROPERTY。','你叫何塞·阿尔卡蒂奥第二。你不是你伯父——但你的血液里有布恩迪亚的愤怒。你看着工人们在铁丝网后面佝偻着干活——一天十四个小时，工资用香蕉公司的代金券支付。你看不下去了。']}, choices:null, nextScene:'ch10_r1_choice' },
 
@@ -359,7 +364,7 @@ registerChapter({
     ch10_r5b: { id:'ch10_r5b', type:'narrative', chapter:10, round:5, title:'最后的讲述者', leftPage:{ speaker:'何塞·阿尔卡蒂奥第二', speakerColor:'#1a3a4a', paragraphs:['你坐在栗树下——对着风讲述。也许没有人听到——但你不在乎。你把三千人的事说完整了——从机枪架起到尸体被装车运走。你说完了每一个细节——然后闭上了眼睛。风把你说的话带走了——不是吹散，是带走。也许它会把它们带到某个地方——某个有耳朵等着听的地方。']}, choices:null, nextScene:'ch10_r5_settlement' },
     ch10_r5c: { id:'ch10_r5c', type:'narrative', chapter:10, round:5, title:'安详的告别者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你坐在那间古老房间里——时间在这里是静止的。你想起了你的一生——罢工、枪声、尸体堆、那些不相信你的人。你微笑了——没有苦涩。因为你知道：有些真相不需要被记住。它们发生了——这本身就足够。世界可以否认——但发生过的事永远发生过了。']}, choices:null, nextScene:'ch10_r5_settlement' },
     ch10_r5_settlement: { id:'ch10_r5_settlement', type:'settlement', chapter:10, round:5, title:'第五轮 · 结算', leftPage:{ speaker:null, speakerColor:null, paragraphs:['何塞·阿尔卡蒂奥第二死了——以他选择的方式。他在那间时间静止的房间里度过了最后的岁月。他走的时候——羊皮卷上的字迹没有变。栗树下的石头没有变。但马孔多变了一点点——因为曾经有一个人记得。']}, settlement:{ summary:'最终轮完成。你作为最后一个见证者——选择了如何面对真相。', nextScene:'chapter10_end', nextLabel:'查看章末结算' } },
-    chapter10_end: { id:'chapter10_end', type:'settlement', chapter:10, round:6, title:'第十章 · 章末结算', leftPage:{ speaker:null, speakerColor:null, paragraphs:['第十章完结。三千人被杀了——然后被遗忘了。但你记得。你在纸上、石头里或沉默中保存了这个真相。','天边有乌云正在聚集。不是比喻——是真正的云。那是将要在马孔多下四年的雨。']}, settlement:{ summary:'第十章完结。你见证了屠杀，并以你的方式对抗了遗忘。', isChapterEnd:true, nextLabel:'进入第十一章 · 四年大雨' } }
+    chapter10_end: { id:'chapter10_end', type:'settlement', chapter:10, round:6, title:'第十章 · 章末结算', leftPage:{ speaker:null, speakerColor:null, paragraphs:['第十章完结。三千人被杀了——然后被遗忘了。但你记得。你在纸上、石头里或沉默中保存了这个真相。','天边有乌云正在聚集。不是比喻——是真正的云。那是将要在马孔多下四年的雨。']}, settlement:{ summary:'第十章完结。你见证了屠杀，并以你的方式对抗了遗忘。', isChapterEnd:true, nextLabel:'进入第十一章 · 四年大雨', fateForecast:'天边的乌云不是比喻。四年的大雨即将开始——它会冲走香蕉公司的铁轨、工棚和血迹。但它冲不走你心里的三千个名字。准备好——第十一章是水写成的。', emotionalCost:'多年以后，当马孔多被飓风抹去——政府仍然会说"什么都没发生"。但你不会。你在火车站前做过的事——无论你喊出声、冲上去还是用身体挡住——将是你面对羊皮卷时唯一能说出口的话："我试过了。"' } }
   },
   memories: {
     '三千人的名字': { id:'三千人的名字', title:'三千人的名字', description:'你用身体挡住母子二人。子弹热的是你的血。倒下去时你想：这条命也许挡住了足够多的东西。', chapter:10 },

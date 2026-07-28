@@ -23,6 +23,10 @@ function registerChapter(data) {
       }
     });
   }
+  // 合并情绪状态
+  if (data.moods && typeof registerChapterMoods === 'function') {
+    registerChapterMoods(data.id, data.moods);
+  }
 }
 
 /** 获取当前章节数据 */

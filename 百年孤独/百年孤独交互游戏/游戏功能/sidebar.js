@@ -154,6 +154,35 @@ const SidebarManager = {
     }
     html += '</div>';
 
+    // 可玩性增强：角色关系值
+    html += '<div class="profile-section">';
+    html += '<h4>🤝 羁绊之人</h4>';
+    if (!GameState.relationships || Object.keys(GameState.relationships).length === 0) {
+      html += '<p class="profile-choice-log" style="color:var(--gold-dim);font-style:italic;">尚未建立与他人的羁绊。<br>继续旅程来影响你与他人的关系。</p>';
+    } else {
+      const relEntries = Object.entries(GameState.relationships);
+      // 按关系值从高到低排列
+      relEntries.sort((a, b) => b[1] - a[1]);
+      const displayedChars = relEntries.slice(0, 8); // 最多显示8个
+      displayedChars.forEach(([charName, value]) => {
+        const level = GameState.getRelationshipLevel
+          ? GameState.getRelationshipLevel(charName)
+          : null;
+        const tierLabel = level ? level.tier : '';
+        const tierColor = level ? level.color : 'var(--gold-dim)';
+        const barColor = value >= 66 ? '#6a9a5a' : value >= 34 ? '#c4910a' : '#a05040';
+        html += '<div class="relationship-item">';
+        html += '<div class="rel-name">' + charName + ' <span style="color:' + tierColor + ';font-size:0.65rem;">— ' + tierLabel + '</span></div>';
+        html += '<div class="rel-bar-wrap"><div class="rel-bar-fill" style="width:' + value + '%;background:' + barColor + ';"></div></div>';
+        html += '<div class="rel-label">' + value + ' / 100</div>';
+        html += '</div>';
+      });
+      if (relEntries.length > 8) {
+        html += '<p class="profile-choice-log" style="text-align:center;color:var(--gold-dim);">……还有 ' + (relEntries.length - 8) + ' 人</p>';
+      }
+    }
+    html += '</div>';
+
     content.innerHTML = html;
     overlay.classList.add('open');
     panel.classList.add('open');

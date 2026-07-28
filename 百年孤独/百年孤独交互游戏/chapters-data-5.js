@@ -491,7 +491,26 @@ registerChapter({
   initialScene: 'epi_opening', possessedCharacter: '你自己——不再是任何附身对象', chapterNumber: 21,
   preview: '',
   nextLabel: '',
+  moods: {
+    'epilogue_rebel': '飓风正在撕碎天空 —— 你站在废墟里，手里攥着一页逆风飞来的羊皮纸',
+    'epilogue_witness': '推开那扇门 —— 灰尘没有积在这里。时间在这间屋子里停止了奔跑',
+    'epilogue_bystander': '站在栗树外面 —— 你离得足够远，远到灰尘落不到你身上',
+    'epi_opening': '你听见了自己的呼吸 —— 这是全部章节以来，你第一次意识到你在呼吸'
+  },
   scenes: {
+    /* ── 结局入口：宿命反抗者 ── */
+    epilogue_rebel: { id:'epilogue_rebel', type:'narrative', chapter:21, round:0, title:'飓风之中', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['飓风从北边吹来——不是循序渐进的风，是整片天空砸下来的风。马孔多的屋顶被掀开，像被一只看不见的手翻开书页。你站在废墟中央——不是逃不掉，是不想逃。','你看着那些名字被风撕成碎片——布恩迪亚、布恩迪亚、布恩迪亚——它们在风里旋转了最后一圈，然后消失。但有一页羊皮纸没有被吹走——它逆着风向，朝你飞来。','你伸出手。碎片落在掌心。上面只有一行字——不是梵文，不是梅尔基亚德斯的字迹。是你自己写的。"至少这一行，是我写的。"你握紧拳头。风停了。']}, choices:null, nextScene:'epi_rebel_settlement' },
+    epi_rebel_settlement: { id:'epi_rebel_settlement', type:'settlement', chapter:21, round:1, title:'反抗者 · 结算', leftPage:{ speaker:null, speakerColor:null, paragraphs:['你曾经以为你在对抗命运——你选了不该选的，拒绝了本该接受的，在每一个路口朝反方向迈了一步。现在你知道了：你不是在对抗——你是在书写。羊皮卷上从来不是预言——是邀请。你只是接受了邀请。','梅尔基亚德斯的声音从很远的地方传来——也许是他自己，也许只是风声："你做到了我没有预料的事。恭喜你——你让这个老人惊讶了。"']}, settlement:{ summary:'你以宿命反抗者的身份走完了百年。你不是读者——你是合著者。', isChapterEnd:true, isFinalEnd:true, nextLabel:'重新开始 · 再次翻开羊皮卷', emotionalCost:'飓风中你抓住的那页纸上只有一行字。那行字是："至少这一行，是我写的。"这句话不是梅尔基亚德斯写的，不是命运写的——是你。你用它替换了羊皮卷的最后一页。为此你付出了代价：你将永远记得马孔多——在所有现实都否认它曾经存在过的世界里，只有你一个人记得。' } },
+
+    /* ── 结局入口：宿命见证者 ── */
+    epilogue_witness: { id:'epilogue_witness', type:'narrative', chapter:21, round:0, title:'梅尔基亚德斯的房间', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你推开那扇门——梅尔基亚德斯的房间。灰尘没有积在这里——时间在这间屋子里停止了奔跑。老人坐在窗边，鹅毛笔悬在羊皮纸上方，一滴墨水迟迟不肯落下。','他回过头。他的眼睛还是那么亮——两颗没熄灭的炭。"来了？我等了你一百年。"他放下笔，合上羊皮卷。封面上没有标题——只有一个名字。你的名字。','"你已经读完了。"他说。不是疑问句。"每一页、每一个选择、每一个你没选的路口——你都在这里了。"']}, choices:null, nextScene:'epi_witness_settlement' },
+    epi_witness_settlement: { id:'epi_witness_settlement', type:'settlement', chapter:21, round:1, title:'见证者 · 结算', leftPage:{ speaker:null, speakerColor:null, paragraphs:['他把羊皮卷递给你。"拿着。这是你的了。"你接过来——羊皮纸还有温度，像刚刚被阳光晒过。你翻开最后一页——最后一行写着："然后他将合上这本书，回到他自己的生活中去——但他会记得。"','梅尔基亚德斯站起身，走到窗口。窗外不再是马孔多——是你来的那个世界。他侧过身——让你走过去。']}, settlement:{ summary:'你以宿命见证者的身份走完了百年。羊皮卷在你手中——不再是预言，是记忆。', isChapterEnd:true, isFinalEnd:true, nextLabel:'合上羊皮卷', emotionalCost:'你理解了命运的必然。这不是屈服——是理解。理解了为什么乌尔苏拉失明后看见的比任何人都多，理解了为什么上校打了三十二场败仗仍然活着，理解了为什么飓风在最后一刻才来——因为它等你读完。这份理解的代价是：你不能再问"如果当时选了另一边会怎样"。你只能接受你已经选的路——并学会在其中找到平静。' } },
+
+    /* ── 结局入口：宿命旁观者 ── */
+    epilogue_bystander: { id:'epilogue_bystander', type:'narrative', chapter:21, round:0, title:'栗树之外', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你站在栗树外面。蚂蚁列队从门槛上爬过——它们扛着比身体大三倍的叶子碎片，像一支沉默的军队。屋子里传出婴儿最后的啼哭——然后安静了。你没有进去。','你靠在栗树干枯的树干上——树干上还有何塞·阿尔卡蒂奥·布恩迪亚被绑过的凹痕。你伸手摸了摸那些纹路——不是想知道什么，只是想触碰。你只是一个路过此地的旅人——你从来没有属于这间屋子，但你也从来没有真正离开过。','风起了。蚂蚁消失了。房子开始碎裂——但你站得很远，远到灰尘落不到你身上。你见证过。仅此而已。']}, choices:null, nextScene:'epi_bystander_settlement' },
+    epi_bystander_settlement: { id:'epi_bystander_settlement', type:'settlement', chapter:21, round:1, title:'旁观者 · 结算', leftPage:{ speaker:null, speakerColor:null, paragraphs:['百年孤独——你翻开了，阅读了，在每一个十字路口选择了一条路。但你从来没有让这个故事进入你骨头最深处的那块地方。也许你是对的。也许保持距离是唯一一种不会被飓风刮走的方式。','马孔多消失了。栗树消失了。你还在——站在一片没有名字的空地上，手里没有羊皮卷。但你的口袋里有一粒栗子——不知道什么时候掉进去的。']}, settlement:{ summary:'你以宿命旁观者的身份走完了百年。你在每一个路口做了选择——但从未让自己真正属于其中任何一条路。', isChapterEnd:true, isFinalEnd:true, nextLabel:'离开马孔多', emotionalCost:'你从未让自己真正属于这间屋子。你隔着一段安全的距离看完了百年的悲欢——没有人因你多活，没有人因你早死。代价是：当飓风来临时，你没有失去任何东西。包括那些你本可以拥有的羁绊。' } },
+
+    /* ── 原有终章流程（作为见证者路线的延续，保留兼容）── */
     epi_opening: { id:'epi_opening', type:'narrative', chapter:21, round:0, title:'你来了', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你终于停下了手指。屏幕上的最后一段叙述已经沉入黑暗——留下的只有你面前这片安静的光。你听见了你自己的呼吸——这是全部章节以来，你第一次意识到你在呼吸。','你不是任何布恩迪亚。你不是那个扛着磁铁走进丛林的男人，不是那个在战争间隙用冰块记忆抵抗行刑队的上校，不是那个缝了一辈子裹尸布却从未穿上自己的女人。你是你自己——但你看过他们全部。你把他们的故事活过一次——不是作为阅读，是作为沉浸。你为他们做了选择。','现在——时间走完了。风从马孔多刮过去之后——你仍然坐在这里。']}, choices:null, nextScene:'epi_eye' },
     epi_eye: { id:'epi_eye', type:'narrative', chapter:21, round:0, title:'宿命之眼', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你注意到屏幕中央有一粒光。它不是烛火，不是太阳——是一只眼睛的形状。它的虹膜是由你所有的选择编织而成的。你选的每一个A、每一个B、每一个C——在虹膜上变成了或深或浅的轮纹。','这只眼睛不眨眼。它只是看着你。不是审判——是全知。它把走过的所有弯折的路口、所有被记忆碎片铺成的小径——从它深处折射回来，让你自己看一遍。','你看得久了——你发现那只眼里的虹膜不是梅尔基亚德斯的。是你自己的。']}, choices:null, nextScene:'epi_judgment' },
     epi_judgment: { id:'epi_judgment', type:'narrative', chapter:21, round:0, title:'宿命之眼的判定', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['宿命之眼开始低语——不是用声音，而是把词语放在你心里你以为是自己的思考的地方。','它说：你曾经以为你在控制这个游戏。你点了A——她活过来一些；点了B——他死得更勇敢一点。但事实上，这个游戏也在控制你。它给你选择，然后把你在选择中暴露的每一次犹豫、每一个倾向——都还给你。你不是在玩一个游戏。你是在显现。','你的标签浮现了——不是作为列表，是作为影像。每一个标签都是一张定格画面，展开像一本摊开在你面前的书。']}, choices:null, nextScene:'epi_settlement' },
