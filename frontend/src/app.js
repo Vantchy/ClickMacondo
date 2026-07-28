@@ -110,15 +110,32 @@ function init() {
   // 键盘导航
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-      SidebarManager.closeFamilyTree();
-      SidebarManager.closeArchives();
-      SidebarManager.closeProfile();
-      SidebarManager.closeRelations();
-      SettingsPanel.close();
-      SaveLoadPanel.close();
-      hideMainMenu();
-      closeAchievements();
-      closeArchiveBookmarks();
+      const mainMenu = document.getElementById('mainmenu-overlay');
+      const anyOpen = (mainMenu && mainMenu.classList.contains('open')) ||
+        document.getElementById('sidebar-family').classList.contains('open') ||
+        document.getElementById('sidebar-archives').classList.contains('open') ||
+        document.getElementById('sidebar-profile').classList.contains('open') ||
+        document.getElementById('sidebar-relations').classList.contains('open') ||
+        document.getElementById('settings-overlay').classList.contains('open') ||
+        document.getElementById('saveload-overlay').classList.contains('open') ||
+        document.getElementById('achievements-overlay').classList.contains('open') ||
+        document.getElementById('bookmarks-overlay').classList.contains('open');
+
+      if (anyOpen) {
+        // 关闭全部面板
+        SidebarManager.closeFamilyTree();
+        SidebarManager.closeArchives();
+        SidebarManager.closeProfile();
+        SidebarManager.closeRelations();
+        SettingsPanel.close();
+        SaveLoadPanel.close();
+        hideMainMenu();
+        closeAchievements();
+        closeArchiveBookmarks();
+      } else {
+        // 无面板打开 → 呼出主菜单
+        showMainMenu();
+      }
     }
     if (e.key === '1' || e.key === '2' || e.key === '3') {
       const scene = GameEngine.getCurrentScene();
