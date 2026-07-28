@@ -534,7 +534,7 @@ body {
   margin-top: 16px;
   padding: 16px 20px;
   /* 原淡蓝冷渐变加深、弱化透光白雾 */
-  background: linear(135deg, rgba(184,137,0.18), rgba(8,6,4,0.65));
+  background: linear-gradient(135deg, rgba(184,137,0.18), rgba(8,6,4,0.65));
   border: 1px solid var(--gold);
   border-radius: 8px;
   animation: memorySlideIn 0.5s ease;
@@ -953,10 +953,7 @@ input[type="range"] {
   <!-- 顶部栏 -->
   <div id="top-bar">
     <div class="top-item">
-      <select id="chapter-select">
-        <option value="1" selected>第一章 · 宿命之环</option>
-        <option value="2" disabled>第二章 · 失眠症（敬请期待）</option>
-      </select>
+      <select id="chapter-select"></select>
     </div>
     <div class="top-item">
       <span id="progress-label">序章</span>
@@ -1070,13 +1067,148 @@ input[type="range"] {
      ================================================================ -->
 <script>
 /* ================================================================
-   一、数据层：第一章完整场景数据
-   15个选择分支 × 5轮 + 序章 + 5个结算 + 章末结算
+   一、数据层：章节注册系统
+   所有章节通过 registerChapter() 注册，引擎动态读取当前章节数据
    ================================================================ */
-const chapter1Data = {
+
+/* ---- 全局章节注册表 ---- */
+const chapters = {};           // { chapterId: chapterData }
+const memoryRegistry = {};    // { memoryId: memoryData } — 全局记忆碎片
+const familyTreeRegistry = {}; // { name: memberData } — 全局家族树（去重）
+
+/** 注册一个章节的数据 */
+function registerChapter(data) {
+  chapters[data.id] = data;
+  // 合并记忆碎片
+  if (data.memories) {
+    Object.assign(memoryRegistry, data.memories);
+  }
+  // 合并家族成员
+  if (data.familyMembers) {
+    data.familyMembers.forEach(m => {
+      if (!familyTreeRegistry[m.name]) {
+        familyTreeRegistry[m.name] = { ...m, firstAppearedIn: data.id };
+      }
+    });
+  }
+}
+
+/** 获取当前章节数据 */
+function getCurrentChapterData() {
+  return chapters['chapter' + GameState.chapter] || null;
+}
+
+/** 获取当前章节中所有记忆碎片 */
+function getCurrentChapterMemories() {
+  const chData = getCurrentChapterData();
+  if (!chData || !chData.memories) return [];
+  return Object.values(chData.memories);
+}
+
+/** 将 familyTreeRegistry 转为数组 */
+function familyTreeToArray() {
+  return Object.values(familyTreeRegistry);
+}
+
+/** 章节元数据注册表 — 所有22个章节的标题和编号 */
+const CHAPTER_META = {
+  'chapter1':  { num: 1,  shortName: '第一章',  subtitle: '宿命之环',                            fileName: '第一章' },
+  'chapter2':  { num: 2,  shortName: '第二章',  subtitle: '失眠症',                              fileName: '第二章' },
+  'chapter3':  { num: 3,  shortName: '第三章',  subtitle: '丽贝卡——家族扩张',                     fileName: '第三章' },
+  'chapter4':  { num: 4,  shortName: '第四章',  subtitle: '自动钢琴、皮埃特罗·克雷斯皮',            fileName: '第四章' },
+  'chapter5':  { num: 5,  shortName: '第五章',  subtitle: '蕾梅黛丝与初战',                       fileName: '第五章' },
+  'chapter6':  { num: 6,  shortName: '第六章',  subtitle: '第一次战争、阿尔卡蒂奥暴政',             fileName: '第六章' },
+  'chapter7':  { num: 7,  shortName: '第七章',  subtitle: '奥雷里亚诺上校的战争循环',              fileName: '第七章' },
+  'chapter8':  { num: 8,  shortName: '第八章',  subtitle: '何塞·阿尔卡蒂奥归来、美人儿蕾梅黛丝',    fileName: '第八章' },
+  'chapter9':  { num: 9,  shortName: '第九章',  subtitle: '狂欢节屠杀、费尔南达登场',               fileName: '第九章' },
+  'chapter10': { num: 10, shortName: '第十章',  subtitle: '大罢工、三千人屠杀',                     fileName: '第十章' },
+  'chapter11': { num: 11, shortName: '第十一章', subtitle: '四年大雨、衰败开始',                    fileName: '第十一章' },
+  'chapter12': { num: 12, shortName: '第十二章', subtitle: '乌尔苏拉之死',                         fileName: '第十二章' },
+  'chapter13': { num: 13, shortName: '第十三章', subtitle: '梅梅与马乌里肖·巴比伦',                 fileName: '第十三章' },
+  'chapter14': { num: 14, shortName: '第十四章', subtitle: '香蕉公司的终结',                        fileName: '第十四章' },
+  'chapter15': { num: 15, shortName: '第十五章', subtitle: '梅梅之死、私生子的出现',                 fileName: '第十五章' },
+  'chapter16': { num: 16, shortName: '第十六章', subtitle: '加斯通到来、阿玛兰妲·乌尔苏拉回归',      fileName: '第十六章' },
+  'chapter17': { num: 17, shortName: '第十七章', subtitle: '近亲之爱、羊皮卷破译',                  fileName: '第十七章' },
+  'chapter18': { num: 18, shortName: '第十八章', subtitle: '最后一个布恩迪亚的诞生',                 fileName: '第十八章' },
+  'chapter19': { num: 19, shortName: '第十九章', subtitle: '毁灭、蚂蚁、飓风',                      fileName: '第十九章' },
+  'chapter20': { num: 20, shortName: '第二十章', subtitle: '百年孤独的终局',                        fileName: '第二十章' },
+  'epilogue':  { num: 21, shortName: '终章',    subtitle: '羊皮卷的见证者',                        fileName: '终章' }
+};
+
+const CHAPTER_ORDER = [
+  'chapter1', 'chapter2', 'chapter3', 'chapter4', 'chapter5',
+  'chapter6', 'chapter7', 'chapter8', 'chapter9', 'chapter10',
+  'chapter11', 'chapter12', 'chapter13', 'chapter14', 'chapter15',
+  'chapter16', 'chapter17', 'chapter18', 'chapter19', 'chapter20', 'epilogue'
+];
+
+/** 获取章节显示标题（如 "第一章 · 宿命之环"） */
+function getChapterDisplayTitle(chapterId) {
+  const meta = CHAPTER_META[chapterId];
+  const chData = chapters[chapterId];
+  if (chData) return chData.title;
+  if (meta) return meta.shortName + (meta.subtitle ? ' · ' + meta.subtitle : '');
+  return chapterId;
+}
+/** 动态生成章节下拉菜单 — 显示所有已知章节，已注册数据的可用 */
+function populateChapterSelect() {
+  const select = document.getElementById('chapter-select');
+  if (!select) return;
+
+  select.innerHTML = '';
+  const currentChNum = GameState.chapter;
+
+  CHAPTER_ORDER.forEach(chId => {
+    const meta = CHAPTER_META[chId];
+    if (!meta) return;
+    const chData = chapters[chId]; // 可能为 null（尚未注册数据）
+    const displayTitle = getChapterDisplayTitle(chId);
+
+    const option = document.createElement('option');
+    option.value = meta.num;
+    option.dataset.chapterId = chId;
+    option.textContent = displayTitle;
+
+    // 已注册数据的章节可用，否则禁用
+    const isRegistered = !!chData;
+    option.disabled = !isRegistered;
+    if (!isRegistered) {
+      option.textContent += '（敬请期待）';
+    }
+
+    if (meta.num === currentChNum) {
+      option.selected = true;
+    }
+
+    select.appendChild(option);
+  });
+
+  // 切换章节事件（只绑定一次）
+  if (!select._chapterListenerAttached) {
+    select._chapterListenerAttached = true;
+    select.addEventListener('change', function(e) {
+      const targetChapter = parseInt(e.target.value);
+      if (targetChapter !== GameState.chapter) {
+        if (GameEngine.switchToChapter(targetChapter)) {
+          Renderer.render();
+          const chData = getCurrentChapterData();
+          showToast('已跳转至 ' + (chData ? chData.title : '第' + targetChapter + '章'));
+          populateChapterSelect();
+        }
+      }
+    });
+  }
+}
+
+/* ---- 第一章数据 ---- */
+registerChapter({
   id: 'chapter1',
   title: '第一章 · 宿命之环',
   initialScene: 'prologue',
+  possessedCharacter: '何塞·阿尔卡蒂奥·布恩迪亚',
+  chapterNumber: 1,
+  preview: '<p>第二章 · 失眠症</p><p style="margin-top:8px;">你将附身于奥雷里亚诺（或乌尔苏拉，或何塞本人），</p><p>经历那场让整个马孔多失去记忆的瘟疫。</p><p style="margin-top:8px;font-weight:600;color:var(--gold-light);">失眠症最可怕的不是无法入睡——</p><p style="font-weight:600;color:var(--gold-light);">而是忘记了你是谁。</p>',
+  nextLabel: '进入第二章 · 失眠症',
 
   scenes: {
 
@@ -1866,88 +1998,86 @@ const chapter1Data = {
         nextLabel: '进入第二章（敬请期待）'
       }
     }
-  }
-};
-
-/* 记忆碎片数据 */
-const memoryFragments = {
-  '覆手': {
-    id: '覆手', title: '覆手',
-    description: '你和奥雷里亚诺一起按住冰块，他的手掌冰凉。多年后行刑队前，他会想起这一刻。',
-    chapter: 1
   },
-  '不是海的海': {
-    id: '不是海的海', title: '不是海的海',
-    description: '你看见的大海是灰白的、肮脏的、泡沫翻腾的——但它仍然是大海。你没有哭，你只是站着。',
-    chapter: 1
+  /* 第一章记忆碎片 */
+  memories: {
+    '覆手': {
+      id: '覆手', title: '覆手',
+      description: '你和奥雷里亚诺一起按住冰块，他的手掌冰凉。多年后行刑队前，他会想起这一刻。',
+      chapter: 1
+    },
+    '不是海的海': {
+      id: '不是海的海', title: '不是海的海',
+      description: '你看见的大海是灰白的、肮脏的、泡沫翻腾的——但它仍然是大海。你没有哭，你只是站着。',
+      chapter: 1
+    },
+    '一只手': {
+      id: '一只手', title: '一只手',
+      description: '乌尔苏拉把手放在你肩上。那是她嫁给你的这些年里，第一次主动触碰你。',
+      chapter: 1
+    },
+    '泥土中的马孔多': {
+      id: '泥土中的马孔多', title: '泥土中的马孔多',
+      description: '你在坑底用黏土建造了一座城市。多年后飓风抹去马孔多时，只有你记得它原来的模样。',
+      chapter: 1
+    },
+    '一步之遥': {
+      id: '一步之遥', title: '一步之遥',
+      description: '你退后了一步。奥雷里亚诺的影子被灯光拉得很长，而你站在阴影里，什么都没有做。',
+      chapter: 1
+    },
+    '蓝白色的光': {
+      id: '蓝白色的光', title: '蓝白色的光',
+      description: '你把冰块举过头顶，蓝白色的光洒在所有人的脸上。那一刻，乌尔苏拉看见了你的脸，像一个不认识的人。',
+      chapter: 1
+    }
   },
-  '一只手': {
-    id: '一只手', title: '一只手',
-    description: '乌尔苏拉把手放在你肩上。那是她嫁给你的这些年里，第一次主动触碰你。',
-    chapter: 1
-  },
-  '泥土中的马孔多': {
-    id: '泥土中的马孔多', title: '泥土中的马孔多',
-    description: '你在坑底用黏土建造了一座城市。多年后飓风抹去马孔多时，只有你记得它原来的模样。',
-    chapter: 1
-  },
-  '一步之遥': {
-    id: '一步之遥', title: '一步之遥',
-    description: '你退后了一步。奥雷里亚诺的影子被灯光拉得很长，而你站在阴影里，什么都没有做。',
-    chapter: 1
-  },
-  '蓝白色的光': {
-    id: '蓝白色的光', title: '蓝白色的光',
-    description: '你把冰块举过头顶，蓝白色的光洒在所有人的脸上。那一刻，乌尔苏拉看见了你的脸，像一个不认识的人。',
-    chapter: 1
-  }
-};
-
-/* 家族树数据 */
-const familyTreeData = [
-  {
-    name: '何塞·阿尔卡蒂奥·布恩迪亚',
-    relation: '族长 · 当前附身',
-    generation: 1,
-    isCurrent: true,
-    description: '马孔多的建立者。痴迷于炼金术、星盘和一切未知之物。正在用一头骡子和一对山羊换两块磁铁。'
-  },
-  {
-    name: '乌尔苏拉·伊瓜兰',
-    relation: '妻子',
-    generation: 1,
-    isCurrent: false,
-    description: '何塞的妻子，家族的实际支柱。她总是等在家里，在桌上摆好碗筷。'
-  },
-  {
-    name: '何塞·阿尔卡蒂奥',
-    relation: '长子',
-    generation: 2,
-    isCurrent: false,
-    description: '十四岁，石头一样沉默，身材壮得像一头小牛。不说话的时候，你就忘记了他的存在。'
-  },
-  {
-    name: '奥雷里亚诺·布恩迪亚',
-    relation: '次子',
-    generation: 2,
-    isCurrent: false,
-    description: '六岁，瘦得像一根芦苇，眼睛里有一种奇怪的清澈。多年后将成为奥雷里亚诺上校。'
-  },
-  {
-    name: '梅尔基亚德斯',
-    relation: '吉卜赛智者',
-    generation: 0,
-    isCurrent: false,
-    description: '吉卜赛人，带来磁铁、放大镜、望远镜和冰块。他知道一切，包括那些尚未发生的事情。'
-  },
-  {
-    name: '庇拉尔·特尔内拉',
-    relation: '纸牌占卜者',
-    generation: 0,
-    isCurrent: false,
-    description: '吉卜赛女人，用旧纸牌看穿命运。她对奥雷里亚诺说："这个孩子……他会死很多次。"'
-  }
-];
+  /* 第一章家族成员 */
+  familyMembers: [
+    {
+      name: '何塞·阿尔卡蒂奥·布恩迪亚',
+      relation: '族长 · 当前附身',
+      generation: 1,
+      isCurrent: true,
+      description: '马孔多的建立者。痴迷于炼金术、星盘和一切未知之物。正在用一头骡子和一对山羊换两块磁铁。'
+    },
+    {
+      name: '乌尔苏拉·伊瓜兰',
+      relation: '妻子',
+      generation: 1,
+      isCurrent: false,
+      description: '何塞的妻子，家族的实际支柱。她总是等在家里，在桌上摆好碗筷。'
+    },
+    {
+      name: '何塞·阿尔卡蒂奥',
+      relation: '长子',
+      generation: 2,
+      isCurrent: false,
+      description: '十四岁，石头一样沉默，身材壮得像一头小牛。不说话的时候，你就忘记了他的存在。'
+    },
+    {
+      name: '奥雷里亚诺·布恩迪亚',
+      relation: '次子',
+      generation: 2,
+      isCurrent: false,
+      description: '六岁，瘦得像一根芦苇，眼睛里有一种奇怪的清澈。多年后将成为奥雷里亚诺上校。'
+    },
+    {
+      name: '梅尔基亚德斯',
+      relation: '吉卜赛智者',
+      generation: 0,
+      isCurrent: false,
+      description: '吉卜赛人，带来磁铁、放大镜、望远镜和冰块。他知道一切，包括那些尚未发生的事情。'
+    },
+    {
+      name: '庇拉尔·特尔内拉',
+      relation: '纸牌占卜者',
+      generation: 0,
+      isCurrent: false,
+      description: '吉卜赛女人，用旧纸牌看穿命运。她对奥雷里亚诺说："这个孩子……他会死很多次。"'
+    }
+  ]
+});
 
 /* ================================================================
    二、游戏状态管理
@@ -2071,7 +2201,8 @@ const GameEngine = {
   goToScene(sceneId) {
     GameState.history.push(sceneId);
     GameState.currentScene = sceneId;
-    const scene = chapter1Data.scenes[sceneId];
+    const chapterData = getCurrentChapterData();
+    const scene = chapterData ? chapterData.scenes[sceneId] : null;
     if (scene) {
       GameState.round = scene.round || GameState.round;
     }
@@ -2079,7 +2210,8 @@ const GameEngine = {
   },
 
   getCurrentScene() {
-    return chapter1Data.scenes[GameState.currentScene] || null;
+    const chapterData = getCurrentChapterData();
+    return chapterData ? chapterData.scenes[GameState.currentScene] || null : null;
   },
 
   goToSettlement() {
@@ -2091,7 +2223,30 @@ const GameEngine = {
   },
 
   getChapterEndScene() {
-    return chapter1Data.scenes['chapter1_end'];
+    const chapterData = getCurrentChapterData();
+    return chapterData ? chapterData.scenes[chapterData.id + '_end'] : null;
+  },
+
+  /** 切换到指定章节 */
+  switchToChapter(chapterNum) {
+    const chapterId = 'chapter' + chapterNum;
+    const chapterData = chapters[chapterId];
+    if (!chapterData) return false;
+
+    GameState.chapter = chapterNum;
+    GameState.currentScene = chapterData.initialScene;
+    GameState.round = 0;
+    GameState.history = [chapterData.initialScene];
+    GameState.choices = [];
+    GameState.choiceLog = [];
+    StorageManager.save();
+    return true;
+  },
+
+  /** 进入下一章 */
+  goToNextChapter() {
+    const nextChapter = GameState.chapter + 1;
+    return this.switchToChapter(nextChapter);
   },
 
   resetGame() {
@@ -2292,8 +2447,8 @@ const Renderer = {
         // 记忆碎片
         if (GameState.choiceLog.length > 0) {
           const lastChoice = GameState.choiceLog[GameState.choiceLog.length - 1];
-          if (lastChoice && lastChoice.memory && memoryFragments[lastChoice.memory]) {
-            const mem = memoryFragments[lastChoice.memory];
+          if (lastChoice && lastChoice.memory && memoryRegistry[lastChoice.memory]) {
+            const mem = memoryRegistry[lastChoice.memory];
             html += `<div class="memory-card">`;
             html += `<div class="memory-card-title">💎 ${mem.title}</div>`;
             html += `<div class="memory-card-desc">${mem.description}</div>`;
@@ -2305,14 +2460,18 @@ const Renderer = {
         if (st.nextScene) {
           html += `<button class="next-btn" onclick="handleNext('${st.nextScene}')">${st.nextLabel || '继续'}</button>`;
         } else if (st.isChapterEnd) {
-          html += `<button class="next-btn" style="opacity:0.6;cursor:default;">${st.nextLabel || '进入第二章（敬请期待）'}</button>`;
-          html += `<div style="text-align:center;margin-top:16px;font-style:italic;color:var(--gold-dim);font-size:0.85rem;">`;
-          html += `<p>第二章 · 失眠症</p>`;
-          html += `<p style="margin-top:8px;">你将附身于奥雷里亚诺（或乌尔苏拉，或何塞本人），</p>`;
-          html += `<p>经历那场让整个马孔多失去记忆的瘟疫。</p>`;
-          html += `<p style="margin-top:8px;font-weight:600;color:var(--gold-light);">失眠症最可怕的不是无法入睡——</p>`;
-          html += `<p style="font-weight:600;color:var(--gold-light);">而是忘记了你是谁。</p>`;
-          html += `</div>`;
+          const nextChapterData = chapters['chapter' + (GameState.chapter + 1)];
+          if (nextChapterData) {
+            html += `<button class="next-btn" onclick="GameEngine.goToNextChapter();Renderer.render();populateChapterSelect();">${nextChapterData.nextLabel || '进入下一章'}</button>`;
+            html += `<div style="text-align:center;margin-top:16px;font-style:italic;color:var(--gold-dim);font-size:0.85rem;">`;
+            html += nextChapterData.preview || '';
+            html += `</div>`;
+          } else {
+            html += `<button class="next-btn" style="opacity:0.6;cursor:default;">终章 · 故事结束</button>`;
+            html += `<div style="text-align:center;margin-top:16px;font-style:italic;color:var(--gold-dim);font-size:0.85rem;">`;
+            html += `<p>羊皮卷已经合上。故事到此结束。</p>`;
+            html += `</div>`;
+          }
         }
 
         html += `</div>`;
@@ -2335,15 +2494,16 @@ const Renderer = {
   updateTopBar(scene) {
     const progressLabel = document.getElementById('progress-label');
     const fateValue = document.getElementById('fate-value');
-    const fateDisplay = document.getElementById('fate-display');
+    const chapterData = getCurrentChapterData();
+    const chapterTitle = chapterData ? chapterData.title : '未知章节';
 
     if (progressLabel) {
       if (scene.round === 0) {
         progressLabel.textContent = '序章';
-      } else if (scene.round >= 1 && scene.round <= 5) {
-        progressLabel.textContent = `第一章 · 第${scene.round}轮`;
-      } else if (scene.round === 6) {
-        progressLabel.textContent = '第一章 · 章末结算';
+      } else if (scene.type === 'settlement' && scene.round >= 6) {
+        progressLabel.textContent = chapterTitle + ' · 章末结算';
+      } else {
+        progressLabel.textContent = chapterTitle + ' · 第' + scene.round + '轮';
       }
     }
 
@@ -2420,9 +2580,10 @@ const SidebarManager = {
     const content = document.getElementById('family-content');
     if (!overlay || !panel || !content) return;
 
+    const members = familyTreeToArray();
     let html = '';
-    familyTreeData.forEach((member, i) => {
-      if (i > 0 && member.generation !== familyTreeData[i-1].generation) {
+    members.forEach((member, i) => {
+      if (i > 0 && member.generation !== members[i-1].generation) {
         html += '<div class="family-tree-connector"></div>';
       }
       html += `
@@ -2450,21 +2611,30 @@ const SidebarManager = {
     const content = document.getElementById('archives-content');
     if (!overlay || !panel || !content) return;
 
-    let html = '<div style="font-size:0.75rem;color:var(--gold-dim);margin-bottom:12px;">第一章 · 宿命之环</div>';
+    let html = '';
 
-    // 显示所有记忆碎片
-    const allMemories = Object.values(memoryFragments);
-    allMemories.forEach(mem => {
-      const unlocked = GameState.memories.includes(mem.id);
-      html += `
-        <div class="archive-item ${unlocked ? 'unlocked' : 'locked'}">
-          <div class="archive-chapter">第一章</div>
-          <div class="archive-title">${unlocked ? '💎 ' : ''}${mem.title}</div>
-          <div class="archive-desc">${unlocked ? mem.description : '尚未解锁……做出不同的选择来发现这段记忆。'}</div>
-        </div>`;
+    // 按章节分组显示记忆碎片
+    const sortedChapterIds = Object.keys(chapters).sort();
+    sortedChapterIds.forEach(chId => {
+      const ch = chapters[chId];
+      if (!ch.memories) return;
+      const chMemories = Object.values(ch.memories);
+      if (chMemories.length === 0) return;
+
+      html += `<div style="font-size:0.75rem;color:var(--gold-dim);margin:12px 0 8px;">${ch.title}</div>`;
+
+      chMemories.forEach(mem => {
+        const unlocked = GameState.memories.includes(mem.id);
+        html += `
+          <div class="archive-item ${unlocked ? 'unlocked' : 'locked'}">
+            <div class="archive-chapter">第${ch.chapterNumber}章</div>
+            <div class="archive-title">${unlocked ? '💎 ' : ''}${mem.title}</div>
+            <div class="archive-desc">${unlocked ? mem.description : '尚未解锁……做出不同的选择来发现这段记忆。'}</div>
+          </div>`;
+      });
     });
 
-    if (GameState.memories.length === 0) {
+    if (Object.keys(memoryRegistry).length === 0 || GameState.memories.length === 0) {
       html += '<div style="text-align:center;color:var(--gold-dim);padding:20px;font-style:italic;">尚未解锁任何记忆碎片。<br>在游戏中做出选择来收集它们。</div>';
     }
 
@@ -2486,13 +2656,16 @@ const SidebarManager = {
     if (!overlay || !panel || !content) return;
 
     const fateLevel = GameState.getFateLevel();
+    const chapterData = getCurrentChapterData();
+    const chapterTitle = chapterData ? chapterData.title : '未知章节';
+    const possessedChar = chapterData ? chapterData.possessedCharacter || '未知角色' : '未知角色';
     let html = '';
 
     // 状态概览
     html += '<div class="profile-section">';
     html += '<h4>当前状态</h4>';
-    html += `<p class="profile-choice-log">附身角色：<strong>何塞·阿尔卡蒂奥·布恩迪亚</strong></p>`;
-    html += `<p class="profile-choice-log">章节进度：第一章 · 第${Math.max(0, GameState.round)}轮</p>`;
+    html += `<p class="profile-choice-log">附身角色：<strong>${possessedChar}</strong></p>`;
+    html += `<p class="profile-choice-log">章节进度：${chapterTitle} · 第${Math.max(0, GameState.round)}轮</p>`;
     html += '</div>';
 
     // 宿命值
@@ -2602,6 +2775,7 @@ const SettingsPanel = {
     if (confirm('确定要重置游戏吗？所有进度和存档将被清除，此操作不可撤销。')) {
       GameEngine.resetGame();
       StorageManager.clear();
+      populateChapterSelect();
       Renderer.render();
       this.close();
       showToast('游戏已重置');
@@ -2624,6 +2798,9 @@ function init() {
       console.log('已读取存档');
     }
   }
+
+  // 动态生成章节选择器
+  populateChapterSelect();
 
   // 渲染初始场景
   Renderer.render();
@@ -2663,6 +2840,7 @@ function init() {
     if (StorageManager.hasSave()) {
       const loaded = StorageManager.load();
       if (loaded) {
+        populateChapterSelect();
         Renderer.render();
         showToast('📂 读档成功');
       } else {
