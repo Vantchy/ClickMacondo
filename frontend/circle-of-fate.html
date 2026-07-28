@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Cinzel:wght@400;700&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
 <!-- 样式 -->
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles/styles.css">
 </head>
 <body>
 
@@ -141,6 +141,11 @@
         <span class="mm-btn-label">记忆碎片集</span>
         <span class="mm-btn-hint">— 散落在各章节的光 —</span>
       </button>
+      <button class="mm-btn" onclick="window.location.href='../story-viewer/story-explorer.html'">
+        <span class="mm-btn-icon">🖼️</span>
+        <span class="mm-btn-label">故事画卷</span>
+        <span class="mm-btn-hint">— 浏览百年孤独插画故事 —</span>
+      </button>
       <button class="mm-btn" onclick="SettingsPanel.open();">
         <span class="mm-btn-icon">⚙️</span>
         <span class="mm-btn-label">设置</span>
@@ -188,7 +193,7 @@
      ================================================================ -->
 <!-- 背景音频 -->
 <audio id="bgm-audio" loop preload="auto" style="display:none;">
-  <source src="elias_weber-mists-in-the-elven-lands-127808.mp3" type="audio/mpeg">
+  <source src="assets/audio/elias_weber-mists-in-the-elven-lands-127808.mp3" type="audio/mpeg">
 </audio>
 
 <div id="book-bg"></div>
@@ -216,6 +221,7 @@
         <span id="fate-value" style="color: var(--fate-low)">0</span>
       </div>
       <button class="top-btn" id="btn-menu" title="主菜单">📜</button>
+      <button class="top-btn" id="btn-story-viewer" title="故事画卷" onclick="window.location.href='../story-viewer/story-explorer.html'">🖼️</button>
       <button class="top-btn" id="btn-settings" title="设置">⚙️</button>
     </div>
   </div>
@@ -350,34 +356,34 @@
      JavaScript 模块（按依赖顺序加载）
      ================================================================ -->
 <!-- 1. 无依赖的配置 -->
-<script src="游戏功能/config.js"></script>
+<script src="src/utils/config.js"></script>
 <!-- 2. 章节注册（依赖 config） -->
-<script src="游戏功能/chapter-registry.js"></script>
+<script src="src/core/chapter-registry.js"></script>
 <!-- 3. 章节数据（依赖 chapter-registry 的 registerChapter） -->
-<script src="chapters-data-1.js"></script>
-<script src="chapters-data.js"></script>
-<script src="chapters-data-2.js"></script>
-<script src="chapters-data-3.js"></script>
-<script src="chapters-data-4.js"></script>
-<script src="chapters-data-5.js"></script>
+<script src="assets/data/chapters-data-1.js"></script>
+<script src="assets/data/chapters-data.js"></script>
+<script src="assets/data/chapters-data-2.js"></script>
+<script src="assets/data/chapters-data-3.js"></script>
+<script src="assets/data/chapters-data-4.js"></script>
+<script src="assets/data/chapters-data-5.js"></script>
 <!-- 4. 游戏状态（依赖 chapter-registry） -->
-<script src="游戏功能/game-state.js"></script>
+<script src="src/core/game-state.js"></script>
 <!-- 5. 成就系统（依赖 config + game-state） -->
-<script src="游戏功能/achievements.js"></script>
+<script src="src/ui/achievements.js"></script>
 <!-- 6. UI 工具（函数定义，惰性调用） -->
-<script src="游戏功能/ui.js"></script>
+<script src="src/ui/ui.js"></script>
 <!-- 7. 存档管理（依赖 game-state + ui） -->
-<script src="游戏功能/storage.js"></script>
+<script src="src/utils/storage.js"></script>
 <!-- 8. 游戏引擎（依赖 game-state + storage + ui） -->
-<script src="游戏功能/game-engine.js"></script>
+<script src="src/core/game-engine.js"></script>
 <!-- 9. 渲染器（依赖 game-state + engine） -->
-<script src="游戏功能/renderer.js"></script>
+<script src="src/core/renderer.js"></script>
 <!-- 10. 侧边栏（依赖 game-state + chapter-registry） -->
-<script src="游戏功能/sidebar.js"></script>
+<script src="src/ui/sidebar.js"></script>
 <!-- 11. 设置面板（依赖 engine + storage + achievements + ui） -->
-<script src="游戏功能/settings.js"></script>
+<script src="src/ui/settings.js"></script>
 <!-- 12. 应用入口（依赖所有模块） -->
-<script src="游戏功能/app.js"></script>
+<script src="src/app.js"></script>
 
 </body>
 </html>

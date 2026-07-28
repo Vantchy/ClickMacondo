@@ -1035,7 +1035,7 @@
       <button class="top-btn" id="btnBookmark">🔖 书签</button>
     </div>
     <div class="top-group">
-      <!-- 自动播放和打字机按钮已移除 -->
+      <button class="top-btn" onclick="window.location.href='../frontend/circle-of-fate.html'" title="宿命之环 · 交互游戏">🎮 宿命之环</button>
     </div>
   </div>
 
@@ -1229,8 +1229,8 @@
     // 配置
     // ════════════════════════════════════════════════════════════════
     const CONFIG = {
-      IMG_BASE: '百年孤独插画/',
-      IMG_PREFIX: '《百年孤独》版画场景',
+      IMG_BASE: 'images/',
+      IMG_PREFIX: 'scene-',
       IMG_EXT: '.png',
     };
     function getImagePath(id) { return CONFIG.IMG_BASE + CONFIG.IMG_PREFIX + id + CONFIG.IMG_EXT; }

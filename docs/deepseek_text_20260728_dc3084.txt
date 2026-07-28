@@ -1,0 +1,36 @@
+my-project/
+├── frontend/                 # 👑 前端代码 (用户界面)
+│   ├── public/               # 静态资源 (不经过构建工具，如 favicon.ico)
+│   ├── src/                  # 源代码主目录
+│   │   ├── assets/           # 图片、字体、样式文件 (会被构建工具处理)
+│   │   ├── components/       # 🌱 基础UI组件 (按钮、输入框、弹窗)
+│   │   ├── pages/            # 📄 页面级组件 (首页、关于页、个人中心)
+│   │   ├── hooks/            # 自定义 React/Vue 钩子 (复用逻辑)
+│   │   ├── utils/            # 工具函数 (日期格式化、数据校验)
+│   │   ├── api/              # 接口请求定义 (调用后端API)
+│   │   ├── stores/           # 状态管理 (Pinia/Redux/Zustand)
+│   │   ├── router/           # 路由配置 (页面跳转规则)
+│   │   ├── App.vue/jsx       # 根组件
+│   │   └── main.js/ts        # 入口文件
+│   ├── .env.development      # 开发环境变量
+│   ├── .env.production       # 生产环境变量
+│   ├── index.html            # HTML模板
+│   └── package.json          # 前端依赖配置
+│
+├── backend/                  # ⚙️ 后端代码 (API服务)
+│   ├── src/                  # 源代码主目录
+│   │   ├── controllers/      # 🎮 控制器/路由层 (接收请求，返回响应)
+│   │   ├── services/         # 💼 业务逻辑层 (核心业务规则)
+│   │   ├── models/           # 🗄️ 数据模型层 (数据库表结构映射)
+│   │   ├── middlewares/      # 🧵 中间件 (鉴权、日志、跨域)
+│   │   ├── routes/           # 🚏 路由定义 (URL映射)
+│   │   ├── utils/            # 辅助工具 (加密、随机数)
+│   │   └── app.js/ts         # 应用入口 (配置中间件，启动服务)
+│   ├── tests/                # 单元测试/集成测试
+│   ├── .env                  # 环境变量 (数据库密码、密钥)
+│   ├── Dockerfile            # Docker部署文件
+│   └── package.json          # 后端依赖配置
+│
+├── docker-compose.yml        # 多容器编排 (数据库/Redis/应用一键启动)
+├── README.md                 # 📖 项目说明文档 (必读)
+└── .gitignore                # 🙈 Git忽略文件 (node_modules等)
