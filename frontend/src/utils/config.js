@@ -260,8 +260,8 @@ const ACHIEVEMENTS = [
     cond: s => (s._marginaliaRead || 0) >= 5 },
   { id:'ach_second_playthrough', icon:'↻', name:'轮回之人', desc:'完成第二次通关——你再次回到了马孔多。',
     cond: s => (s.playthroughCount || 0) >= 2 },
-  { id:'ach_marginalia_reader', icon:'¶', name:'边缘的读者', desc:'累计阅读过10条边缘文字。',
-    cond: s => (s._marginaliaRead || 0) >= 10 },
+  { id:'ach_marginalia_reader', icon:'¶', name:'边缘的读者', desc:'累计阅读过5条边缘文字。',
+    cond: s => (s._marginaliaRead || 0) >= 5 },
   /* v2.0 烙印统计型成就 */
   { id:'ach_consecutive_witness', icon:'◎', name:'连续的见证者', desc:'连续3章以上保持见证者烙印——你在命运中找到了节奏。',
     cond: s => (s.getImprintStats ? s.getImprintStats().maxConsecutive >= 3 : false) },
@@ -312,8 +312,8 @@ const ACHIEVEMENTS = [
   /* ── v2.3 新增成就：关系深度 ── */
   { id:'ach_ursula_kitchen', icon:'◉', name:'乌尔苏拉的厨房', desc:'与乌尔苏拉的关系达到至交（≥85）——你听见了这个家族的心跳。',
     cond: s => (s.relationships && s.relationships['乌尔苏拉·伊瓜兰'] || 0) >= 85 },
-  { id:'ach_five_friends', icon:'↭', name:'不孤的灵魂', desc:'与5位以上角色的关系达到亲近（≥66）——你在马孔多找到了不止一个可以依靠的人。',
-    cond: s => Object.values(s.relationships || {}).filter(v => v >= 66).length >= 5 },
+  { id:'ach_five_friends', icon:'↭', name:'不孤的灵魂', desc:'与3位以上角色的关系达到亲近（≥66）——你在马孔多找到了不止一个可以依靠的人。',
+    cond: s => Object.values(s.relationships || {}).filter(v => v >= 66).length >= 3 },
   { id:'ach_lone_path', icon:'◆', name:'没有温度的手', desc:'通关时，所有角色关系值均不超过40。你穿越了百年，没在任何人身上留下温度。',
     cond: s => s.hasCompletedGame && Object.keys(s.relationships || {}).length >= 5
                 && Object.values(s.relationships || {}).every(v => v <= 40) },

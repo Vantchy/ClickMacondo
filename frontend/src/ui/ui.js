@@ -4,6 +4,9 @@
          js/chapter-registry.js, js/achievements.js
    ================================================================ */
 
+/** 主菜单子面板追踪：从主菜单打开则记 true，关闭时还原主菜单 */
+let _overlayOpenedFromMenu = false;
+
 /* ---- Toast 提示 ---- */
 let toastTimer = null;
 function showToast(msg, duration = 2000) {
@@ -91,6 +94,14 @@ function showCredits() {
 function closeCredits() {
   const creditsOverlay = document.getElementById('credits-overlay');
   if (creditsOverlay) creditsOverlay.classList.remove('show');
+
+  // 还原致谢名单原始内容（移除上次插入的评价，恢复原始占位符）
+  const scroll = document.getElementById('credits-scroll');
+  if (scroll && scroll.dataset.originalHTML) {
+    scroll.innerHTML = scroll.dataset.originalHTML;
+    delete scroll.dataset.originalHTML;
+  }
+
   GameEngine.resetGame();
   StorageManager.clearAll();
   GameState.chapter = 0;
@@ -271,10 +282,12 @@ function exitToCover() {
 
 /* ---- v2.0: 玩法介绍 ---- */
 function openGameplayIntro() {
+  _overlayOpenedFromMenu = true;
   document.getElementById('gameplay-overlay').classList.add('open');
 }
 function closeGameplayIntro() {
   document.getElementById('gameplay-overlay').classList.remove('open');
+  if (_overlayOpenedFromMenu) { _overlayOpenedFromMenu = false; showMainMenu(); }
 }
 
 function openMainMenu() {
@@ -302,11 +315,13 @@ function openAchievementsPage() {
       </div>`;
   });
   grid.innerHTML = html || '<div style="color:var(--gold-dim);text-align:center;padding:20px;">暂无成就定义</div>';
+  _overlayOpenedFromMenu = true;
   document.getElementById('achievements-overlay').classList.add('open');
 }
 
 function closeAchievements() {
   document.getElementById('achievements-overlay').classList.remove('open');
+  if (_overlayOpenedFromMenu) { _overlayOpenedFromMenu = false; showMainMenu(); }
 }
 
 function openBookmarksPage() {
@@ -335,11 +350,13 @@ function openBookmarksPage() {
     html = '<div style="color:var(--gold-dim);text-align:center;padding:20px;font-style:italic;">尚未收集任何记忆碎片。<br>在游戏中做出选择来收集它们。</div>' + html;
   }
   grid.innerHTML = html;
+  _overlayOpenedFromMenu = true;
   document.getElementById('bookmarks-overlay').classList.add('open');
 }
 
 function closeArchiveBookmarks() {
   document.getElementById('bookmarks-overlay').classList.remove('open');
+  if (_overlayOpenedFromMenu) { _overlayOpenedFromMenu = false; showMainMenu(); }
 }
 
 /* ---- v2.1: 标签收集册（跨存档持久化） ---- */
@@ -438,11 +455,13 @@ function openTagCollectionPage() {
   html = '<div style="text-align:center;margin-bottom:12px;font-size:0.75rem;color:var(--gold-light);">◈ 全局收集进度：<strong>' + totalGot + '/' + totalAll + ' (' + globalPct + '%)</strong></div>' + html;
 
   grid.innerHTML = html;
+  _overlayOpenedFromMenu = true;
   overlay.classList.add('open');
 }
 
 function closeTagCollection() {
   document.getElementById('tagcollection-overlay').classList.remove('open');
+  if (_overlayOpenedFromMenu) { _overlayOpenedFromMenu = false; showMainMenu(); }
 }
 
 /* ---- v2.1: 隐藏线索册（跨存档持久化） ---- */
@@ -536,16 +555,17 @@ function openClueCollectionPage() {
   html = '<div style="text-align:center;margin-bottom:12px;font-size:0.75rem;color:#c0a0d0;">◈ 线索收集进度：<strong>' + totalGot + '/' + totalAll + ' (' + globalPct + '%)</strong></div>' + html;
 
   grid.innerHTML = html;
+  _overlayOpenedFromMenu = true;
   overlay.classList.add('open');
 }
 
 function closeClueCollection() {
   document.getElementById('cluecollection-overlay').classList.remove('open');
+  if (_overlayOpenedFromMenu) { _overlayOpenedFromMenu = false; showMainMenu(); }
 }
 
 /* ---- v2.3: 结局回廊 ---- */
 function openEndingsGallery() {
-  hideMainMenu();
   const overlay = document.getElementById('endings-gallery-overlay');
   if (!overlay) return;
   const grid = document.getElementById('endings-gallery-grid');
@@ -578,12 +598,14 @@ function openEndingsGallery() {
   });
 
   grid.innerHTML = html;
+  _overlayOpenedFromMenu = true;
   overlay.classList.add('open');
 }
 
 function closeEndingsGallery() {
   const overlay = document.getElementById('endings-gallery-overlay');
   if (overlay) overlay.classList.remove('open');
+  if (_overlayOpenedFromMenu) { _overlayOpenedFromMenu = false; showMainMenu(); }
 }
 
 /* ---- 终章评价 ---- */
@@ -652,25 +674,34 @@ function getEndingEvaluation() {
 function showEndingCredits() {
   const evalData = getEndingEvaluation();
   const scroll = document.getElementById('credits-scroll');
-  if (scroll) {
-    const evalHTML = `
-      <div style="height:25vh;"></div>
-      <div style="font-family:var(--font-title);font-size:1rem;color:${evalData.color};letter-spacing:0.12em;margin-bottom:8px;">
-        — ${evalData.title} —
-      </div>
-      <div class="credits-quote" style="margin-bottom:40px;font-size:0.85rem;color:${evalData.color};">
-        ${evalData.quote}
-      </div>
-      <div class="credits-divider"></div>
-    `;
-    const existing = scroll.innerHTML;
-      // 使用更健壮的方式替换 credits 间距：先匹配再替换，避免硬编码 HTML 格式
-      const spacerMatch = existing.match(/<div style="height:30vh;"><\/div>/);
-      if (spacerMatch) {
-        scroll.innerHTML = evalHTML + existing.replace(spacerMatch[0], '<div style="height:5vh;"><\/div>');
-      } else {
-        scroll.innerHTML = evalHTML + existing;
-      }
+  if (!scroll) return;
+
+  // 防止重复插入（评价已存在则直接播放致谢名单）
+  if (scroll.querySelector('.credits-evaluation')) {
+    showCredits();
+    return;
+  }
+
+  const evalHTML = `
+    <div class="credits-evaluation" style="height:25vh;"></div>
+    <div style="font-family:var(--font-title);font-size:1rem;color:${evalData.color};letter-spacing:0.12em;margin-bottom:8px;">
+      — ${evalData.title} —
+    </div>
+    <div class="credits-quote" style="margin-bottom:40px;font-size:0.85rem;color:${evalData.color};">
+      ${evalData.quote}
+    </div>
+    <div class="credits-divider"></div>
+  `;
+  const existing = scroll.innerHTML;
+  // 保存原始 HTML，以便 closeCredits 时还原
+  if (!scroll.dataset.originalHTML) {
+    scroll.dataset.originalHTML = existing;
+  }
+  const spacerMatch = existing.match(/<div style="height:30vh;"><\/div>/);
+  if (spacerMatch) {
+    scroll.innerHTML = evalHTML + existing.replace(spacerMatch[0], '<div style="height:5vh;"><\/div>');
+  } else {
+    scroll.innerHTML = evalHTML + existing;
   }
   showCredits();
 }

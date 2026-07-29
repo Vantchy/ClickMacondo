@@ -157,39 +157,48 @@ const Renderer = {
         const lockedChoiceId = GameState.sceneChoices[scene.id];
         const isLocked = !!lockedChoiceId;
 
-        // 选项模式 — 可玩性增强：根据记忆碎片过滤选项
-        const visibleChoices = GameEngine.filterChoicesByMemories
-          ? GameEngine.filterChoicesByMemories(scene)
-          : scene.choices;
-
         html += `<div class="right-section-title">${isLocked ? '你的选择' : '做出你的选择'}</div>`;
         html += `<div class="choices-list">`;
-        visibleChoices.forEach(choice => {
+
+        // v2.4: 遍历全部选项 — 门控未通过的展示为锁定态+具体条件
+        scene.choices.forEach(choice => {
+          const gateInfo = (GameEngine.describeChoiceGates && !isLocked)
+            ? GameEngine.describeChoiceGates(choice)
+            : { passed: true, hasGates: false, conditions: [] };
+
           const isChosen = isLocked && choice.id === lockedChoiceId;
-          const isSecret = choice.isSecretOption || choice.requiredMemory;
+          const isGatedLocked = !isLocked && gateInfo.hasGates && !gateInfo.passed;
+          const isGatedUnlocked = !isLocked && gateInfo.hasGates && gateInfo.passed;
+          const isAnySecret = choice.isSecretOption || choice.requiredMemory || choice.requiredClue;
+
           let btnClass = 'choice-btn';
-          if (isSecret) btnClass += ' secret-option';
+          if (isAnySecret) btnClass += ' secret-option';
           if (isChosen) btnClass += ' choice-chosen';
           else if (isLocked) btnClass += ' choice-dimmed';
+          else if (isGatedLocked) btnClass += ' choice-gated-locked';
+          else if (isGatedUnlocked) btnClass += ' choice-gated-unlocked';
 
-          // v2.0: 不再展示情感代价/收益标签——后果在叙事中自然浮现
-          const onclickAttr = isLocked ? '' : `onclick="selectChoice('${choice.id}')"`;
-          const selectedClass = (!isLocked && _selectedChoiceId === choice.id) ? ' choice-selected' : '';
-          html += `
-            <div class="${btnClass}${selectedClass}" data-choice-id="${choice.id}" ${onclickAttr}>
-              <span class="choice-label">${isChosen ? '▶ ' : ''}${choice.label}</span>
-              <span class="choice-desc">${choice.description}</span>
-            </div>`;
+          const canClick = !isLocked && !isGatedLocked;
+          const onclickAttr = canClick ? `onclick="selectChoice('${choice.id}')"` : '';
+          const selectedClass = (canClick && _selectedChoiceId === choice.id) ? ' choice-selected' : '';
+
+          html += `<div class="${btnClass}${selectedClass}" data-choice-id="${choice.id}" ${onclickAttr}>`;
+          html += `<span class="choice-label">${isChosen ? '▶ ' : ''}${choice.label}</span>`;
+          html += `<span class="choice-desc">${choice.description}</span>`;
+
+          // 展示门控条件（未锁定状态的含门控选项）
+          if (!isLocked && gateInfo.hasGates) {
+            html += `<div class="choice-gate-conditions">`;
+            gateInfo.conditions.forEach(c => {
+              html += `<span class="choice-gate-condition ${c.met ? 'met' : 'unmet'}">`;
+              html += (c.met ? '✓ ' : '✗ ') + c.desc;
+              html += `</span>`;
+            });
+            html += `</div>`;
+          }
+
+          html += `</div>`;
         });
-
-        // v2.2: 隐藏选项灰位提示 — 当过滤后选项数少于原始选项数时显示
-        if (!isLocked && visibleChoices.length < scene.choices.length) {
-          html += `
-            <div class="choice-btn choice-locked-hint">
-              <span class="choice-label">？？？</span>
-              <span class="choice-desc">—— 需要特定的线索、记忆或羁绊才能解锁此选项 ——</span>
-            </div>`;
-        }
 
         html += `</div>`;
       } else if (scene.type === 'settlement' && scene.settlement) {
@@ -233,9 +242,12 @@ const Renderer = {
           html += `<button class="next-btn" onclick="handleNext('${st.nextScene}')">${st.nextLabel || '继续'}</button>`;
         } else if (st.isChapterEnd) {
           let nextChapterNum = GameState.chapter + 1;
-          const lastChoice = GameState.choiceLog.length > 0 ? GameState.choiceLog[GameState.choiceLog.length - 1] : null;
-          if (lastChoice && lastChoice.targetChapter) {
-            nextChapterNum = lastChoice.targetChapter;
+          // 仅序章结算时从 choiceLog 读取 targetChapter 决定跳转目标
+          if (GameState.chapter === 0) {
+            const lastChoice = GameState.choiceLog.length > 0 ? GameState.choiceLog[GameState.choiceLog.length - 1] : null;
+            if (lastChoice && lastChoice.targetChapter) {
+              nextChapterNum = lastChoice.targetChapter;
+            }
           }
           const nextChapterId = chapterNumToId(nextChapterNum);
           const nextChapterData = chapters[nextChapterId];
@@ -257,6 +269,13 @@ const Renderer = {
             }
             html += `</div>`;
           } else {
+            console.warn('[章末按钮] nextChapterData 为空!',
+              'chapter=' + GameState.chapter,
+              'nextChapterNum=' + nextChapterNum,
+              'nextChapterId=' + nextChapterId,
+              'chapters[id]=' + (chapters[nextChapterId] || 'UNDEFINED'),
+              'chapters总keys=' + Object.keys(chapters).length,
+              'choiceLog长度=' + GameState.choiceLog.length);
             html += `<button class="next-btn" style="opacity:0.6;cursor:default;">终章 · 故事结束</button>`;
             html += `<div style="text-align:center;margin-top:16px;font-style:italic;color:var(--gold-dim);font-size:0.85rem;">`;
             html += `<p>羊皮卷已经合上。故事到此结束。</p>`;

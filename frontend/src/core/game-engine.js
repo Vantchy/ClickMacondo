@@ -193,7 +193,14 @@ const GameEngine = {
   switchToChapter(chapterNum, preserveHistory) {
     const chapterId = chapterNumToId(chapterNum);
     const chapterData = chapters[chapterId];
-    if (!chapterData) return false;
+    if (!chapterData) {
+      console.error('[switchToChapter] 章节数据不存在!',
+        'chapterNum=' + chapterNum,
+        'chapterId=' + chapterId,
+        'chapters keys=' + Object.keys(chapters).length,
+        '调用栈:', new Error().stack);
+      return false;
+    }
 
     if (chapterNum !== GameState.chapter) {
       const isFromPrologue = (GameState.chapter === 0);
@@ -284,6 +291,62 @@ const GameEngine = {
     return true;
   },
 
+  /** [DEBUG] 破解模式：绕过所有锁定，跳转到任意章节
+   *  @param {number} chapterNum — 0=序章, 1-20=正文, 21=终章
+   */
+  debugJumpToChapter(chapterNum) {
+    const chapterId = chapterNumToId(chapterNum);
+    const chapterData = chapters[chapterId];
+    if (!chapterData) {
+      console.warn('debugJumpToChapter: 章节不存在 — ' + chapterNum);
+      return false;
+    }
+
+    // 标记当前章节完成（避免状态不一致）
+    if (GameState.chapter >= 1) {
+      this.recordChapterImprint(GameState.chapter);
+    }
+    GameState.markChapterCompleted(GameState.chapter);
+
+    // 应用动量规则（仅当从 ≥1 章跳到下一章时）
+    if (GameState.chapter >= 1 && chapterNum === GameState.chapter + 1) {
+      this.applyMomentum(GameState.chapter);
+    }
+
+    // 直接设置目标章节
+    GameState.chapter = chapterNum;
+    GameState.currentScene = chapterData.initialScene;
+    GameState.round = 0;
+    GameState.history = [chapterData.initialScene];
+    GameState.historyIndex = 0;
+    GameState.choices = [];
+    GameState.choiceLog = [];
+    // 重置本章瞬态（跨章状态保留，让玩家可以跨章累积线索/记忆/好感）
+    GameState.fateCounter = 0;
+    GameState.bondCounter = 0;
+    GameState._lastFateChange = 0;
+    GameState._lastBondChange = 0;
+    GameState._lastClueFound = null;
+    GameState._secretOptionsChosen = 0;
+    GameState._hasGoneBack = false;
+    GameState._backNavCount = 0;
+    GameState._marginaliaRead = 0;
+    GameState._hotspotsFound = 0;
+    GameState._allHotspotsFound = false;
+    GameState._endingType = null;
+    GameState._allChaptersDone = false;
+
+    StorageManager.autoSave();
+    this.encounterChapterMembers();
+
+    console.log('%c🔧 DEBUG JUMP %c→ 第' + chapterNum + '章 %c「' + chapterData.title + '」',
+      'color:#c0a878;font-weight:bold;', 'color:#d4b878;', 'color:#8a9ab0;');
+    if (typeof showToast === 'function') {
+      showToast('🔧 调试跳转：' + chapterData.title);
+    }
+    return true;
+  },
+
   /** 进入下一章 */
   goToNextChapter() {
     // v2.0: 记录本章烙印（序章不记录）
@@ -304,9 +367,14 @@ const GameEngine = {
     // 检查成就并通知
     checkAchievements();
     checkAndNotifyAchievements();
-    // 检查是否有待处理的targetChapter（序章时代选择）
-    const lastChoice = GameState.choiceLog.length > 0 ? GameState.choiceLog[GameState.choiceLog.length - 1] : null;
-    let nextChapter = (lastChoice && lastChoice.targetChapter) ? lastChoice.targetChapter : GameState.chapter + 1;
+    // 序章时代选择：仅当从序章（chapter=0）推进时才读取 targetChapter
+    let nextChapter = GameState.chapter + 1;
+    if (GameState.chapter === 0) {
+      const lastChoice = GameState.choiceLog.length > 0 ? GameState.choiceLog[GameState.choiceLog.length - 1] : null;
+      if (lastChoice && lastChoice.targetChapter) {
+        nextChapter = lastChoice.targetChapter;
+      }
+    }
 
     // v2.0: 终章结局路由 — 按 imprint 统计判定
     if (nextChapter === 21) {
@@ -325,6 +393,11 @@ const GameEngine = {
       GameState._allChaptersDone = allChaptersDone;
     }
 
+    console.log('[goToNextChapter]',
+      '当前章节=' + GameState.chapter,
+      '→ 下一章=' + nextChapter,
+      'choiceLog长度=' + GameState.choiceLog.length,
+      '已完成的章节=' + Object.keys(GameState.completedChapters).join(','));
     return this.switchToChapter(nextChapter, true);
   },
 
@@ -468,6 +541,136 @@ const GameEngine = {
       }
       return true;
     });
+  },
+
+  /** v2.4: 描述选项的门控条件 — 返回通过状态 + 每条条件详情
+   *  @param {object} choice — 选项对象
+   *  @returns {{ passed: boolean, hasGates: boolean, conditions: Array<{met:boolean, label:string, desc:string}> }}
+   */
+  describeChoiceGates(choice) {
+    const conditions = [];
+    let allMet = true;
+    let hasGates = false;
+
+    // requiredMemory
+    if (choice.requiredMemory) {
+      hasGates = true;
+      const memId = choice.requiredMemory;
+      const mem = (typeof memoryRegistry !== 'undefined') ? memoryRegistry[memId] : null;
+      const met = GameState.memories.includes(memId);
+      if (!met) allMet = false;
+      conditions.push({
+        met,
+        label: '记忆碎片',
+        desc: met ? '已持有「' + (mem ? mem.title : memId) + '」'
+                  : '需要记忆碎片：「' + (mem ? mem.title : memId) + '」'
+      });
+    }
+
+    // requiredClue
+    if (choice.requiredClue) {
+      hasGates = true;
+      const clueId = choice.requiredClue;
+      const clue = (typeof CLUE_DEFS !== 'undefined') ? CLUE_DEFS[clueId] : null;
+      const met = GameState.hasClue(clueId);
+      if (!met) allMet = false;
+      conditions.push({
+        met,
+        label: '隐藏线索',
+        desc: met ? '已发现「' + (clue ? clue.name : clueId) + '」'
+                  : '需要隐藏线索：' + (clue ? clue.name : clueId)
+      });
+    }
+
+    // requiredFlag
+    if (choice.requiredFlag) {
+      hasGates = true;
+      const { flag, min } = choice.requiredFlag;
+      const current = GameState.getFlag(flag);
+      const met = current >= min;
+      if (!met) allMet = false;
+      conditions.push({
+        met,
+        label: '命运标记',
+        desc: met ? '标记「' + flag + '」已达 ' + current + '（需 ≥' + min + '）'
+                  : '需要标记「' + flag + '」达到 ' + min + '（当前：' + current + '）'
+      });
+    }
+
+    // requiredRelationship
+    if (choice.requiredRelationship) {
+      hasGates = true;
+      const { character, min } = choice.requiredRelationship;
+      const current = GameState.relationships[character] || 0;
+      const met = current >= min;
+      if (!met) allMet = false;
+      conditions.push({
+        met,
+        label: '好感度',
+        desc: met ? '与「' + character + '」好感 ' + current + '（需 ≥' + min + '）'
+                  : '需要与「' + character + '」好感度达到 ' + min + '（当前：' + current + '）'
+      });
+    }
+
+    // requiredFate
+    if (choice.requiredFate) {
+      hasGates = true;
+      const f = GameState.fateCounter;
+      const { min, max } = choice.requiredFate;
+      const metMin = min == null || f >= min;
+      const metMax = max == null || f <= max;
+      const met = metMin && metMax;
+      if (!met) allMet = false;
+      let range = '';
+      if (min != null && max != null) range = min + ' ≤ 宿命 ≤ ' + max;
+      else if (min != null) range = '宿命 ≥ ' + min;
+      else if (max != null) range = '宿命 ≤ ' + max;
+      conditions.push({
+        met,
+        label: '宿命值',
+        desc: met ? range + '（当前：' + f + '）'
+                  : '需要 ' + range + '（当前：' + f + '）'
+      });
+    }
+
+    // requiredBond
+    if (choice.requiredBond) {
+      hasGates = true;
+      const b = GameState.bondCounter;
+      const { min, max } = choice.requiredBond;
+      const metMin = min == null || b >= min;
+      const metMax = max == null || b <= max;
+      const met = metMin && metMax;
+      if (!met) allMet = false;
+      let range = '';
+      if (min != null && max != null) range = min + ' ≤ 羁绊 ≤ ' + max;
+      else if (min != null) range = '羁绊 ≥ ' + min;
+      else if (max != null) range = '羁绊 ≤ ' + max;
+      conditions.push({
+        met,
+        label: '羁绊值',
+        desc: met ? range + '（当前：' + b + '）'
+                  : '需要 ' + range + '（当前：' + b + '）'
+      });
+    }
+
+    // requiredPlaythrough
+    if (choice.requiredPlaythrough) {
+      hasGates = true;
+      const min = choice.requiredPlaythrough;
+      const current = GameState.playthroughCount || 0;
+      const met = current >= min;
+      if (!met) allMet = false;
+      const weekLabel = min === 2 ? '二周目' : min === 3 ? '三周目' : min + '周目';
+      conditions.push({
+        met,
+        label: '轮回',
+        desc: met ? '已达' + weekLabel + '以上'
+                  : '需要' + weekLabel + '以上方可解锁（当前：第' + current + '周目）'
+      });
+    }
+
+    return { passed: allMet, hasGates, conditions };
   },
 
   /** 可玩性增强：追踪边缘文字阅读 */
