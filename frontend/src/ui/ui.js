@@ -89,7 +89,8 @@ function showCredits() {
 
 /** 关闭致谢名单并重置游戏 */
 function closeCredits() {
-  document.getElementById('credits-overlay').classList.remove('show');
+  const creditsOverlay = document.getElementById('credits-overlay');
+  if (creditsOverlay) creditsOverlay.classList.remove('show');
   GameEngine.resetGame();
   StorageManager.clearAll();
   GameState.chapter = 0;
@@ -122,7 +123,6 @@ const BGM = {
       p.then(() => { this._started = true; console.log('背景音乐已启动'); })
        .catch((e) => { console.warn('背景音乐播放失败（可能需要用户交互后重试）:', e.message); });
     } else {
-      this._started = true;
     }
   },
 
@@ -196,11 +196,11 @@ function refreshBigSaveCard() {
     const mins = (save.totalPlayMinutes || 0) % 60;
     const timeStr = hours > 0 ? hours + '小时' + mins + '分钟' : mins + '分钟';
     card.innerHTML = `
-      <div>📖 当前进度：<strong style="color:var(--gold-light);">${save.currentChapterTitle || '未知'}</strong></div>
-      <div>👤 附身角色：${save.possessedChar || '—'}</div>
-      <div>🏷️ 标签：${save.totalTags || 0}　💎 记忆：${save.totalMemories || 0}</div>
-      <div>📅 上次游玩：${save.lastPlayed || '—'}　⏱️ 累计时长：${timeStr}</div>
-      <div>📚 已完成章节：${save.chaptersCompleted || 0} / 21</div>
+      <div>❧ 当前进度：<strong style="color:var(--gold-light);">${save.currentChapterTitle || '未知'}</strong></div>
+      <div>◆ 附身角色：${save.possessedChar || '—'}</div>
+      <div>⁂ 标签：${save.totalTags || 0}　◆ 记忆：${save.totalMemories || 0}</div>
+      <div>¶ 上次游玩：${save.lastPlayed || '—'}　↻ 累计时长：${timeStr}</div>
+      <div>❧ 已完成章节：${save.chaptersCompleted || 0} / 21</div>
     `;
     if (continueBtn) continueBtn.disabled = false;
   } else if (hasAutosave) {
@@ -271,12 +271,10 @@ function exitToCover() {
 
 /* ---- v2.0: 玩法介绍 ---- */
 function openGameplayIntro() {
-  hideMainMenu();
   document.getElementById('gameplay-overlay').classList.add('open');
 }
 function closeGameplayIntro() {
   document.getElementById('gameplay-overlay').classList.remove('open');
-  showMainMenu();
 }
 
 function openMainMenu() {
@@ -295,7 +293,7 @@ function openAchievementsPage() {
     const unlocked = unlockedIds.includes(ach.id);
     html += `
       <div class="achievement-card ${unlocked ? 'unlocked' : 'locked'}">
-        <div class="ach-icon">${unlocked ? ach.icon : '🔒'}</div>
+        <div class="ach-icon">${unlocked ? ach.icon : '✕'}</div>
         <div class="ach-info">
           <div class="ach-name">${ach.name}</div>
           <div class="ach-desc">${ach.desc}</div>
@@ -324,7 +322,7 @@ function openBookmarksPage() {
       const unlocked = GameState.memories.includes(mem.id);
       html += `
         <div class="bookmark-card ${unlocked ? 'unlocked' : 'locked'}">
-          <div class="bookmark-icon">${unlocked ? '💎' : '🔒'}</div>
+          <div class="bookmark-icon">${unlocked ? '◆' : '✕'}</div>
           <div class="bookmark-info">
             <div class="bookmark-chapter">第${ch.chapterNumber}章</div>
             <div class="bookmark-title">${mem.title}</div>
@@ -430,14 +428,14 @@ function openTagCollectionPage() {
       let cls = 'tag-badge';
       if (has) cls += ' tag-obtained';
       else cls += ' tag-missing';
-      html += '<span class="' + cls + '" style="font-size:0.62rem;padding:2px 7px;">' + t + (cur && !has ? ' 🟢' : '') + '</span>';
+      html += '<span class="' + cls + '" style="font-size:0.62rem;padding:2px 7px;">' + t + (cur && !has ? ' ●' : '') + '</span>';
     });
     html += '</div></div>';
   });
 
   // 全局进度
   const globalPct = totalAll > 0 ? Math.round((totalGot/totalAll)*100) : 0;
-  html = '<div style="text-align:center;margin-bottom:12px;font-size:0.75rem;color:var(--gold-light);">📊 全局收集进度：<strong>' + totalGot + '/' + totalAll + ' (' + globalPct + '%)</strong></div>' + html;
+  html = '<div style="text-align:center;margin-bottom:12px;font-size:0.75rem;color:var(--gold-light);">◈ 全局收集进度：<strong>' + totalGot + '/' + totalAll + ' (' + globalPct + '%)</strong></div>' + html;
 
   grid.innerHTML = html;
   overlay.classList.add('open');
@@ -528,14 +526,14 @@ function openClueCollectionPage() {
       const found = persistentClues.has(clue.id);
       const cur = currentClues.has(clue.id);
       let cls = found ? 'clue-collection-item found' : 'clue-collection-item missing';
-      const marker = cur && !found ? ' 🟢' : '';
-      html += '<span class="' + cls + '" style="font-size:0.6rem;padding:2px 8px;border-radius:10px;">' + (found ? '🔍 ' : '？') + clue.name + marker + '</span>';
+      const marker = cur && !found ? ' ●' : '';
+      html += '<span class="' + cls + '" style="font-size:0.6rem;padding:2px 8px;border-radius:10px;">' + (found ? '◈ ' : '？') + clue.name + marker + '</span>';
     });
     html += '</div></div>';
   });
 
   const globalPct = totalAll > 0 ? Math.round((totalGot / totalAll) * 100) : 0;
-  html = '<div style="text-align:center;margin-bottom:12px;font-size:0.75rem;color:#c0a0d0;">📊 线索收集进度：<strong>' + totalGot + '/' + totalAll + ' (' + globalPct + '%)</strong></div>' + html;
+  html = '<div style="text-align:center;margin-bottom:12px;font-size:0.75rem;color:#c0a0d0;">◈ 线索收集进度：<strong>' + totalGot + '/' + totalAll + ' (' + globalPct + '%)</strong></div>' + html;
 
   grid.innerHTML = html;
   overlay.classList.add('open');
@@ -549,6 +547,14 @@ function closeClueCollection() {
 function getEndingEvaluation() {
   const chaptersDone = Object.keys(GameState.completedChapters).length;
   const memories = GameState.memories.length;
+  const endingType = GameState._endingType || 'bystander';
+  const baseEnding = endingType.replace('_all_clues', '');
+  const allClues = endingType.includes('_all_clues');
+  const endingDef = (typeof ENDING_DEFS !== 'undefined') ? ENDING_DEFS[endingType] : null;
+  const endingTitle = endingDef ? endingDef.title : '宿命旁观者';
+
+  // 综合评分：记忆碎片数 + 全线索加分
+  const score = memories + (allClues ? 5 : 0);
 
   if (chaptersDone <= 5) {
     return {
@@ -557,31 +563,46 @@ function getEndingEvaluation() {
       quote: '你只翻开了羊皮卷的前几页——马孔多的故事还很长。当你准备好时，栗树下的老人仍在等你。',
     };
   }
-  if (memories <= 3) {
+  if (score <= 3) {
     return {
       title: '匆匆过客',
       color: 'var(--gold-dim)',
       quote: '你走过了马孔多的街道，但未曾拾起一片落叶。有些故事，需要停下来才能听见。',
     };
   }
-  if (memories <= 7) {
+  if (score <= 7) {
     return {
       title: '马孔多的旅人',
       color: 'var(--gold)',
       quote: '你在故事之间找到了自己的步伐。你知道有些事早已写好在羊皮卷上——但你仍然选择了用自己的手去触碰每一块冰、每一只蝴蝶。',
     };
   }
-  if (memories <= 12) {
+  if (score <= 12) {
     return {
       title: '羊皮卷的合著者',
       color: 'var(--gold-light)',
       quote: '你已经不是读者了——你是这卷羊皮纸上的最后一个名字。梅尔基亚德斯写下了一切，但他没有写你会怎么读。你用自己的选择在每一个句号之间种下了新的逗号。',
     };
   }
+  // 高分 + 特定结局的定制评价
+  if (baseEnding === 'rebel') {
+    return {
+      title: '羊皮卷的撕裂者',
+      color: 'var(--gold)',
+      quote: '你撕掉了命运写好的那一页。梅尔基亚德斯看着空白处——然后笑了。"我写不了你。但你已经写下了自己的故事。"',
+    };
+  }
+  if (baseEnding === 'coauthor' || baseEnding === 'witness') {
+    return {
+      title: '百年孤独的见证者',
+      color: 'var(--gold-light)',
+      quote: '你活过了一百年。不是作为布恩迪亚——是作为你自己。马孔多被飓风抹去了——但它在你的记忆里比任何现实都更坚固。这是羊皮卷无法预言的——一个读者把一本书活成了自己的生命。',
+    };
+  }
   return {
-    title: '百年孤独的见证者',
-    color: 'var(--gold-light)',
-    quote: '你活过了一百年。不是作为布恩迪亚——是作为你自己。马孔多被飓风抹去了——但它在你的记忆里比任何现实都更坚固。这是羊皮卷无法预言的——一个读者把一本书活成了自己的生命。',
+    title: endingTitle + '的旅人',
+    color: (endingDef && endingDef.color) || 'var(--gold-light)',
+    quote: '你以「' + endingTitle + '」的身份走完了百年的孤独。羊皮卷已经合上——但你的名字，已经写在了最后一页的空白处。',
   };
 }
 
@@ -600,7 +621,13 @@ function showEndingCredits() {
       <div class="credits-divider"></div>
     `;
     const existing = scroll.innerHTML;
-    scroll.innerHTML = evalHTML + existing.replace(/<div style="height:30vh;"><\/div>/, '<div style="height:5vh;"></div>');
+      // 使用更健壮的方式替换 credits 间距：先匹配再替换，避免硬编码 HTML 格式
+      const spacerMatch = existing.match(/<div style="height:30vh;"><\/div>/);
+      if (spacerMatch) {
+        scroll.innerHTML = evalHTML + existing.replace(spacerMatch[0], '<div style="height:5vh;"><\/div>');
+      } else {
+        scroll.innerHTML = evalHTML + existing;
+      }
   }
   showCredits();
 }

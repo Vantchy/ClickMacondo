@@ -13,7 +13,7 @@ const StorageManager = {
     try {
       const data = GameState.toJSON();
       localStorage.setItem(this.AUTO_KEY, JSON.stringify(data));
-      updateBigSave();
+      try { updateBigSave(); } catch (e) { console.warn('大存档更新失败:', e); }
       return true;
     } catch (e) {
       console.warn('自动存档失败:', e);
@@ -74,6 +74,7 @@ const StorageManager = {
       const raw = localStorage.getItem(this.SLOT_PREFIX + slotNum);
       if (!raw) return false;
       const saveData = JSON.parse(raw);
+      if (!saveData.state) { console.warn('存档槽位数据缺少.state字段'); return false; }
       GameState.fromJSON(saveData.state);
       return true;
     } catch (e) {
@@ -122,7 +123,7 @@ const SaveLoadPanel = {
     const title = document.getElementById('saveload-title');
     if (!overlay || !title) return;
 
-    title.textContent = mode === 'save' ? '💾 选择存档位置' : '📂 选择读档位置';
+    title.textContent = mode === 'save' ? '◈ 选择存档位置' : '❧ 选择读档位置';
     this.renderCurrentInfo();
     this.renderSlots();
     overlay.classList.add('open');
@@ -167,9 +168,9 @@ const SaveLoadPanel = {
         html += '<div class="save-slot-time">' + info.timestamp + '</div>';
         html += '</div>';
         html += '<div class="save-slot-actions">';
-        html += '<button class="slot-btn load-btn" data-action="load" data-slot="' + i + '">📂 读取</button>';
-        html += '<button class="slot-btn save-btn" data-action="save" data-slot="' + i + '">💾 覆盖</button>';
-        html += '<button class="slot-btn delete-btn" data-action="delete" data-slot="' + i + '">🗑️</button>';
+        html += '<button class="slot-btn load-btn" data-action="load" data-slot="' + i + '">❧ 读取</button>';
+        html += '<button class="slot-btn save-btn" data-action="save" data-slot="' + i + '">◈ 覆盖</button>';
+        html += '<button class="slot-btn delete-btn" data-action="delete" data-slot="' + i + '">✕</button>';
         html += '</div>';
         html += '</div>';
       } else {
@@ -180,7 +181,7 @@ const SaveLoadPanel = {
         html += '<div class="save-slot-empty-text">— 空存档位 —</div>';
         html += '</div>';
         html += '<div class="save-slot-actions">';
-        html += '<button class="slot-btn save-btn" data-action="save" data-slot="' + i + '">💾 保存到此</button>';
+        html += '<button class="slot-btn save-btn" data-action="save" data-slot="' + i + '">◈ 保存到此</button>';
         html += '</div>';
         html += '</div>';
       }
@@ -204,7 +205,7 @@ const SaveLoadPanel = {
     switch (action) {
       case 'save':
         if (StorageManager.saveToSlot(slotNum)) {
-          showToast('💾 已保存到存档 ' + this.CHINESE_NUMS[slotNum]);
+          showToast('◈ 已保存到存档 ' + this.CHINESE_NUMS[slotNum]);
           this.renderSlots();
         } else {
           showToast('❌ 存档失败');
@@ -213,7 +214,7 @@ const SaveLoadPanel = {
 
       case 'load':
         if (!StorageManager.getSlotInfo(slotNum)) {
-          showToast('📂 该存档位为空');
+          showToast('❧ 该存档位为空');
           return;
         }
         if (confirm('确定要从存档 ' + this.CHINESE_NUMS[slotNum] + ' 读取吗？当前未保存的进度将丢失。')) {
@@ -221,7 +222,7 @@ const SaveLoadPanel = {
             StorageManager.autoSave(); // 同步自动存档
             Renderer.render();
             this.close();
-            showToast('📂 已从存档 ' + this.CHINESE_NUMS[slotNum] + ' 读取');
+            showToast('❧ 已从存档 ' + this.CHINESE_NUMS[slotNum] + ' 读取');
           } else {
             showToast('❌ 读档失败');
           }
@@ -232,7 +233,7 @@ const SaveLoadPanel = {
         if (confirm('确定要删除存档 ' + this.CHINESE_NUMS[slotNum] + ' 吗？此操作不可撤销。')) {
           StorageManager.deleteSlot(slotNum);
           this.renderSlots();
-          showToast('🗑️ 存档 ' + this.CHINESE_NUMS[slotNum] + ' 已删除');
+          showToast('✕ 存档 ' + this.CHINESE_NUMS[slotNum] + ' 已删除');
         }
         break;
     }

@@ -294,7 +294,7 @@ registerChapter({
     ch17_r2_choice: { id:'ch17_r2_choice', type:'choice', chapter:17, round:2, title:'第二轮选择 · 破译加速', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['羊皮卷的翻译速度在加快——快到你觉得不是你在读它，是它在你的脑海里直接印上文字。你看到了何塞·阿尔卡蒂奥·布恩迪亚被绑在栗树下的那一天——不是文字，是画面。你看到了蕾梅黛丝升天的那个下午——你甚至感觉到了一滴上天堂之前的雨水。','然后你看到了一行字——它让你停下了呼吸：","家族的第一个人被捆在一棵树上，最后一个人正被蚂蚁吃掉。","'], transition:'你选择——' }, choices:[
       { id:'ch17_r2_a', label:'继续读——面对全部真相', description:'不能逃避。读完它——哪怕最后一句是你不想看到的。', nextScene:'ch17_r2a', effects:{ tags:['勇敢的读者'], memory:null, fate: 1, bond: 2 } },
       { id:'ch17_r2_b', label:'出去走走——消化一下', description:'你需要空气。放下羊皮卷——和阿玛兰妲·乌尔苏拉一起去栗树下走走。', nextScene:'ch17_r2b', effects:{ tags:['暂停者'], memory:null, fate: 1, bond: -1 } },
-      { id:'ch17_r2_c', label:'撕掉那一页——改变预言', description:'如果你撕掉它——也许预言就不会实现了？也许羊皮卷不是绝对的？', nextScene:'ch17_r2c', effects:{ tags:['反抗者'], memory:'被撕下的一页', fate: 0, bond: 1 } }
+      { id:'ch17_r2_c', label:'撕掉那一页——改变预言', description:'如果你撕掉它——也许预言就不会实现了？也许羊皮卷不是绝对的？', nextScene:'ch17_r2c', isSecretOption: true, effects:{ tags:['反抗者'], memory:'被撕下的一页', fate: 0, bond: 1 } }
     ], settlement:'ch17_r2_settlement' },
     ch17_r2a: { id:'ch17_r2a', type:'narrative', chapter:17, round:2, title:'勇敢的读者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你继续读。羊皮卷在你眼前展开——你看到了你自己。看到你坐在这间房间里读羊皮卷的画面被写进了羊皮卷里。你忽然明白了——梅尔基亚德斯写的不是过去，不是未来——是现在。是每一个正在发生的现在。你在读的时候——故事同时在被创造。']}, choices:null, nextScene:'ch17_r2_settlement' },
     ch17_r2b: { id:'ch17_r2b', type:'narrative', chapter:17, round:2, title:'暂停者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你牵着阿玛兰妲·乌尔苏拉的手走到栗树下。老人正在画圆圈——他听见了你们的脚步声，但他没有抬头。风把栗树的枯叶吹下来——它们落在你们的头发上。你们没有讨论预言——你们只是站着——像两棵也在慢慢被时间削平的树。']}, choices:null, nextScene:'ch17_r2_settlement' },

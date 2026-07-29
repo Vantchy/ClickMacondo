@@ -185,7 +185,7 @@ const Renderer = {
       } else if (scene.type === 'settlement' && scene.settlement) {
         // 结算模式
         const st = scene.settlement;
-        html += `<div class="right-section-title">📋 结算</div>`;
+        html += `<div class="right-section-title">▸ 结算</div>`;
         html += `<div class="settlement-panel">`;
 
         if (st.summary) {
@@ -262,7 +262,7 @@ const Renderer = {
 
       } else if (scene.type === 'exploration' && scene.hotspots) {
         // 可玩性增强：自由探索场景
-        html += `<div class="right-section-title">🔍 探索这个场景</div>`;
+        html += `<div class="right-section-title">◈ 探索这个场景</div>`;
         html += `<div style="text-align:center;color:var(--gold-dim);font-size:0.8rem;margin-bottom:12px;font-style:italic;">点击闪烁的光点来发现隐藏的事物</div>`;
         html += `<div class="exploration-area" id="exploration-area">`;
         html += `<div class="exploration-bg-hint">触碰那些微光……</div>`;
@@ -279,7 +279,7 @@ const Renderer = {
         });
         html += `</div>`;
         html += `<div class="exploration-progress" id="exploration-progress">已发现 0 / ${scene.requiredDiscoveries || scene.hotspots.length}</div>`;
-        const continueDisabled = (scene.requiredDiscoveries || 1) > 0 ? ' disabled' : '';
+        const continueDisabled = (scene.requiredDiscoveries != null && scene.requiredDiscoveries > 0) ? ' disabled' : '';
         html += `<button class="exploration-continue-btn" id="exploration-continue-btn"${continueDisabled} onclick="handleExplorationContinue('${scene.nextScene}')">继续旅程 ▸</button>`;
       }
 
@@ -326,10 +326,10 @@ const Renderer = {
     const fateDisplay = document.getElementById('fate-display');
     const bondDisplay = document.getElementById('bond-display');
     if (fateDisplay) {
-      fateDisplay.textContent = '⭐ ' + GameState.fateCounter;
+      fateDisplay.textContent = '✧ 宿命 ' + GameState.fateCounter;
     }
     if (bondDisplay) {
-      bondDisplay.textContent = '🤝 ' + GameState.bondCounter;
+      bondDisplay.textContent = '↭ 羁绊 ' + GameState.bondCounter;
     }
 
     // 阅读进度条 + 页码
@@ -400,21 +400,21 @@ const Renderer = {
     if (fateChange === 0 && bondChange === 0) return '';
 
     let html = '<div class="fatebond-change-panel">';
-    html += '<div class="fatebond-change-title">📜 本次选择的影响</div>';
+    html += '<div class="fatebond-change-title">¶ 本次选择的影响</div>';
     html += '<div class="fatebond-change-items">';
 
     if (fateChange !== 0) {
       const sign = fateChange > 0 ? '+' : '';
       const cls = fateChange > 0 ? 'fb-change-positive' : 'fb-change-negative';
       const label = fateChange > 0 ? '宿命值上升' : '宿命值下降';
-      html += `<span class="fb-change-item ${cls}">⭐ ${label} ${sign}${fateChange}</span>`;
+      html += `<span class="fb-change-item ${cls}">✧ ${label} ${sign}${fateChange}</span>`;
     }
 
     if (bondChange !== 0) {
       const sign = bondChange > 0 ? '+' : '';
       const cls = bondChange > 0 ? 'fb-change-positive' : 'fb-change-negative';
       const label = bondChange > 0 ? '羁绊值上升' : '羁绊值下降';
-      html += `<span class="fb-change-item ${cls}">🤝 ${label} ${sign}${bondChange}</span>`;
+      html += `<span class="fb-change-item ${cls}">↭ ${label} ${sign}${bondChange}</span>`;
     }
 
     if (fateChange === 0 && bondChange === 0) {
@@ -442,7 +442,7 @@ const Renderer = {
       const cls = isPositive ? 'rel-change-positive' : 'rel-change-negative';
       const sign = isPositive ? '+' : '';
       html += '<span class="rel-change-item ' + cls + '">';
-      html += (isPositive ? '💛 ' : '💔 ');
+      html += (isPositive ? '+ ' : '− ');
       html += change.character + ' ' + sign + change.delta;
       html += '</span>';
     });
@@ -474,6 +474,12 @@ const Renderer = {
 /* ---- 探索场景状态追踪 ---- */
 let _explorationState = {}; // { hotspotId: true } — 当前探索场景已发现的热点
 
+/** 重置渲染器模块级状态（游戏重置时调用） */
+function resetRendererState() {
+  _explorationState = {};
+  _selectedChoiceId = null;
+}
+
 /* ---- 全局事件处理函数 ---- */
 function handleChoice(choiceId) {
   clearChoiceSelection();
@@ -502,7 +508,14 @@ function handleNext(nextSceneId) {
   // 检测是否为章末结算，标记章节完成
   const currentScene = GameEngine.getCurrentScene();
   if (currentScene && currentScene.settlement && currentScene.settlement.isChapterEnd) {
+    // v2.0: 记录本章烙印（与 goToNextChapter 保持一致）
+    if (GameState.chapter >= 1) {
+      GameEngine.recordChapterImprint(GameState.chapter);
+    }
     GameState.markChapterCompleted(GameState.chapter);
+    // 检查成就
+    checkAchievements();
+    checkAndNotifyAchievements();
   }
   GameEngine.goToScene(nextSceneId);
   Renderer.render();
@@ -652,7 +665,7 @@ function showCluePopup(clueDef) {
   popup.id = 'clue-popup';
   popup.className = 'clue-popup';
   popup.innerHTML = `
-    <div class="clue-popup-icon">🔍</div>
+    <div class="clue-popup-icon">◈</div>
     <div class="clue-popup-title">${clueDef.name}</div>
     <div class="clue-popup-desc">${clueDef.desc}</div>
     <div class="clue-popup-hint">已加入线索藏品 · ${clueDef.unlocksIn ? '可在后续章节解锁隐藏选项' : ''}</div>

@@ -79,7 +79,7 @@ const SidebarManager = {
         html += `
           <div class="archive-item ${unlocked ? 'unlocked' : 'locked'}">
             <div class="archive-chapter">第${ch.chapterNumber}章</div>
-            <div class="archive-title">${unlocked ? '💎 ' : ''}${mem.title}</div>
+            <div class="archive-title">${unlocked ? '◆ ' : ''}${mem.title}</div>
             <div class="archive-desc">${unlocked ? mem.description : '尚未解锁……做出不同的选择来发现这段记忆。'}</div>
           </div>`;
       });
@@ -91,7 +91,7 @@ const SidebarManager = {
 
     // v2.0: 隐藏线索分类
     html += '<div style="margin-top:24px;padding-top:16px;border-top:1px solid rgba(184,137,62,0.18);">';
-    html += '<div style="font-size:0.75rem;color:var(--gold-dim);margin:12px 0 8px;">🔍 隐藏线索</div>';
+    html += '<div style="font-size:0.75rem;color:var(--gold-dim);margin:12px 0 8px;">◈ 隐藏线索</div>';
     if (typeof CLUE_DEFS !== 'undefined') {
       const clueEntries = Object.values(CLUE_DEFS);
       // 按章节排序
@@ -99,8 +99,9 @@ const SidebarManager = {
       clueEntries.forEach(clue => {
         const found = GameState.hasClue ? GameState.hasClue(clue.id) : false;
         html += '<div class="clue-collection-item ' + (found ? 'found' : 'missing') + '">';
-        html += '<span>' + (found ? '🔍 ' : '？ ') + '</span>';
-        html += '<span>' + (found ? clue.name : '尚未发现 — ' + (clue.chapter ? '第' + clue.chapter + '章' : '未知')) + '</span>';
+        html += '<span>' + (found ? '◈ ' : '？ ') + '</span>';
+        const chapterLabel = (clue.chapter != null) ? (clue.chapter === 0 ? '序章' : '第' + clue.chapter + '章') : '未知';
+        html += '<span>' + (found ? clue.name : '尚未发现 — ' + chapterLabel) + '</span>';
         html += '</div>';
       });
     }
@@ -137,13 +138,13 @@ const SidebarManager = {
 
     // v2.1: 标签按章节下拉查看
     html += '<div class="profile-section">';
-    html += '<h4>🏷️ 标签收集 <span style="font-size:0.6rem;color:var(--gold-dim);">(' + GameState.tags.length + ' 已获得)</span></h4>';
+    html += '<h4>⁂ 标签收集 <span style="font-size:0.6rem;color:var(--gold-dim);">(' + GameState.tags.length + ' 已获得)</span></h4>';
     html += this._renderTagDropdown();
     html += '</div>';
 
     // 选择记录 (精简)
     html += '<div class="profile-section">';
-    html += '<h4>📝 选择记录</h4>';
+    html += '<h4>¶ 选择记录</h4>';
     if (GameState.choiceLog.length === 0) {
       html += '<p class="profile-choice-log" style="color:var(--gold-dim);font-style:italic;">尚未做出选择。</p>';
     } else {
@@ -161,7 +162,7 @@ const SidebarManager = {
 
     // v2.0: 角色关系值（显示档位+精确数值）
     html += '<div class="profile-section">';
-    html += '<h4>🤝 羁绊之人</h4>';
+    html += '<h4>↭ 羁绊之人</h4>';
     if (!GameState.relationships || Object.keys(GameState.relationships).length === 0) {
       html += '<p class="profile-choice-log" style="color:var(--gold-dim);font-style:italic;">尚未建立与他人的羁绊。<br>继续旅程来影响你与他人的关系。</p>';
     } else {
@@ -190,7 +191,7 @@ const SidebarManager = {
 
     // v2.0: 当前象限
     html += '<div class="profile-section">';
-    html += '<h4>🧭 当前象限 <span class="help-icon" onclick="event.stopPropagation();SidebarManager.showDefinitionsPopup(\'quadrant\')" title="点击查看象限定义">？</span></h4>';
+    html += '<h4>◎ 当前象限 <span class="help-icon" onclick="event.stopPropagation();SidebarManager.showDefinitionsPopup(\'quadrant\')" title="点击查看象限定义">？</span></h4>';
     const quadrant = (typeof GameEngine !== 'undefined' && GameEngine.getCurrentQuadrant)
       ? GameEngine.getCurrentQuadrant()
       : (typeof getQuadrantLabel !== 'undefined' ? getQuadrantLabel(GameState.fateCounter || 0, GameState.bondCounter || 0) : null);
@@ -204,22 +205,37 @@ const SidebarManager = {
 
     // v2.0: 宿命烙印
     html += '<div class="profile-section">';
-    html += '<h4>⭐ 宿命烙印 <span class="help-icon" onclick="event.stopPropagation();SidebarManager.showDefinitionsPopup(\'fateImprint\')" title="点击查看烙印定义">？</span></h4>';
+    html += '<h4>✧ 宿命烙印 <span class="help-icon" onclick="event.stopPropagation();SidebarManager.showDefinitionsPopup(\'fateImprint\')" title="点击查看烙印定义">？</span></h4>';
     html += this._renderImprintTrack(GameState.fateImprint || {}, 'fate');
     html += '</div>';
 
     // v2.0: 羁绊烙印
     html += '<div class="profile-section">';
-    html += '<h4>🤝 羁绊烙印 <span class="help-icon" onclick="event.stopPropagation();SidebarManager.showDefinitionsPopup(\'bondImprint\')" title="点击查看烙印定义">？</span></h4>';
+    html += '<h4>↭ 羁绊烙印 <span class="help-icon" onclick="event.stopPropagation();SidebarManager.showDefinitionsPopup(\'bondImprint\')" title="点击查看烙印定义">？</span></h4>';
     html += this._renderImprintTrack(GameState.bondImprint || {}, 'bond');
     html += '</div>';
 
     // v2.0: 线索收集
     html += '<div class="profile-section">';
-    html += '<h4>🔍 隐藏线索</h4>';
+    html += '<h4>◈ 隐藏线索</h4>';
     const foundClues = (GameState.clueFragments || []).length;
     const totalClues = (typeof CLUE_DEFS !== 'undefined') ? Object.keys(CLUE_DEFS).length : 30;
-    html += '<p class="profile-choice-log" style="text-align:center;color:var(--gold-dim);">已发现 ' + foundClues + ' / ' + totalClues + ' 条</p>';
+    html += '<p class="profile-choice-log" style="text-align:center;color:var(--gold-dim);margin-bottom:8px;">已发现 ' + foundClues + ' / ' + totalClues + ' 条</p>';
+
+    // 列出已获得的具体线索
+    if (foundClues > 0 && typeof CLUE_DEFS !== 'undefined') {
+      const clueEntries = Object.values(CLUE_DEFS);
+      clueEntries.sort((a, b) => (a.chapter || 0) - (b.chapter || 0));
+      clueEntries.forEach(clue => {
+        if (GameState.clueFragments.includes(clue.id)) {
+          const chapterLabel = (clue.chapter != null) ? (clue.chapter === 0 ? '序章' : '第' + clue.chapter + '章') : '未知';
+          html += '<div class="clue-collection-item found" style="padding:4px 6px;">';
+          html += '<span>◈ </span>';
+          html += '<span>' + clue.name + ' <span style="font-size:0.58rem;color:var(--gold-dim);">— ' + chapterLabel + '</span></span>';
+          html += '</div>';
+        }
+      });
+    }
     html += '</div>';
 
     content.innerHTML = html;
@@ -256,20 +272,20 @@ const SidebarManager = {
     let html = '';
 
     if (topic === 'quadrant' || !topic) {
-      title = '🧭 象限说明';
+      title = '◎ 象限说明';
       html += '<div class="def-section"><div class="def-section-title">四象限体系</div>';
-      html += '<p class="def-text">你的宿命值（⭐）和羁绊值（🤝）共同决定你所在的象限。每个象限不是标签——是一种阅读命运的方式。</p>';
+      html += '<p class="def-text">你的宿命值（✧）和羁绊值（↭）共同决定你所在的象限。每个象限不是标签——是一种阅读命运的方式。</p>';
       html += '<div class="def-grid">';
-      html += '<div class="def-card"><div class="def-card-name" style="color:var(--gold-light);">🏠 家族守望者</div><div class="def-card-desc">高宿命 + 高羁绊<br>理解一切，仍选择连接。<br>你在羊皮卷每一页边缘都写了注释。</div></div>';
-      html += '<div class="def-card"><div class="def-card-name" style="color:#8a9ab0;">🔭 孤绝先知</div><div class="def-card-desc">高宿命 + 低羁绊<br>看透一切，与谁都不相连。<br>你理解了全部——代价是独自一人。</div></div>';
-      html += '<div class="def-card"><div class="def-card-name" style="color:var(--gold);">🌊 命运追随者</div><div class="def-card-desc">低宿命 + 高羁绊<br>顺从命运的流动。<br>你让某些人活得更久、死得更暖。</div></div>';
-      html += '<div class="def-card"><div class="def-card-name" style="color:#a05040;">🔥 孤独反抗者</div><div class="def-card-desc">低宿命 + 低羁绊<br>搏斗命运，独自一人。<br>你和命运互相撕扯——最后谁都没赢。</div></div>';
+      html += '<div class="def-card"><div class="def-card-name" style="color:var(--gold-light);">◉ 家族守望者</div><div class="def-card-desc">高宿命 + 高羁绊<br>理解一切，仍选择连接。<br>你在羊皮卷每一页边缘都写了注释。</div></div>';
+      html += '<div class="def-card"><div class="def-card-name" style="color:#8a9ab0;">◎ 孤绝先知</div><div class="def-card-desc">高宿命 + 低羁绊<br>看透一切，与谁都不相连。<br>你理解了全部——代价是独自一人。</div></div>';
+      html += '<div class="def-card"><div class="def-card-name" style="color:var(--gold);">↝ 命运追随者</div><div class="def-card-desc">低宿命 + 高羁绊<br>顺从命运的流动。<br>你让某些人活得更久、死得更暖。</div></div>';
+      html += '<div class="def-card"><div class="def-card-name" style="color:#a05040;">◆ 孤独反抗者</div><div class="def-card-desc">低宿命 + 低羁绊<br>搏斗命运，独自一人。<br>你和命运互相撕扯——最后谁都没赢。</div></div>';
       html += '</div></div>';
     }
 
     if (topic === 'fateImprint' || !topic) {
-      title = title || '📖 烙印说明';
-      html += '<div class="def-section"><div class="def-section-title">⭐ 宿命烙印档位</div>';
+      title = title || '¶ 烙印说明';
+      html += '<div class="def-section"><div class="def-section-title">✧ 宿命烙印档位</div>';
       html += '<p class="def-text">每章结束时，根据宿命值占比判定本章烙印。烙印永久保存，影响终局判定和下一章的起始动量。</p>';
       html += '<div class="def-list">';
       html += '<div class="def-item"><span class="def-dot fate-rebel"></span><strong>抗争者</strong> — 宿命值 ≤ 1/3 最大值。下一章起始宿命 = 0（从空白开始）</div>';
@@ -279,8 +295,8 @@ const SidebarManager = {
     }
 
     if (topic === 'bondImprint' || !topic) {
-      title = title || '📖 烙印说明';
-      html += '<div class="def-section"><div class="def-section-title">🤝 羁绊烙印档位</div>';
+      title = title || '¶ 烙印说明';
+      html += '<div class="def-section"><div class="def-section-title">↭ 羁绊烙印档位</div>';
       html += '<p class="def-text">每章结束时，根据羁绊值占比判定本章羁绊烙印。与宿命烙印平行运作。</p>';
       html += '<div class="def-list">';
       html += '<div class="def-item"><span class="def-dot bond-estranged"></span><strong>疏离者</strong> — 羁绊值 ≤ 1/3 最大值。与家族若即若离，独自面对命运</div>';
@@ -289,7 +305,7 @@ const SidebarManager = {
       html += '</div></div>';
     }
 
-    html += '<div class="def-section"><div class="def-section-title">🔄 动量规则</div>';
+    html += '<div class="def-section"><div class="def-section-title">↻ 动量规则</div>';
     html += '<p class="def-text">上一章的烙印决定下一章的起始值——选择有惯性，但不是锁死。你可以转向，但要用力。</p>';
     html += '</div>';
 
@@ -360,13 +376,13 @@ const SidebarManager = {
 
     // 章节下拉选择器
     let html = '<select id="tag-chapter-select" onchange="SidebarManager._switchTagChapter(this.value)" style="width:100%;padding:6px 10px;background:#14100c;color:#d4b070;border:1px solid rgba(184,137,62,0.3);border-radius:6px;font-family:var(--font-ui);font-size:0.75rem;margin-bottom:8px;cursor:pointer;">';
-    html += '<option value="all">📊 全部章节概览</option>';
+    html += '<option value="all">◈ 全部章节概览</option>';
     sortedChapters.forEach(([chNum, ct]) => {
       const total = ct.all.size;
       const got = ct.obtained.size;
       const pct = total > 0 ? Math.round((got/total)*100) : 0;
       const bar = '█'.repeat(Math.round(pct/10)) + '░'.repeat(10-Math.round(pct/10));
-      const marker = chNum == currentChapter ? ' 📍' : '';
+      const marker = chNum == currentChapter ? '' : '';
       html += '<option value="' + chNum + '"' + (chNum == currentChapter ? ' selected' : '') + '>第' + chNum + '章 ' + ct.title.split('·')[0] + ' [' + got + '/' + total + '] ' + bar + marker + '</option>';
     });
     html += '</select>';
@@ -439,7 +455,7 @@ const SidebarManager = {
 
     // 已获得
     if (ct.obtained.size > 0) {
-      html += '<div style="margin-bottom:6px;"><span style="font-size:0.58rem;color:#8ab880;">✅ 已获得 (' + ct.obtained.size + ')</span></div>';
+      html += '<div style="margin-bottom:6px;"><span style="font-size:0.58rem;color:#8ab880;">✓ 已获得 (' + ct.obtained.size + ')</span></div>';
       html += '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;">';
       [...ct.obtained].sort().forEach(t => {
         html += '<span class="tag-badge tag-obtained">' + t + '</span>';
@@ -449,7 +465,7 @@ const SidebarManager = {
 
     // 未获得
     if (ct.missing.size > 0) {
-      html += '<div style="margin-bottom:6px;"><span style="font-size:0.58rem;color:#a09080;">⬜ 未获得 (' + ct.missing.size + ')</span></div>';
+      html += '<div style="margin-bottom:6px;"><span style="font-size:0.58rem;color:#a09080;">○ 未获得 (' + ct.missing.size + ')</span></div>';
       html += '<div style="display:flex;flex-wrap:wrap;gap:4px;">';
       [...ct.missing].sort().forEach(t => {
         html += '<span class="tag-badge tag-missing">' + t + '</span>';
@@ -516,8 +532,8 @@ const SidebarManager = {
     const direct = findRelation(name1, name2);
     const path = findRelationPath(name1, name2);
 
-    let html = '<div style="padding:12px;background:rgba(184,137,62,0.08);border:1px solid rgba(184,137,62,0.2);border-radius:8px;">';
-    html += '<div style="font-family:var(--font-title);font-size:0.85rem;color:var(--gold-light);margin-bottom:10px;">🔗 关系查询结果</div>';
+    let html = '<div style="padding:12px;background:rgba(184,137,62,0.08);border:1px solid rgba(184,137,62,0.2);border-radius:3px;">';
+    html += '<div style="font-family:var(--font-title);font-size:0.85rem;color:var(--gold-light);margin-bottom:10px;">↝ 关系查询结果</div>';
 
     if (direct) {
       const [label, event] = direct;

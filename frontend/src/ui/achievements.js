@@ -4,25 +4,51 @@
    ================================================================ */
 
 function checkAchievements() {
-  const unlocked = getUnlockedAchievements();
-  return unlocked;
+  const newly = getNewlyUnlocked();
+  if (newly.length > 0) {
+    persistAchievements();
+  }
+  return getUnlockedAchievements();
 }
 
 function getUnlockedAchievements() {
-  const unlocked = [];
-  ACHIEVEMENTS.forEach(ach => {
-    if (ach.cond(GameState)) unlocked.push(ach.id);
-  });
-  // 持久化
+  // 从持久化存储读取，合并当前满足条件的成就
   const stored = JSON.parse(localStorage.getItem('cien_anos_achievements') || '[]');
-  const merged = [...new Set([...stored, ...unlocked])];
-  localStorage.setItem('cien_anos_achievements', JSON.stringify(merged));
+  const current = [];
+  ACHIEVEMENTS.forEach(ach => {
+    if (ach.cond(GameState)) current.push(ach.id);
+  });
+  const merged = [...new Set([...stored, ...current])];
   return merged;
+}
+
+/** 获取新增的成就（用于通知） */
+function getNewlyUnlocked() {
+    const stored = JSON.parse(localStorage.getItem('cien_anos_achievements') || '[]');
+  const current = [];
+  ACHIEVEMENTS.forEach(ach => {
+    if (ach.cond(GameState)) current.push(ach.id);
+  });
+  return current.filter(id => !stored.includes(id));
+}
+
+/** 持久化当前成就到 localStorage */
+function persistAchievements() {
+  const current = [];
+  ACHIEVEMENTS.forEach(ach => {
+    if (ach.cond(GameState)) current.push(ach.id);
+  });
+  const stored = JSON.parse(localStorage.getItem('cien_anos_achievements') || '[]');
+  const merged = [...new Set([...stored, ...current])];
+  localStorage.setItem('cien_anos_achievements', JSON.stringify(merged));
 }
 
 function isAchievementUnlocked(achId) {
   const stored = JSON.parse(localStorage.getItem('cien_anos_achievements') || '[]');
-  return stored.includes(achId);
+  if (stored.includes(achId)) return true;
+  // 同时检查当前条件（未持久化的最新状态）
+  const ach = ACHIEVEMENTS.find(function(a) { return a.id === achId; });
+  return ach ? ach.cond(GameState) : false;
 }
 
 function clearAchievements() {
@@ -33,6 +59,10 @@ function clearAchievements() {
 let _lastAchievementCheck = [];
 
 function checkAndNotifyAchievements() {
+  // 确保已初始化，防止对所有成就同时触发通知
+  if (_lastAchievementCheck.length === 0) {
+    initAchievementTracking();
+  }
   const current = getUnlockedAchievements();
   const newly = current.filter(id => !_lastAchievementCheck.includes(id));
   _lastAchievementCheck = current;

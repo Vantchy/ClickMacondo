@@ -361,7 +361,7 @@ registerChapter({
     ch10_r4_settlement: { id:'ch10_r4_settlement', type:'settlement', chapter:10, round:4, title:'第四轮 · 结算', leftPage:{ speaker:null, speakerColor:null, paragraphs:['遗忘像潮水一样淹没了马孔多。但海浪下有一块石头——刻着三千。它不会漂浮，但它也不会被冲走。']}, settlement:{ summary:'第四轮完成。你选择了对抗遗忘的方式。', nextScene:'ch10_r5_choice', nextLabel:'进入最终轮', quadrantNarratives: { guardian: '三千人——你记住了。每一个。不是在纸上——是在骨头里。', prophet: '你写了真相——但没有人读。你会在作坊里一遍一遍地熔金鱼，每一遍都在默念那三千个名字。', follower: '你把真相告诉了乌尔苏拉——她是你唯一信任的人。有时候只需要一个人记住。', rebel: '你拒绝遗忘——即使整个世界都在合谋让你忘记。三千人——你念出他们的名字时，他们还活着。' } } },
 
     ch10_r5_choice: { id:'ch10_r5_choice', type:'choice', chapter:10, round:5, title:'第五轮选择 · 最后的见证', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你很老了。你坐在梅尔基亚德斯的旧房间里——这间房间的时间不会流逝。你看着书架上那些羊皮卷——它们记录着这个家族的全部历史。你忽然想：也许这些羊皮卷里也有三千人的名字。也许没有。也许梅尔基亚德斯没有写到他们——因为他们不在布恩迪亚家的谱系里。','但你知道。你还活着——至少现在。你是三千人被遗忘的唯一阻止。当你也走了——他们就真的消失了。'], transition:'你选择——' }, choices:[
-      { id:'ch10_r5_a', label:'把名字写进羊皮卷', description:'在梅尔基亚德斯的羊皮卷边缘，偷偷写下三千人的数字。让它成为家族记录的一部分。', nextScene:'ch10_r5a', effects:{ tags:['篡改者'], memory:'羊皮卷边缘的数字', fate:2, bond:-1 } },
+      { id:'ch10_r5_a', label:'把名字写进羊皮卷', description:'在梅尔基亚德斯的羊皮卷边缘，偷偷写下三千人的数字。让它成为家族记录的一部分。', nextScene:'ch10_r5a', isSecretOption: true, effects:{ tags:['篡改者'], memory:'羊皮卷边缘的数字', fate:2, bond:-1 } },
       { id:'ch10_r5_b', label:'在死亡前——最后讲述一次', description:'把你的故事讲给最后一个人——也许是你家族的某个人，也许是风。', nextScene:'ch10_r5b', effects:{ tags:['最后的讲述者'], memory:null, fate:1, bond:0 } },
       { id:'ch10_r5_c', label:'安静等待——让历史自己说话', description:'你已经做了够多了。也许历史不需要被见证——也许只需要它自己知道它发生过。', nextScene:'ch10_r5c', effects:{ tags:['安详的告别者'], memory:null, fate:-1, bond:1 } }
     ], settlement:'ch10_r5_settlement' },

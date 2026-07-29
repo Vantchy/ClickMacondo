@@ -52,6 +52,14 @@ const GameState = {
     this.fateImprint = {};
     this.bondImprint = {};
     this.clueFragments = [];
+    // 重置瞬态字段
+    this._lastFateChange = 0;
+    this._lastBondChange = 0;
+    this._lastClueFound = null;
+    this._secretOptionChosen = false;
+    this._allHotspotsFound = false;
+    this._marginaliaRead = 0;
+    this._hotspotsFound = 0;
     // hasCompletedGame 和 playthroughCount 不重置——它们是持久化元数据
   },
 
@@ -81,9 +89,10 @@ const GameState = {
     }
   },
 
-  /** 调整角色关系值，自动限制在 0-100 */
+  /** 调整角色关系值，自动限制在 0-100（防御 NaN） */
   adjustRelationship(characterName, delta, reason) {
     if (!characterName) return;
+    if (!Number.isFinite(delta)) return;
     this.initRelationship(characterName);
     const oldVal = this.relationships[characterName];
     this.relationships[characterName] = Math.max(0, Math.min(100, oldVal + delta));
@@ -115,7 +124,8 @@ const GameState = {
     if (!(flagName in this.characterFlags)) {
       this.characterFlags[flagName] = 0;
     }
-    this.characterFlags[flagName] += (amount || 1);
+    // 使用 != null 而非 ||，确保 amount=0 不会错误地变成 1
+    this.characterFlags[flagName] += (amount != null ? amount : 1);
   },
 
   /** 获取角色标记值 */
@@ -155,14 +165,14 @@ const GameState = {
     return this.clueFragments.includes(clueId);
   },
 
-  /** 获取关系值档位标签（增强版 — 含阈值触发提示） */
+  /** 获取关系值档位标签（增强版 — 含阈值触发提示，阈值与 getRelationshipLevel 对齐） */
   getRelationshipTier(characterName) {
     const v = this.relationships[characterName];
     if (v === undefined) return null;
-    if (v >= 85) return { tier: '至交', threshold: 'secret', desc: '愿为你披露秘密' };
-    if (v >= 70) return { tier: '亲近', threshold: 'dialogue', desc: '对话中流露真心' };
-    if (v >= 30) return { tier: '普通', threshold: null, desc: '相敬如宾' };
-    if (v >= 15) return { tier: '冷淡', threshold: null, desc: '保持距离' };
+    if (v >= 86) return { tier: '至交', threshold: 'secret', desc: '愿为你披露秘密' };
+    if (v >= 66) return { tier: '亲近', threshold: 'dialogue', desc: '对话中流露真心' };
+    if (v >= 46) return { tier: '普通', threshold: null, desc: '相敬如宾' };
+    if (v >= 26) return { tier: '冷淡', threshold: null, desc: '保持距离' };
     return { tier: '疏远', threshold: null, desc: '形同陌路' };
   },
 
@@ -174,6 +184,7 @@ const GameState = {
 
   toJSON() {
     return {
+      _version: 2,  // 存档格式版本号，用于未来迁移
       currentScene: this.currentScene,
       chapter: this.chapter,
       round: this.round,
@@ -203,6 +214,11 @@ const GameState = {
   },
 
   fromJSON(data) {
+    if (!data || !data.currentScene) {
+      console.warn('存档数据无效，使用默认状态');
+      this.reset();
+      return;
+    }
     this.currentScene = data.currentScene;
     this.chapter = data.chapter;
     this.round = data.round;
@@ -228,6 +244,14 @@ const GameState = {
     this.fateImprint = data.fateImprint || {};
     this.bondImprint = data.bondImprint || {};
     this.clueFragments = data.clueFragments || [];
+    // 重置瞬态字段（这些字段不应从存档恢复，否则显示过期数据）
+    this._lastFateChange = 0;
+    this._lastBondChange = 0;
+    this._lastClueFound = null;
+    this._secretOptionChosen = false;
+    this._allHotspotsFound = false;
+    this._marginaliaRead = 0;
+    this._hotspotsFound = 0;
   }
 };
 

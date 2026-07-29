@@ -113,7 +113,7 @@
 
     <!-- 大存档记录卡片 -->
     <div class="mm-savecard" id="mm-savecard">
-      <div class="mm-savecard-title">📜 羊皮卷档案</div>
+      <div class="mm-savecard-title">❧ 羊皮卷档案</div>
       <div id="mm-saveinfo" style="font-size:0.78rem;color:#c0b090;line-height:1.8;">
         尚无游玩记录
       </div>
@@ -122,52 +122,52 @@
     <!-- 菜单选项 -->
     <div class="mm-options">
       <button class="mm-btn mm-btn-primary" id="mm-btn-continue" onclick="continueFromMenu()">
-        <span class="mm-btn-icon">📖</span>
+        <span class="mm-btn-icon">❧</span>
         <span class="mm-btn-label">继续阅读</span>
         <span class="mm-btn-hint">— 从上次停下的地方 —</span>
       </button>
       <button class="mm-btn" onclick="startNewGame()">
-        <span class="mm-btn-icon">🕯️</span>
+        <span class="mm-btn-icon">†</span>
         <span class="mm-btn-label">重新开始</span>
         <span class="mm-btn-hint">— 翻开新的羊皮卷 —</span>
       </button>
       <button class="mm-btn" onclick="openAchievementsPage()">
-        <span class="mm-btn-icon">🏆</span>
+        <span class="mm-btn-icon">✦</span>
         <span class="mm-btn-label">成就书签</span>
         <span class="mm-btn-hint">— 旅途中的印记 —</span>
       </button>
       <button class="mm-btn" onclick="openBookmarksPage()">
-        <span class="mm-btn-icon">💎</span>
+        <span class="mm-btn-icon">◆</span>
         <span class="mm-btn-label">记忆碎片集</span>
         <span class="mm-btn-hint">— 散落在各章节的光 —</span>
       </button>
       <button class="mm-btn" onclick="openTagCollectionPage()">
-        <span class="mm-btn-icon">🏷️</span>
+        <span class="mm-btn-icon">⁂</span>
         <span class="mm-btn-label">标签收集册</span>
         <span class="mm-btn-hint">— 跨存档的标签图鉴 —</span>
       </button>
       <button class="mm-btn" onclick="openClueCollectionPage()">
-        <span class="mm-btn-icon">🔍</span>
+        <span class="mm-btn-icon">◈</span>
         <span class="mm-btn-label">隐藏线索册</span>
         <span class="mm-btn-hint">— 梅尔基亚德斯的秘密 —</span>
       </button>
       <button class="mm-btn" onclick="window.location.href='../story-viewer/story-explorer.html'">
-        <span class="mm-btn-icon">🖼️</span>
+        <span class="mm-btn-icon">❦</span>
         <span class="mm-btn-label">故事画卷</span>
         <span class="mm-btn-hint">— 浏览百年孤独插画故事 —</span>
       </button>
       <button class="mm-btn" onclick="openGameplayIntro()">
-        <span class="mm-btn-icon">📖</span>
+        <span class="mm-btn-icon">❧</span>
         <span class="mm-btn-label">玩法介绍</span>
         <span class="mm-btn-hint">— 了解宿命、羁绊与线索 —</span>
       </button>
       <button class="mm-btn" onclick="SettingsPanel.open();">
-        <span class="mm-btn-icon">⚙️</span>
+        <span class="mm-btn-icon">⊛</span>
         <span class="mm-btn-label">设置</span>
         <span class="mm-btn-hint">— 字体与音量 —</span>
       </button>
       <button class="mm-btn mm-btn-exit" onclick="exitToCover()">
-        <span class="mm-btn-icon">🚪</span>
+        <span class="mm-btn-icon">←</span>
         <span class="mm-btn-label">回到封面</span>
         <span class="mm-btn-hint">— 不删除任何记录 —</span>
       </button>
@@ -182,7 +182,7 @@
      ================================================================ -->
 <div class="modal-overlay" id="achievements-overlay">
   <div class="modal-panel" style="width:min(560px,94vw);max-height:80vh;overflow-y:auto;">
-    <div class="modal-title">🏆 成就书签</div>
+    <div class="modal-title">✦ 成就书签</div>
     <div id="achievements-grid" style="display:flex;flex-direction:column;gap:10px;"></div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn modal-btn-primary" onclick="closeAchievements()">返回</button>
@@ -195,7 +195,7 @@
      ================================================================ -->
 <div class="modal-overlay" id="bookmarks-overlay">
   <div class="modal-panel" style="width:min(560px,94vw);max-height:80vh;overflow-y:auto;">
-    <div class="modal-title">💎 记忆碎片集</div>
+    <div class="modal-title">◆ 记忆碎片集</div>
     <div id="bookmarks-grid" style="display:flex;flex-direction:column;gap:8px;"></div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn modal-btn-primary" onclick="closeArchiveBookmarks()">返回</button>
@@ -208,7 +208,7 @@
      ================================================================ -->
 <div class="modal-overlay" id="tagcollection-overlay">
   <div class="modal-panel" style="width:min(580px,94vw);max-height:80vh;overflow-y:auto;">
-    <div class="modal-title">🏷️ 标签收集册</div>
+    <div class="modal-title">⁂ 标签收集册</div>
     <div style="font-size:0.65rem;color:var(--gold-dim);text-align:center;margin-bottom:12px;font-style:italic;">跨存档图鉴 —— 所有游玩中获得的标签永久记录</div>
     <div id="tagcollection-grid" style="display:flex;flex-direction:column;gap:6px;"></div>
     <div class="modal-actions" style="margin-top:16px;">
@@ -222,7 +222,7 @@
      ================================================================ -->
 <div class="modal-overlay" id="cluecollection-overlay">
   <div class="modal-panel" style="width:min(580px,94vw);max-height:80vh;overflow-y:auto;">
-    <div class="modal-title">🔍 隐藏线索册</div>
+    <div class="modal-title">◈ 隐藏线索册</div>
     <div style="font-size:0.65rem;color:var(--gold-dim);text-align:center;margin-bottom:12px;font-style:italic;">梅尔基亚德斯藏在羊皮卷中的秘密 —— 跨存档永久记录</div>
     <div id="cluecollection-grid" style="display:flex;flex-direction:column;gap:6px;"></div>
     <div class="modal-actions" style="margin-top:16px;">
@@ -255,12 +255,12 @@
       <span id="mood-label" class="mood-label"></span>
     </div>
     <div class="top-item" style="gap:8px;">
-      <span id="fate-display" class="axis-display" title="宿命值">⭐ 0</span>
-      <span id="bond-display" class="axis-display" title="羁绊值">🤝 0</span>
+      <span id="fate-display" class="axis-display" title="宿命值">✧ 宿命 0</span>
+      <span id="bond-display" class="axis-display" title="羁绊值">↭ 羁绊 0</span>
     </div>
     <div class="top-item">
-      <button class="top-btn" id="btn-menu" title="主菜单">📜</button>
-      <button class="top-btn" id="btn-settings" title="设置">⚙️</button>
+      <button class="top-btn" id="btn-menu" title="主菜单">❧ 菜单</button>
+      <button class="top-btn" id="btn-settings" title="设置">⊛ 设置</button>
     </div>
   </div>
 
@@ -287,12 +287,12 @@
 
   <!-- 底部栏 -->
   <div id="bottom-bar">
-    <button class="bottom-btn" id="btn-save">💾 存档</button>
-    <button class="bottom-btn" id="btn-load">📂 读档</button>
-    <button class="bottom-btn" id="btn-family-tree">🌳 家族树</button>
-    <button class="bottom-btn" id="btn-archives">📜 历史档案</button>
-    <button class="bottom-btn" id="btn-profile">👤 个人简介</button>
-    <button class="bottom-btn" id="btn-relations">🔗 关系查询</button>
+    <button class="bottom-btn" id="btn-save">◈ 存档</button>
+    <button class="bottom-btn" id="btn-load">❧ 读档</button>
+    <button class="bottom-btn" id="btn-family-tree">❦ 家族树</button>
+    <button class="bottom-btn" id="btn-archives">¶ 历史档案</button>
+    <button class="bottom-btn" id="btn-profile">◆ 个人简介</button>
+    <button class="bottom-btn" id="btn-relations">↝ 关系查询</button>
   </div>
 </div>
 
@@ -302,7 +302,7 @@
 <div class="sidebar-overlay" id="sidebar-family-overlay"></div>
 <div class="sidebar-panel" id="sidebar-family">
   <div class="sidebar-header">
-    <span class="sidebar-title">🌳 布恩迪亚家族谱系</span>
+    <span class="sidebar-title">❦ 布恩迪亚家族谱系</span>
     <button class="sidebar-close" id="close-family">✕</button>
   </div>
   <div class="sidebar-content" id="family-content"></div>
@@ -314,7 +314,7 @@
 <div class="sidebar-overlay" id="sidebar-archives-overlay"></div>
 <div class="sidebar-panel" id="sidebar-archives">
   <div class="sidebar-header">
-    <span class="sidebar-title">📜 历史档案</span>
+    <span class="sidebar-title">¶ 历史档案</span>
     <button class="sidebar-close" id="close-archives">✕</button>
   </div>
   <div class="sidebar-content" id="archives-content"></div>
@@ -326,7 +326,7 @@
 <div class="sidebar-overlay" id="sidebar-profile-overlay"></div>
 <div class="sidebar-panel" id="sidebar-profile">
   <div class="sidebar-header">
-    <span class="sidebar-title">👤 个人简介</span>
+    <span class="sidebar-title">◆ 个人简介</span>
     <button class="sidebar-close" id="close-profile">✕</button>
   </div>
   <div class="sidebar-content" id="profile-content"></div>
@@ -338,19 +338,21 @@
 <div class="sidebar-overlay" id="sidebar-relations-overlay"></div>
 <div class="sidebar-panel" id="sidebar-relations">
   <div class="sidebar-header">
-    <span class="sidebar-title">🔗 关系查询</span>
+    <span class="sidebar-title">↝ 关系查询</span>
     <button class="sidebar-close" id="close-relations">✕</button>
   </div>
   <div class="sidebar-content" id="relations-content">
     <div style="margin-bottom:14px;">
-      <div style="font-size:0.75rem;color:var(--gold-dim);margin-bottom:4px;">选择人物一</div>
-      <select id="relation-char1" style="width:100%;padding:8px;background:#14100c;color:#d4b070;border:1px solid rgba(184,137,62,0.3);border-radius:6px;font-family:var(--font-ui);font-size:0.8rem;"></select>
+      <div style="font-size:0.75rem;color:var(--gold-dim);margin-bottom:4px;letter-spacing:0.06em;">选择人物一</div>
+      <select id="relation-char1" style="width:100%;padding:10px 12px;background:#14100c;color:#d4b070;border:1px solid rgba(184,137,62,0.3);border-radius:3px;font-family:var(--font-ui);font-size:0.8rem;outline:none;"></select>
     </div>
     <div style="margin-bottom:14px;">
-      <div style="font-size:0.75rem;color:var(--gold-dim);margin-bottom:4px;">选择人物二</div>
-      <select id="relation-char2" style="width:100%;padding:8px;background:#14100c;color:#d4b070;border:1px solid rgba(184,137,62,0.3);border-radius:6px;font-family:var(--font-ui);font-size:0.8rem;"></select>
+      <div style="font-size:0.75rem;color:var(--gold-dim);margin-bottom:4px;letter-spacing:0.06em;">选择人物二</div>
+      <select id="relation-char2" style="width:100%;padding:10px 12px;background:#14100c;color:#d4b070;border:1px solid rgba(184,137,62,0.3);border-radius:3px;font-family:var(--font-ui);font-size:0.8rem;outline:none;"></select>
     </div>
-    <button id="btn-query-relation" style="width:100%;padding:10px;background:rgba(184,137,62,0.2);border:1px solid var(--gold);color:#e8d0a0;border-radius:20px;cursor:pointer;font-family:var(--font-title);font-size:0.85rem;letter-spacing:0.06em;">查询关系</button>
+    <button id="btn-query-relation" style="width:100%;padding:12px;background:rgba(184,137,62,0.10);border:1px solid var(--gold);color:#e8d0a0;border-radius:3px;cursor:pointer;font-family:var(--font-title);font-size:0.85rem;letter-spacing:0.1em;transition:all 0.3s ease;"
+      onmouseover="this.style.background='rgba(184,137,62,0.22)'"
+      onmouseout="this.style.background='rgba(184,137,62,0.10)'">查询关系</button>
     <div id="relation-result" style="margin-top:16px;"></div>
   </div>
 </div>
@@ -360,7 +362,7 @@
      ================================================================ -->
 <div class="modal-overlay" id="settings-overlay">
   <div class="modal-panel">
-    <div class="modal-title">⚙️ 设置</div>
+    <div class="modal-title">⊛ 设置</div>
     <div class="setting-row">
       <span class="setting-label">字体大小</span>
       <div class="setting-control">
@@ -385,7 +387,7 @@
 
 <!-- 记忆碎片弹窗（右下角滑入） -->
 <div id="memory-popup">
-  <div id="memory-popup-icon">💎</div>
+  <div id="memory-popup-icon">◆</div>
   <div id="memory-popup-title"></div>
   <div id="memory-popup-desc"></div>
 </div>
@@ -398,56 +400,56 @@
      ================================================================ -->
 <div class="modal-overlay" id="gameplay-overlay">
   <div class="modal-panel" style="width:min(620px,94vw);max-height:82vh;overflow-y:auto;padding:24px 28px;">
-    <div class="modal-title" style="font-size:1rem;">📖 玩法介绍 · 宿命之环</div>
+    <div class="modal-title" style="font-size:1rem;">¶ 玩法介绍 · 宿命之环</div>
     <div style="font-size:0.78rem;color:#c0b090;line-height:1.8;margin-top:12px;">
 
       <div class="gp-section">
-        <div class="gp-section-title">🎭 你是什么？</div>
+        <div class="gp-section-title">◉ 你是什么？</div>
         <p>你是一个被梅尔基亚德斯召唤到马孔多的<strong>灵魂</strong>。在每一章中，你将<strong>附身于布恩迪亚家族的不同成员</strong>——何塞·阿尔卡蒂奥·布恩迪亚、奥雷里亚诺上校、乌尔苏拉……通过他们的眼睛，经历百年的孤独与宿命。</p>
       </div>
 
       <div class="gp-section">
-        <div class="gp-section-title">🎲 选择与双轴</div>
+        <div class="gp-section-title">✦ 选择与双轴</div>
         <p>每个选择都会影响两条轴线：</p>
-        <p>⭐ <strong style="color:#e8c870;">宿命值 (Fate)</strong> — 顺从命运 vs 反抗命运<br>🤝 <strong style="color:#c0b8d0;">羁绊值 (Bond)</strong> — 与家族/他人的连接强度</p>
+        <p>✧ <strong style="color:#e8c870;">宿命值 (Fate)</strong> — 顺从命运 vs 反抗命运<br>↭ <strong style="color:#c0b8d0;">羁绊值 (Bond)</strong> — 与家族/他人的连接强度</p>
         <p>两条轴线共同决定你所在的<strong>四象限</strong>：<br>
-        🏠 家族守望者(高F+高B) · 🔭 孤绝先知(高F+低B)<br>
-        🌊 命运追随者(低F+高B) · 🔥 孤独反抗者(低F+低B)</p>
+        ◉ 家族守望者(高F+高B) · ◎ 孤绝先知(高F+低B)<br>
+        ↝ 命运追随者(低F+高B) · ◆ 孤独反抗者(低F+低B)</p>
         <p style="font-size:0.7rem;color:#908070;">数值在结算时显示变化。选项上<strong>不展示代价标签</strong>——后果在叙事中自然浮现。</p>
       </div>
 
       <div class="gp-section">
-        <div class="gp-section-title">🔄 烙印与动量</div>
+        <div class="gp-section-title">↻ 烙印与动量</div>
         <p>每章结束时，宿命/羁绊值会判定为<strong>烙印</strong>（抗争者/追随者/见证者），永久记录。<br>上一章的烙印决定下一章的<strong>起始值</strong>——选择有惯性，但不是锁死。你可以转向，但要用力。</p>
       </div>
 
       <div class="gp-section">
-        <div class="gp-section-title">🔍 隐藏线索</div>
+        <div class="gp-section-title">◈ 隐藏线索</div>
         <p>叙事文本中有些文字颜色略深——<strong style="color:#8a6040;">像这样</strong>——点击它们可以发现<strong>隐藏线索道具</strong>。收集线索可在后续章节<strong>解锁隐藏选项</strong>，发现普通游玩中看不到的故事分支。</p>
         <p style="font-size:0.7rem;color:#908070;">线索道具跨存档持久化。在侧边栏的"个人简介"中查看收集进度。</p>
       </div>
 
       <div class="gp-section">
-        <div class="gp-section-title">💎 记忆碎片</div>
+        <div class="gp-section-title">◆ 记忆碎片</div>
         <p>特定选择会解锁<strong>记忆碎片</strong>——一段情节摘要。收集碎片可解锁成就，部分碎片可解锁后续章节的隐藏选项。</p>
       </div>
 
       <div class="gp-section">
-        <div class="gp-section-title">💚 好感度</div>
+        <div class="gp-section-title">↭ 好感度</div>
         <p>某些选择会影响你与特定角色的<strong>关系值</strong>（0~100）。关系值达到阈值（30/70/85）会触发不同的对话内容和隐藏剧情。<br>在侧边栏"个人简介"中查看具体数值。</p>
       </div>
 
       <div class="gp-section">
-        <div class="gp-section-title">🏁 七种结局</div>
+        <div class="gp-section-title">✦ 七种结局</div>
         <p>终章结局由你在全部22章中的<strong>烙印统计</strong>决定：<br>
         · 高宿命+高羁绊 → <strong>合著者</strong> · 高宿命+低羁绊 → <strong>孤独智者</strong><br>
         · 低宿命+高羁绊 → <strong>为爱赴死</strong> · 低宿命+低羁绊 → <strong>飓风中的人</strong><br>
         · 抗争者占60% → <strong>反抗者烙印</strong> · 无档位过半 → <strong>均衡烙印</strong><br>
-        · 集齐22条线索 → 触发梅尔基亚德斯的<strong>额外对话</strong></p>
+        · 集齐24条线索 → 触发梅尔基亚德斯的<strong>额外对话</strong></p>
       </div>
 
       <div class="gp-section">
-        <div class="gp-section-title">⌨️ 操作提示</div>
+        <div class="gp-section-title">⌨ 操作提示</div>
         <p>← → 方向键 或 点击右页按钮翻页 · 1/2/3 数字键选择选项 · Space 确认 · Esc 呼出主菜单<br>点击左页暖色文字发现线索 · 底部按钮打开侧边栏查看家族树/档案/简介</p>
       </div>
 
@@ -463,7 +465,7 @@
      ================================================================ -->
 <div class="modal-overlay" id="saveload-overlay">
   <div class="modal-panel">
-    <div class="modal-title" id="saveload-title">💾 存档 / 读档</div>
+    <div class="modal-title" id="saveload-title">◈ 存档 / 读档</div>
     <div id="saveload-current"></div>
     <div class="save-slots-grid" id="save-slots-grid"></div>
     <div class="modal-actions">

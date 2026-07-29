@@ -217,55 +217,55 @@ function findRelationPath(name1, name2) {
 
 /* ---- 成就定义 ---- */
 const ACHIEVEMENTS = [
-  { id:'ach_first_choice', icon:'🎲', name:'最初的抉择', desc:'在第一章中做出第一个选择。',
+  { id:'ach_first_choice', icon:'◆', name:'最初的抉择', desc:'在第一章中做出第一个选择。',
     cond: s => s.choiceLog.length >= 1 },
-  { id:'ach_ch1_done', icon:'📖', name:'宿命之环', desc:'完成第一章「宿命之环」，迈入马孔多的故事。',
+  { id:'ach_ch1_done', icon:'❧', name:'宿命之环', desc:'完成第一章「宿命之环」，迈入马孔多的故事。',
     cond: s => s.isChapterCompleted(1) },
-  { id:'ach_insomnia', icon:'🌙', name:'失眠症患者', desc:'完成第二章——遗忘比失眠更可怕。',
+  { id:'ach_insomnia', icon:'◑', name:'失眠症患者', desc:'完成第二章——遗忘比失眠更可怕。',
     cond: s => s.isChapterCompleted(2) },
-  { id:'ach_magnets', icon:'🧲', name:'磁铁与执着', desc:'在第一章中选择拖着磁铁走进丛林寻找黄金。',
+  { id:'ach_magnets', icon:'↭', name:'磁铁与执着', desc:'在第一章中选择拖着磁铁走进丛林寻找黄金。',
     cond: s => s.tags.includes('执着勘探者') },
-  { id:'ach_family_man', icon:'🍲', name:'家庭的守望者', desc:'在关键选择中把家人放在第一位。',
+  { id:'ach_family_man', icon:'◉', name:'家庭的守望者', desc:'在关键选择中把家人放在第一位。',
     cond: s => s.tags.includes('家庭的守望者') || s.tags.includes('家族支柱') },
-  { id:'ach_memory_keeper', icon:'💎', name:'记忆收藏家', desc:'累计解锁5枚记忆碎片。',
+  { id:'ach_memory_keeper', icon:'◆', name:'记忆收藏家', desc:'累计解锁5枚记忆碎片。',
     cond: s => s.memories.length >= 5 },
-  { id:'ach_memory_master', icon:'💠', name:'记忆大师', desc:'累计解锁10枚记忆碎片。',
+  { id:'ach_memory_master', icon:'◈', name:'记忆大师', desc:'累计解锁10枚记忆碎片。',
     cond: s => s.memories.length >= 10 },
-  { id:'ach_war', icon:'⚔️', name:'战争的回声', desc:'完成第五章——经历奥雷里亚诺上校的战争与爱情。',
+  { id:'ach_war', icon:'✦', name:'战争的回声', desc:'完成第五章——经历奥雷里亚诺上校的战争与爱情。',
     cond: s => s.isChapterCompleted(5) },
-  { id:'ach_rain', icon:'🌧️', name:'四年大雨', desc:'完成第十一章——在马孔多的泥泞中重新站立。',
+  { id:'ach_rain', icon:'∴', name:'四年大雨', desc:'完成第十一章——在马孔多的泥泞中重新站立。',
     cond: s => s.isChapterCompleted(11) },
-  { id:'ach_massacre', icon:'🕯️', name:'不灭的记忆', desc:'完成第十章——亲眼见证三千人大屠杀，并选择不遗忘。',
+  { id:'ach_massacre', icon:'†', name:'不灭的记忆', desc:'完成第十章——亲眼见证三千人大屠杀，并选择不遗忘。',
     cond: s => s.isChapterCompleted(10) },
-  { id:'ach_ursula', icon:'👵', name:'乌尔苏拉之眼', desc:'完成第十二章——在失明中看清了整个家族的百年。',
+  { id:'ach_ursula', icon:'◉', name:'乌尔苏拉之眼', desc:'完成第十二章——在失明中看清了整个家族的百年。',
     cond: s => s.isChapterCompleted(12) },
-  { id:'ach_butterfly', icon:'🦋', name:'黄蝴蝶', desc:'完成第十三章——目送蝴蝶永远离开马孔多。',
+  { id:'ach_butterfly', icon:'❦', name:'黄蝴蝶', desc:'完成第十三章——目送蝴蝶永远离开马孔多。',
     cond: s => s.isChapterCompleted(13) },
-  { id:'ach_love', icon:'💕', name:'禁忌之爱', desc:'完成第十七章——直面羊皮卷上关于你自己的句子。',
+  { id:'ach_love', icon:'❧', name:'禁忌之爱', desc:'完成第十七章——直面羊皮卷上关于你自己的句子。',
     cond: s => s.isChapterCompleted(17) },
-  { id:'ach_ant', icon:'🐜', name:'蚂蚁的行军', desc:'完成第十九章——见证最后一个布恩迪亚被蚂蚁带走。',
+  { id:'ach_ant', icon:'⁂', name:'蚂蚁的行军', desc:'完成第十九章——见证最后一个布恩迪亚被蚂蚁带走。',
     cond: s => s.isChapterCompleted(19) },
-  { id:'ach_full_circle', icon:'🌪️', name:'百年闭环', desc:'完成全部二十章——见证马孔多从诞生到被飓风抹去。',
+  { id:'ach_full_circle', icon:'↻', name:'百年闭环', desc:'完成全部二十章——见证马孔多从诞生到被飓风抹去。',
     cond: s => s.isChapterCompleted(20) },
-  { id:'ach_all_tags', icon:'🏅', name:'标签收集者', desc:'累计获得15个以上的标签。',
+  { id:'ach_all_tags', icon:'✦', name:'标签收集者', desc:'累计获得15个以上的标签。',
     cond: s => s.tags.length >= 15 },
-  { id:'ach_three_eras', icon:'🔮', name:'三种视角', desc:'分别通过序章的三个时代入口进入过马孔多。',
+  { id:'ach_three_eras', icon:'◈', name:'三种视角', desc:'分别通过序章的三个时代入口进入过马孔多。',
     cond: s => (s._eraVisited || []).length >= 3 },
   /* 可玩性增强：新成就 */
-  { id:'ach_clue_finder', icon:'🔍', name:'线索猎人', desc:'使用一条线索碎片解锁了隐藏选项。',
+  { id:'ach_clue_finder', icon:'◈', name:'线索猎人', desc:'使用一条线索碎片解锁了隐藏选项。',
     cond: s => (s._secretOptionChosen || false) },
-  { id:'ach_bond_master', icon:'🤝', name:'羁绊之人', desc:'与任意角色的关系值达到至交（≥85）。',
+  { id:'ach_bond_master', icon:'↭', name:'羁绊之人', desc:'与任意角色的关系值达到至交（≥85）。',
     cond: s => Object.values(s.relationships || {}).some(v => v >= 85) },
-  { id:'ach_explorer', icon:'🗺️', name:'马孔多的探索者', desc:'在探索场景中发现过所有热点。',
-    cond: s => (s._allHotspotsFound || false) },
-  { id:'ach_second_playthrough', icon:'🔄', name:'轮回之人', desc:'完成第二次通关——你再次回到了马孔多。',
+  { id:'ach_explorer', icon:'◎', name:'马孔多的探索者', desc:'在羊皮卷的边缘发现隐藏的文字——累计阅读5条边缘批注。',
+    cond: s => (s._marginaliaRead || 0) >= 5 },
+  { id:'ach_second_playthrough', icon:'↻', name:'轮回之人', desc:'完成第二次通关——你再次回到了马孔多。',
     cond: s => (s.playthroughCount || 0) >= 2 },
-  { id:'ach_marginalia_reader', icon:'✍️', name:'边缘的读者', desc:'累计阅读过10条边缘文字。',
+  { id:'ach_marginalia_reader', icon:'¶', name:'边缘的读者', desc:'累计阅读过10条边缘文字。',
     cond: s => (s._marginaliaRead || 0) >= 10 },
   /* v2.0 烙印统计型成就 */
-  { id:'ach_consecutive_witness', icon:'👁️', name:'连续的见证者', desc:'连续3章以上保持见证者烙印——你在命运中找到了节奏。',
+  { id:'ach_consecutive_witness', icon:'◎', name:'连续的见证者', desc:'连续3章以上保持见证者烙印——你在命运中找到了节奏。',
     cond: s => (s.getImprintStats ? s.getImprintStats().maxConsecutive >= 3 : false) },
-  { id:'ach_consecutive_rebel', icon:'🔥', name:'不熄的反抗', desc:'连续3章以上保持抗争者烙印——你从未向命运低头。',
+  { id:'ach_consecutive_rebel', icon:'◆', name:'不熄的反抗', desc:'连续3章以上保持抗争者烙印——你从未向命运低头。',
     cond: s => {
       if (!s.fateImprint) return false;
       const entries = Object.entries(s.fateImprint);
@@ -275,25 +275,25 @@ const ACHIEVEMENTS = [
       }
       return Math.max(max, cur) >= 3;
     }},
-  { id:'ach_pendulum', icon:'🔄', name:'命运的摆锤', desc:'烙印档位翻转5次以上——你在命运的两端之间反复摇摆。',
+  { id:'ach_pendulum', icon:'↻', name:'命运的摆锤', desc:'烙印档位翻转5次以上——你在命运的两端之间反复摇摆。',
     cond: s => (s.getImprintStats ? s.getImprintStats().pendulumSwings >= 5 : false) },
-  { id:'ach_shapeless', icon:'🌫️', name:'无定形之人', desc:'无任何档位过半——梅尔基亚德斯写不了你，因为你从不静止。',
+  { id:'ach_shapeless', icon:'○', name:'无定形之人', desc:'无任何档位过半——梅尔基亚德斯写不了你，因为你从不静止。',
     cond: s => {
       const stats = s.getImprintStats ? s.getImprintStats() : null;
       if (!stats || stats.total < 5) return false;
       return stats.rebelPct < 50 && stats.followerPct < 50 && stats.witnessPct < 50;
     }},
-  { id:'ach_clue_collector_10', icon:'🔍', name:'线索收集者', desc:'收集10条以上隐藏线索。',
+  { id:'ach_clue_collector_10', icon:'◈', name:'线索收集者', desc:'收集10条以上隐藏线索。',
     cond: s => (s.clueFragments || []).length >= 10 },
-  { id:'ach_clue_collector_all', icon:'🔮', name:'全知之眼', desc:'集齐全部24条隐藏线索——你找到了梅尔基亚德斯藏在羊皮卷里的一切。',
+  { id:'ach_clue_collector_all', icon:'◈', name:'全知之眼', desc:'集齐全部24条隐藏线索——你找到了梅尔基亚德斯藏在羊皮卷里的一切。',
     cond: s => (s.clueFragments || []).length >= 24 },
-  { id:'ach_all_endings', icon:'🌟', name:'宿命的全貌', desc:'触发过所有7种结局——你读完了羊皮卷的每一页。',
+  { id:'ach_all_endings', icon:'✦', name:'宿命的全貌', desc:'触发过全部8种结局——你读完了羊皮卷的每一页。',
     cond: s => {
       if (!s._endingsSeen) return false;
-      const required = ['coauthor','prophet','lover','hurricane','rebel','balanced','bystander'];
+      const required = ['coauthor','prophet','lover','hurricane','rebel','balanced','bystander','witness'];
       return required.every(e => s._endingsSeen.includes(e));
     }},
-  { id:'ach_quadrant_shift', icon:'🧭', name:'象限行者', desc:'在单次游玩中经历了至少3个不同象限。',
+  { id:'ach_quadrant_shift', icon:'◎', name:'象限行者', desc:'在单次游玩中经历了至少3个不同象限。',
     cond: s => {
       if (!s.fateImprint || !s.bondImprint) return false;
       const quadrants = new Set();
@@ -306,7 +306,7 @@ const ACHIEVEMENTS = [
       });
       return quadrants.size >= 3;
     }},
-  { id:'ach_soul_of_family', icon:'🏠', name:'家族的魂', desc:'累计5章以上保持"家族的魂"羁绊烙印。',
+  { id:'ach_soul_of_family', icon:'◉', name:'家族的魂', desc:'累计5章以上保持"家族的魂"羁绊烙印。',
     cond: s => Object.values(s.bondImprint || {}).filter(b => b === 'soul_of_family').length >= 5 }
 ];
 
@@ -346,6 +346,11 @@ const ENDING_DEFS = {
     color: 'var(--gold)',
     initialScene: 'epilogue_rebel',
     summary: '羊皮卷有一页是空白的——"这一页是我撕掉的。"梅尔基亚德斯看着那页空白——然后笑了。"我写不了你。"'
+  },
+  rebel_all_clues: {
+    id: 'rebel_all_clues', title: '反抗者 · 全知', color: 'var(--gold)',
+    initialScene: 'epilogue_rebel',
+    summary: '你撕掉了羊皮卷的一页——也找到了所有的碎片。梅尔基亚德斯看着那页空白和你手中的全部线索，沉默了许久。"我写不了你——但你已经不需要我了。"'
   },
   balanced: {
     id: 'balanced',
@@ -406,9 +411,9 @@ const ENDING_DEFS = {
   }
 };
 
-/** 根据当前游戏状态决定终章结局类型 */
+/** 根据当前游戏状态决定终章结局类型（v2.1：基于烙印统计，非瞬时值） */
 function determineEnding(state) {
-  // v2.0: 按 imprint 统计判定结局
+  // 按 imprint 统计判定结局
   const stats = state.getImprintStats ? state.getImprintStats() : computeImprintStats(state.fateImprint || {}, state.bondImprint || {});
   const totalChapters = stats.total || 0;
 
@@ -416,34 +421,63 @@ function determineEnding(state) {
   const allClues = (state.clueFragments || []).length >= 24;
 
   // 反抗者烙印 ≥ 60% → 反抗者结局
-  if (stats.rebelPct >= 60) return 'rebel';
+  if (stats.rebelPct >= 60) {
+    return allClues ? 'rebel_all_clues' : 'rebel';
+  }
 
   // 无档位过半 → 均衡烙印
   if (stats.rebelPct < 50 && stats.followerPct < 50 && stats.witnessPct < 50 && totalChapters >= 3) {
     return allClues ? 'balanced_all_clues' : 'balanced';
   }
 
-  // 高 fate + 高 bond → 合著者（通过 quadrant 判定）
-  const quadrant = state.getQuadrant ? state.getQuadrant() : getQuadrantLabel(state.fateCounter || 0, state.bondCounter || 0);
-  if (quadrant.id === 'guardian') return allClues ? 'coauthor_all_clues' : 'coauthor';
-  if (quadrant.id === 'prophet') return allClues ? 'prophet_all_clues' : 'prophet';
-  if (quadrant.id === 'follower') return allClues ? 'lover_all_clues' : 'lover';
+  // 基于烙印统计判定宿命/羁绊主导方向（而非第20章瞬时值）
+  const dominantFate = stats.dominantImprint; // 'rebel' | 'follower' | 'witness'
 
-  // 低 fate + 高 bond → 为爱赴死
-  const fateImprint = state.fateImprint || {};
+  // 羁绊主导烙印
   const bondImprint = state.bondImprint || {};
-  const fateEntries = Object.values(fateImprint);
   const bondEntries = Object.values(bondImprint);
-  const highBondCount = bondEntries.filter(b => b === 'soul_of_family').length;
-  const lowFateCount = fateEntries.filter(f => f === 'rebel').length;
-  if (lowFateCount > highBondCount && highBondCount > 0) return allClues ? 'lover_all_clues' : 'lover';
+  let soulCount = 0, estrangedCount = 0, bondedCount = 0;
+  bondEntries.forEach(b => {
+    if (b === 'soul_of_family') soulCount++;
+    else if (b === 'estranged') estrangedCount++;
+    else bondedCount++;
+  });
+  const dominantBond = soulCount >= estrangedCount && soulCount >= bondedCount ? 'soul_of_family'
+    : estrangedCount >= soulCount && estrangedCount >= bondedCount ? 'estranged'
+    : 'bonded';
 
-  // 低 fate + 低 bond → 飓风中的人
-  if (stats.rebelPct >= 40 && bondEntries.filter(b => b === 'estranged').length >= bondEntries.length * 0.4) {
+  // 高宿命(见证者主导) + 高羁绊(家族魂主导) → 合著者
+  if (dominantFate === 'witness' && dominantBond === 'soul_of_family') {
+    return allClues ? 'coauthor_all_clues' : 'coauthor';
+  }
+  // 高宿命 + 低羁绊 → 孤独智者
+  if (dominantFate === 'witness' && dominantBond === 'estranged') {
+    return allClues ? 'prophet_all_clues' : 'prophet';
+  }
+  // 低宿命(抗争者主导) + 高羁绊 → 为爱赴死
+  if (dominantFate === 'rebel' && dominantBond === 'soul_of_family') {
+    return allClues ? 'lover_all_clues' : 'lover';
+  }
+  // 低宿命 + 低羁绊 → 飓风中的人
+  if (dominantFate === 'rebel' && dominantBond === 'estranged') {
     return allClues ? 'hurricane_all_clues' : 'hurricane';
   }
 
-  // 默认：见证者
+  // 混合情况 — 按偏向判定
+  if (dominantFate === 'witness') {
+    return allClues ? 'coauthor_all_clues' : 'coauthor';
+  }
+  if (dominantBond === 'soul_of_family') {
+    return allClues ? 'lover_all_clues' : 'lover';
+  }
+  if (dominantFate === 'rebel') {
+    return allClues ? 'hurricane_all_clues' : 'hurricane';
+  }
+  if (dominantBond === 'estranged') {
+    return allClues ? 'prophet_all_clues' : 'prophet';
+  }
+
+  // 默认：见证者占比较高 → 见证者结局
   if (stats.witnessPct >= 33) return allClues ? 'witness_all_clues' : 'witness';
 
   return allClues ? 'bystander_all_clues' : 'bystander';

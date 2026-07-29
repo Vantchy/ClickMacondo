@@ -17,6 +17,7 @@ const GameEngine = {
     // 记录选择
     GameState.choices.push(choiceId);
     GameState.choiceLog.push({
+      chapter: GameState.chapter,
       round: scene.round,
       choiceId: choiceId,
       label: choice.label,
@@ -44,7 +45,7 @@ const GameEngine = {
     }
 
     // v2.0: 处理宿命值变化
-    if (typeof choice.effects.fate === 'number') {
+    if (typeof choice.effects.fate === 'number' && Number.isFinite(choice.effects.fate)) {
       GameState.fateCounter = Math.max(0, Math.min(
         (typeof MAX_FATE !== 'undefined') ? MAX_FATE : 6,
         GameState.fateCounter + choice.effects.fate
@@ -55,7 +56,7 @@ const GameEngine = {
     }
 
     // v2.0: 处理羁绊值变化
-    if (typeof choice.effects.bond === 'number') {
+    if (typeof choice.effects.bond === 'number' && Number.isFinite(choice.effects.bond)) {
       GameState.bondCounter = Math.max(0, Math.min(
         (typeof MAX_BOND !== 'undefined') ? MAX_BOND : 6,
         GameState.bondCounter + choice.effects.bond
@@ -90,12 +91,12 @@ const GameEngine = {
     }
 
     // 可玩性增强：追踪秘密选项使用
-    if (choice.isSecretOption || choice.requiredMemory) {
+    if (choice.isSecretOption || choice.requiredClue) {
       GameState._secretOptionChosen = true;
     }
 
     // 锁定选择：记录当前场景选择了哪个选项（回退后不可更改）
-    GameState.sceneChoices[GameState.currentScene] = choiceId;
+    GameState.sceneChoices[scene.id] = choiceId;
 
     // 先跳转到分支叙事
     const nextSceneId = choice.nextScene;
@@ -263,8 +264,8 @@ const GameEngine = {
       }
 
       // 其他情况：锁定
-      if (!GameState.isChapterCompleted(chapterNum) && chapterNum > GameState.chapter) {
-        showToast('🔒 请先完成当前章节再来探索这里');
+      if (!GameState.isChapterCompleted(chapterNum) && chapterNum > GameState.chapter + 1) {
+        showToast('✕ 请先完成当前章节再来探索这里');
         return false;
       }
     }
@@ -395,9 +396,9 @@ const GameEngine = {
     if (newEncounters.length > 0) {
       setTimeout(() => {
         if (newEncounters.length === 1) {
-          showToast('🌳 ' + newEncounters[0] + ' 已加入家族树');
+          showToast('❦ ' + newEncounters[0] + ' 已加入家族树');
         } else {
-          showToast('🌳 ' + newEncounters.length + ' 位人物已加入家族树');
+          showToast('❦ ' + newEncounters.length + ' 位人物已加入家族树');
         }
       }, 800);
     }
@@ -421,6 +422,7 @@ const GameEngine = {
   },
 
   resetGame() {
+    if (typeof resetRendererState === 'function') resetRendererState();
     GameState.reset();
     StorageManager.clearAll();
   },
@@ -535,7 +537,16 @@ const GameEngine = {
       const st = scene.settlement;
       if (st.isFinalEnd) return false; // 终章致谢需手动点击
       if (st.nextScene) {
-        if (st.isChapterEnd) GameState.markChapterCompleted(GameState.chapter);
+        if (st.isChapterEnd) {
+          // v2.0: 记录本章烙印（与 goToNextChapter 保持一致）
+          if (GameState.chapter >= 1) {
+            this.recordChapterImprint(GameState.chapter);
+          }
+          GameState.markChapterCompleted(GameState.chapter);
+          // 检查成就
+          checkAchievements();
+          checkAndNotifyAchievements();
+        }
         this.goToScene(st.nextScene);
         return true;
       }

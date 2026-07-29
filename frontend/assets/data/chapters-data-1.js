@@ -267,6 +267,7 @@ registerChapter({
           label: '与梅尔基亚德斯交易——用你的"记忆"',
           description: '你买不起放大镜。但你有一件东西可以交换：你父亲的面容记忆……',
           nextScene: 'round2_b_narrative',
+          isSecretOption: true,
           effects: { tags: ['代价与收获', '失去面容的人'], memory: null, relationshipEffects: { '梅尔基亚德斯': 10 }, characterFlags: { 'paid_with_memory': 1 }, fate: 2, bond: 0 },
           emotionalCost: '你失去的是父亲的脸——他的眉毛、他的胡茬、他笑时的皱纹。你记得他存在过，但再也看不见他',
           emotionalGain: '你得到了这面能点燃一切的镜子——代价已付，从此没有人能说你是一个不敢付出的人',
