@@ -256,15 +256,23 @@ const ACHIEVEMENTS = [
     cond: s => (s._secretOptionsChosen || 0) >= 1 },
   { id:'ach_bond_master', icon:'↭', name:'羁绊之人', desc:'与任意角色的关系值达到至交（≥85）。',
     cond: s => Object.values(s.relationships || {}).some(v => v >= 85) },
-  { id:'ach_explorer', icon:'◎', name:'马孔多的探索者', desc:'在羊皮卷的边缘发现隐藏的文字——累计阅读5条边缘批注。',
-    cond: s => (s._marginaliaRead || 0) >= 5 },
+  { id:'ach_explorer', icon:'◎', name:'马孔多的探索者', desc:'在羊皮卷的边缘发现隐藏的文字——累计阅读3条边缘批注。',
+    cond: s => (s._marginaliaRead || 0) >= 3 },
   { id:'ach_second_playthrough', icon:'↻', name:'轮回之人', desc:'完成第二次通关——你再次回到了马孔多。',
     cond: s => (s.playthroughCount || 0) >= 2 },
-  { id:'ach_marginalia_reader', icon:'¶', name:'边缘的读者', desc:'累计阅读过5条边缘文字。',
+  { id:'ach_marginalia_reader', icon:'¶', name:'边缘的读者', desc:'累计阅读过5条边缘文字——你开始听见梅尔基亚德斯在页边的低语。',
     cond: s => (s._marginaliaRead || 0) >= 5 },
   /* v2.0 烙印统计型成就 */
   { id:'ach_consecutive_witness', icon:'◎', name:'连续的见证者', desc:'连续3章以上保持见证者烙印——你在命运中找到了节奏。',
-    cond: s => (s.getImprintStats ? s.getImprintStats().maxConsecutive >= 3 : false) },
+    cond: s => {
+      if (!s.fateImprint) return false;
+      const entries = Object.entries(s.fateImprint);
+      let max = 0, cur = 1;
+      for (let i = 1; i < entries.length; i++) {
+        if (entries[i][1] === 'witness' && entries[i-1][1] === 'witness') { cur++; } else { max = Math.max(max, cur); cur = 1; }
+      }
+      return Math.max(max, cur) >= 3;
+    }},
   { id:'ach_consecutive_rebel', icon:'◆', name:'不熄的反抗', desc:'连续3章以上保持抗争者烙印——你从未向命运低头。',
     cond: s => {
       if (!s.fateImprint) return false;
