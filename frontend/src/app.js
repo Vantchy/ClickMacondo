@@ -153,7 +153,7 @@ function init() {
     // 选择页：数字键选中，再按确认；空格确认
     const choiceScene = GameEngine.getCurrentScene();
     const isChoicePage = choiceScene && choiceScene.type === 'choice' && choiceScene.choices && !GameState.sceneChoices[choiceScene.id];
-    if (e.key === '1' || e.key === '2' || e.key === '3') {
+    if (e.key === '1' || e.key === '2' || e.key === '3' || e.key === '4') {
       if (isChoicePage) {
         e.preventDefault();
         const idx = parseInt(e.key) - 1;

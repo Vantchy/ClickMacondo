@@ -304,7 +304,8 @@ registerChapter({
     ch17_r3_choice: { id:'ch17_r3_choice', type:'choice', chapter:17, round:3, title:'第三轮选择 · 她的恐惧', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['阿玛兰妲·乌尔苏拉也读了羊皮卷——只读了一小段——就被吓得脸都白了。她读到了那句关于"最后一个人正被蚂蚁吃掉"的话。她开始做梦——梦里有蚂蚁从墙缝里涌出来，爬过她的脚踝，爬过孩子的摇篮。','她醒来的时候——手心全是汗。她看着你——"我们不会有孩子吧？"她的声音在抖。但你不知道答案——你还没读到那一页。'], transition:'你选择——' }, choices:[
       { id:'ch17_r3_a', label:'安慰她——不会有事', description:'抱住她，告诉她这只是一个古老的预言。不一定会发生——不一定是指你们。', nextScene:'ch17_r3a', effects:{ tags:['安慰者'], memory:null, fate: 0, bond: 2 } },
       { id:'ch17_r3_b', label:'诚实——告诉她你也不知道', description:'不给她虚假的承诺。预言可能是真的——但你们会一起面对。不管发生什么。', nextScene:'ch17_r3b', effects:{ tags:['诚实的伴侣'], memory:null, fate: 1, bond: 0 } },
-      { id:'ch17_r3_c', label:'重新翻译——看看有没有误解', description:'也许是翻译错了。重新检查那一段——用字典，用逻辑，用一切可能的解读方式。', nextScene:'ch17_r3c', effects:{ tags:['学者'], memory:null, fate: 2, bond: -1 } }
+      { id:'ch17_r3_c', label:'重新翻译——看看有没有误解', description:'也许是翻译错了。重新检查那一段——用字典，用逻辑，用一切可能的解读方式。', nextScene:'ch17_r3c', effects:{ tags:['学者'], memory:null, fate: 2, bond: -1 } },
+      { id:'ch17_r3_d', label:'用铜镜照一照羊皮卷——看那些倒写的字', description:'梅尔基亚德斯的铜镜还在你口袋里。你把它举到羊皮卷前——镜面里，那些倒写的字变成了正写的。你读出了你从未见过的句子。', nextScene:'ch17_r3a', requiredClue: 'melquiades_mirror', effects:{ tags:['镜中读者'], memory:null, fate: 1, bond: 1 } }
     ], settlement:'ch17_r3_settlement' },
     ch17_r3a: { id:'ch17_r3a', type:'narrative', chapter:17, round:3, title:'安慰者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你抱住她。她的手在你的背后——你感觉到她的身体在慢慢放松。你不确定自己在说实话——但你在说爱。有时候爱比事实更能让人挺过黑夜。她睡着了——她的呼吸很平稳。你看着她在月光下的脸——你不知道她能拥有多少日子。但今晚——她在呼吸。']}, choices:null, nextScene:'ch17_r3_settlement' },
     ch17_r3b: { id:'ch17_r3b', type:'narrative', chapter:17, round:3, title:'诚实的伴侣', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你看着她的眼睛——告诉她："我也不知道。可能是真的。可能不是。但不管发生什么——我们都在这里。在一起。"她沉默了很久——然后点了点头。她没有哭——但你看见她的嘴角动了一下。不是微笑——是接受。']}, choices:null, nextScene:'ch17_r3_settlement' },

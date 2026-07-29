@@ -24,7 +24,8 @@ registerChapter({
     ch11_r2_choice: { id:'ch11_r2_choice', type:'choice', chapter:11, round:2, title:'第二轮选择 · 衰败的迹象', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['雨下了一年了。房子开始腐烂——墙壁上长出了蘑菇，木梁上生了白蚁，衣服上全是霉斑。乌尔苏拉每天擦洗——但她擦完一块墙壁，另一块又开始滴水。','费尔南达把自己关在房间里——不是怕湿，是怕看到她祖母留下的家具在霉变。奥雷里亚诺第二不笑了——他的胃口消失了。雨水把一切味道都冲淡了。'], transition:'你选择——' }, choices:[
       { id:'ch11_r2_a', label:'坚持清理——对抗腐坏', description:'每天擦洗，每天修补。腐烂是敌人——你必须和它战斗到最后一刻。', nextScene:'ch11_r2a', effects:{ tags:['不屈者'], memory:null , fate:0, bond:2 } },
       { id:'ch11_r2_b', label:'接受衰败——保存核心', description:'有些东西注定会毁掉。集中精力保护最重要的东西——人和记忆。', nextScene:'ch11_r2b', effects:{ tags:['务实者'], memory:null , fate:-1, bond:2 } },
-      { id:'ch11_r2_c', label:'寻找雨停的迹象', description:'出去——在雨中寻找任何可能意味着雨要停了的迹象。哪怕只是一线希望。', nextScene:'ch11_r2c', effects:{ tags:['希望寻找者'], memory:null , fate:1, bond:0 } }
+      { id:'ch11_r2_c', label:'寻找雨停的迹象', description:'出去——在雨中寻找任何可能意味着雨要停了的迹象。哪怕只是一线希望。', nextScene:'ch11_r2c', effects:{ tags:['希望寻找者'], memory:null , fate:1, bond:0 } },
+      { id:'ch11_r2_d', label:'你记得标签上的墨水——在每件物品上重新写下名字', description:'失眠症那年你在每件物品上写下了名字。现在雨要把所有字都洗掉了——但你可以再写一遍。用不褪色的墨。', nextScene:'ch11_r2a', requiredMemory: '标签上的墨水', effects:{ tags:['重写名字的人'], memory:null, fate: 0, bond: 2 } }
     ], settlement:'ch11_r2_settlement' },
     ch11_r2a: { id:'ch11_r2a', type:'narrative', chapter:11, round:2, title:'不屈者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你每天擦洗墙壁——蘑菇擦了又长，长了又擦。你的手泡在水里太久——皮肤开始脱落。但房子还在——每一块被你擦拭过的墙壁都在为你撑着。乌尔苏拉说："这房子不会倒——只要还有人愿意为它擦墙。"']}, choices:null, nextScene:'ch11_r2_settlement' },
     ch11_r2b: { id:'ch11_r2b', type:'narrative', chapter:11, round:2, title:'务实者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你不再擦墙了。你把全家人的照片、乌尔苏拉的银器、父亲的手稿——所有最重要的东西搬到了最高的房间。墙可以烂——但这些东西不能丢。因为它们是这个家族曾经存在过的证据。']}, choices:null, nextScene:'ch11_r2_settlement' },
@@ -115,7 +116,8 @@ registerChapter({
     ch12_r4_choice: { id:'ch12_r4_choice', type:'choice', chapter:12, round:4, title:'第四轮选择 · 告别', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['乌尔苏拉知道自己要走了。一百多年的生命——她知道身体什么时候要停下。但她的眼睛是瞎的——她看不见那些围在她床边的人。她的耳朵还在工作——她听见了呼吸声。有些呼吸她认得——有些已经不认得。但它们在——这就够了。','她伸出手——有人在握着。是阿玛兰妲？是梅梅？是费尔南达？她不确定——但那只手是温热的。这让她想起了她第一次握住何塞·阿尔卡蒂奥·布恩迪亚的手——那天她十八岁，穿着白裙子，裙摆沾了泥。'], transition:'你选择——' }, choices:[
       { id:'ch12_r4_a', label:'说再见——叫每个人的名字', description:'用最后的力气，一个一个地叫出他们的名字。让他们知道你记得每一个人。', nextScene:'ch12_r4a', effects:{ tags:['完整的告别'], memory:'最后的点名', fate:0, bond:1 } },
       { id:'ch12_r4_b', label:'安静离开——不要惊动任何人', description:'你不想让他们看见这一刻。在睡梦中慢慢松开手——让他们在你走了之后才发现。', nextScene:'ch12_r4b', effects:{ tags:['安静的告别'], memory:null, fate:-1, bond:1 } },
-      { id:'ch12_r4_c', label:'说一句——然后把空间留给他们', description:'只说一句——"吃饭了。"——然后闭上眼睛。让他们记住你在喊他们吃饭的样子。', nextScene:'ch12_r4c', effects:{ tags:['日常的告别'], memory:'最后的晚饭', fate:0, bond:1 } }
+      { id:'ch12_r4_c', label:'说一句——然后把空间留给他们', description:'只说一句——"吃饭了。"——然后闭上眼睛。让他们记住你在喊他们吃饭的样子。', nextScene:'ch12_r4c', effects:{ tags:['日常的告别'], memory:'最后的晚饭', fate:0, bond:1 } },
+      { id:'ch12_r4_d', label:'你被爱过足够多次——可以安心地合上眼睛了', description:'你回顾这一生：孩子们回来了，房子还在，你缝过的衣服还穿在他们身上。你不是在告别——你是在完成最后一针。', nextScene:'ch12_r4a', requiredFlag: { flag: 'ursula_cared', min: 3 }, effects:{ tags:['被爱标记的人'], memory:null, fate: 0, bond: 2 } }
     ], settlement:'ch12_r4_settlement' },
     ch12_r4a: { id:'ch12_r4a', type:'narrative', chapter:12, round:4, title:'完整的告别', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你一个一个地叫出他们的名字——从这一代到那一代。有些人听到了——有些人没有。但你说了出口——那些名字在你嘴里像最后的面团被揉完。最后一个名字——你说了何塞·阿尔卡蒂奥·布恩迪亚。他在栗树下——听不到。但风会把你的声音带过去。']}, choices:null, nextScene:'ch12_r4_settlement' },
     ch12_r4b: { id:'ch12_r4b', type:'narrative', chapter:12, round:4, title:'安静的告别', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你在睡梦中松开了手。床边的孩子们没有发现——直到你的呼吸变得很慢很慢，然后停了。他们没有哭——不是不难过，是你走得太安静了，安静得让他们觉得你只是在休息。你确实是——你一直在休息——只是这次你不会再醒来去厨房揉面了。']}, choices:null, nextScene:'ch12_r4_settlement' },

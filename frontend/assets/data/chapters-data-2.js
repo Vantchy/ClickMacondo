@@ -11,7 +11,28 @@ registerChapter({
   scenes: {
     ch3_opening: { id:'ch3_opening', type:'narrative', chapter:3, round:0, title:'第三幕开启 · 敲门的人', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['门开了。你站在走廊的阴影里。她站在门外——赤着脚，抱着一个过于窄小的木箱，脚背上全是湿泥。她的眼睛很大，像两口干涸的井。','她说她叫丽贝卡。父亲侧身让她走进来。她经过时，所有人都闻到了那种气味——像从很远的地方飘来的风干肉的味道。','乌尔苏拉从厨房走出："让她进来。"这一句话改变了这个家。'], clues:[
           { triggerText:'泥从指缝漏下来', itemId:'taste_of_mud', narrative:'你尝过泥土的味道吗？不是饿——是一种更深的渴望。丽贝卡吃泥不是为了填饱肚子，是为了填满一种你不知道名字的空虚。', unlocksIn:['chapter8'] }
-        ]}, choices:null, nextScene:'ch3_r1_choice' },
+        ]}, choices:null, nextScene:'ch3_explore' },
+
+    ch3_explore: {
+      id: 'ch3_explore', type: 'exploration', chapter: 3, round: 0,
+      title: '探索 · 布恩迪亚家宅',
+      leftPage: {
+        speaker: '旁白', speakerColor: '#4a2a18',
+        paragraphs: [
+          '你站在布恩迪亚家的天井里。房子正在扩建——乌尔苏拉说要建到四十间。墙还没有抹完，梁柱散发着新木的香气。到处是半干的泥浆和锯末。',
+          '在继续之前——你感到这院子里藏着什么东西。那些角落、门口、树荫——它们并不安静。它们想让你看见它们。',
+          '触碰那些微光——你会发现这所房子不是只有墙壁和门窗。它有记忆。'
+        ]
+      },
+      hotspots: [
+        { id: 'hs_tree', label: '栗树下', position: { x: '10%', y: '25%' }, narrative: '栗树的树皮上刻着深深浅浅的圆圈——那是何塞·阿尔卡蒂奥·布恩迪亚画的。他不说为什么。但你知道：这圆圈是一个人在试图理解时间的形状。像金鱼——做好了熔掉，熔掉了再做。不是徒劳——是仪式。', discoveredText: '你触碰了栗树的记忆。' },
+        { id: 'hs_rebeca', label: '丽贝卡的房门', position: { x: '70%', y: '30%' }, narrative: '房门虚掩着。从门缝里你能看见床底下的骨灰盒——盒盖微微敞开。不是骨灰——是泥土。一点点从她脚背上干涸的湿泥，被小心刮下来放进盒子里。她不是在吃泥——她是在保存她从那个遥远地方带来的最后一点气味。', discoveredText: '你明白了丽贝卡的秘密。' },
+        { id: 'hs_kitchen', label: '乌尔苏拉的厨房', position: { x: '50%', y: '65%' }, narrative: '厨房里弥漫着草药和糖浆的气味。灶台上搁着三只碗——大小不一，但摆得整整齐齐。乌尔苏拉从不扔掉任何一只缺了口的碗。她说："每一道缺口都曾经是一张嘴在说话。"你不确定她说的是碗——还是这个家里的人。', discoveredText: '你听见了厨房里的低语。' },
+        { id: 'hs_corridor', label: '新扩建的走廊', position: { x: '35%', y: '15%' }, narrative: '走廊的尽头，石膏还没有干透。你看见墙上有人用指甲划了几道线——那是孩子们的身高刻度。每一道旁边写着一个名字和一个日期。奥雷里亚诺——何塞·阿尔卡蒂奥——阿玛兰妲——丽贝卡。走廊还在扩建——但这里已经跑过了这么多孩子的赤脚。', discoveredText: '你找到了孩子们的身高刻度。' }
+      ],
+      requiredDiscoveries: 3,
+      nextScene: 'ch3_r1_choice'
+    },
 
     ch3_r1_choice: { id:'ch3_r1_choice', type:'choice', chapter:3, round:1, title:'第一轮选择 · 收养与陌生', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['第二天早上，你在天井里看见了丽贝卡。她站在井边，手伸进口袋，摸出什么东西塞进嘴里。你走近——她嘴角有泥痕。', '"你在吃什么？"她吓了一跳。泥从指缝漏下来。"没有什么。"'], transition:'你选择——' }, choices:[
       { id:'ch3_r1_a', label:'保守她的秘密', description:'退后一步，假装什么都没看见。每个人都有权保留自己的秘密。', nextScene:'ch3_r1a', effects:{ tags:['沉默的守护者'], memory:null, fate:0, bond:1 } },
@@ -223,7 +244,8 @@ registerChapter({
     ch5_r1_choice: { id:'ch5_r1_choice', type:'choice', chapter:5, round:1, title:'第一轮选择 · 初恋的宣言', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你无法忘记那个画面——蕾梅黛丝举着糖苹果，蜜蜂在她指尖嗡嗡作响。你从来没有对任何人有过这种感觉。不是肉欲——是一种近乎宗教的确定。你确定你将在余生所有重要时刻想起这颗糖苹果。','但她也只有九岁。而她父亲是镇长——那个你帮助或反对过的人。'], transition:'你选择——' }, choices:[
       { id:'ch5_r1_a', label:'向她父亲提亲', description:'你是布恩迪亚——你知道自己想要什么。去找镇长，正式求娶蕾梅黛丝。', nextScene:'ch5_r1a', effects:{ tags:['勇敢的求婚者'], memory:null, fate: 1, bond: 1 } },
       { id:'ch5_r1_b', label:'等待她长大', description:'她还太小。把你的感情埋在心底，等她长大——用时间来证明你的真心。', nextScene:'ch5_r1b', effects:{ tags:['耐心的等待者'], memory:null, fate: -1, bond: 2 } },
-      { id:'ch5_r1_c', label:'扼杀这份感情', description:'她只是个孩子。你告诉自己：这不是爱，是一种错觉。转身走开——趁还来得及。', nextScene:'ch5_r1c', effects:{ tags:['自我克制者'], memory:'未说出口的爱', fate: 0, bond: -1 } }
+      { id:'ch5_r1_c', label:'扼杀这份感情', description:'她只是个孩子。你告诉自己：这不是爱，是一种错觉。转身走开——趁还来得及。', nextScene:'ch5_r1c', effects:{ tags:['自我克制者'], memory:'未说出口的爱', fate: 0, bond: -1 } },
+      { id:'ch5_r1_d', label:'用磁铁感应——寻找隐藏的金属', description:'你口袋里的磁铁还在嗡鸣。也许它能告诉你一些看不见的东西——关于这座房子，关于蕾梅黛丝，关于你自己。', nextScene:'ch5_r1a', requiredClue: 'magnet_hum', effects:{ tags:['磁铁的低语者'], memory:null, fate: 0, bond: 1 } }
     ], settlement:'ch5_r1_settlement' },
     ch5_r1a: { id:'ch5_r1a', type:'narrative', chapter:5, round:1, title:'勇敢的求婚者', leftPage:{ speaker:'奥雷里亚诺', speakerColor:'#1a3a4a', paragraphs:['你穿上最干净的衬衫，走向镇长家。摩斯科特开了门——看见是你，愣了一下。"我想娶你的女儿。"你说。他看了你很久——久到你能听见厨房里有人在洗东西。然后他说："她九岁。"你说："我会等她。"他最终点了点头——不是因为相信你，是因为你是布恩迪亚。']}, choices:null, nextScene:'ch5_r1_settlement' },
     ch5_r1b: { id:'ch5_r1b', type:'narrative', chapter:5, round:1, title:'耐心的等待者', leftPage:{ speaker:'奥雷里亚诺', speakerColor:'#1a3a4a', paragraphs:['你什么都没说——但每天下午，你会在实验室窗口多站一会儿。蕾梅黛丝路过的时候，你没有招手，没有说话。你只是看着她走过——她的裙子拖在泥地上，她手里有时是糖苹果，有时是一朵花，有时什么都没有。你不急。你在心里说：我有时间。我有的是时间。']}, choices:null, nextScene:'ch5_r1_settlement' },
@@ -243,7 +265,8 @@ registerChapter({
     ch5_r3_choice: { id:'ch5_r3_choice', type:'choice', chapter:5, round:3, title:'第三轮选择 · 蕾梅黛丝之死', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你不在家。你在前线——指挥第一场战役。然后信来了。乌尔苏拉只写了三个字："她走了。"','蕾梅黛丝死了。不是因为战争——是因为意外。她从楼梯上摔下来，怀着你未出生的孩子。她死的时候十四岁。你还记得她九岁时举着糖苹果的样子——那只蜜蜂绕着糖壳飞，她的嘴忘了咬。现在那个嘴巴永远不会咬了。那些苹果永远不会被吃完了。'], transition:'你选择——' }, marginalia:{ text:'这页有水渍。不是我弄的——是上一个读者。也可能是再上一个。这页永远会有水渍。', style:'warning' }, choices:[
       { id:'ch5_r3_a', label:'回家——守在她墓前', description:'战争可以等。蕾梅黛丝不能等——你已经错过了她最后一面，至少不要错过告别。', nextScene:'ch5_r3a', effects:{ tags:['悲痛的丈夫'], memory:'糖苹果与墓石', relationshipEffects:{'乌尔苏拉·伊瓜兰':10}, characterFlags:{'returned_for_love':1}, fate: -1, bond: 2 }, emotionalCost:'你骑了三天三夜的马——但墓前只有一块白色石头。你不知道该说什么。你放下的糖被蚂蚁搬走了——也许这就是答案', alternativeNarrative:'若你留在前线——你的副官会替你指挥下一场战役。你不知道蕾梅黛丝的墓在地下沉了半寸——但乌尔苏拉知道。她每天都去浇水。她用厨房的水——本来是用来煮汤的。' },
       { id:'ch5_r3_b', label:'留在前线——用战争麻痹自己', description:'回家没有意义——她不在那里了。留在战场上，让自己被硝烟吞没。', nextScene:'ch5_r3b', effects:{ tags:['逃避者'], memory:null, relationshipEffects:{'乌尔苏拉·伊瓜兰':-15}, characterFlags:{'fled_from_grief':1}, fate: 2, bond: -1 }, emotionalCost:'你打了三十二场仗——但每一场你都在心里留了一小块空白。那块空白是蕾梅黛丝的形状', alternativeNarrative:'若你回去守墓——你会跪在那块白色石头前，膝下的泥土是湿的。你会闻到乌尔苏拉泼的水——它渗进了石头的纹理。你会知道：有些伤口不在皮肤上，在每一次你看见糖苹果的时候。' },
-      { id:'ch5_r3_c', label:'写一封信——然后继续战斗', description:'你不能回去，但也不能沉默。写一封信给乌尔苏拉——告诉她蕾梅黛丝的名字不会被忘记。', nextScene:'ch5_r3c', effects:{ tags:['沉默的纪念者'], memory:'写给亡妻的信', relationshipEffects:{'乌尔苏拉·伊瓜兰':5}, characterFlags:{'wrote_for_dead':1}, fate: 1, bond: 1 }, alternativeNarrative:'若你回去守墓——你会看见乌尔苏拉站在墓旁。她没有哭——她只是蹲下来，用手把石头上的一只蚂蚁轻轻拨开。你那天才知道：她不是在照料坟墓——她是在照料那个永远不会出生的孩子。' }
+      { id:'ch5_r3_c', label:'写一封信——然后继续战斗', description:'你不能回去，但也不能沉默。写一封信给乌尔苏拉——告诉她蕾梅黛丝的名字不会被忘记。', nextScene:'ch5_r3c', effects:{ tags:['沉默的纪念者'], memory:'写给亡妻的信', relationshipEffects:{'乌尔苏拉·伊瓜兰':5}, characterFlags:{'wrote_for_dead':1}, fate: 1, bond: 1 }, alternativeNarrative:'若你回去守墓——你会看见乌尔苏拉站在墓旁。她没有哭——她只是蹲下来，用手把石头上的一只蚂蚁轻轻拨开。你那天才知道：她不是在照料坟墓——她是在照料那个永远不会出生的孩子。' },
+      { id:'ch5_r3_d', label:'想起父亲覆在你手上的温度——回家', description:'你忽然记起了那个遥远的下午：父亲把冰块放在你手里，他的手覆在你的手背上。那温度穿过时间——告诉你有些东西比战争更值得回去。', nextScene:'ch5_r3a', requiredMemory: '覆手', effects:{ tags:['被冰召唤的人'], memory:null, fate: -1, bond: 2 } }
     ], settlement:'ch5_r3_settlement' },
     ch5_r3a: { id:'ch5_r3a', type:'narrative', chapter:5, round:3, title:'悲痛的丈夫', leftPage:{ speaker:'奥雷里亚诺上校', speakerColor:'#1a3a4a', paragraphs:['你骑着马日夜兼程回到马孔多。乌尔苏拉在门口等你——她老了十岁。你走进院子——蕾梅黛丝的墓在栗树旁边，一块白色的石头，上面没有字——因为没有人敢写下她的名字。','你站在墓前，把手里的糖放在石头上。不是糖苹果——是普通的糖。你在前线从牙缝里省下来的。你放了很久——直到蚂蚁把它搬完。']}, choices:null, nextScene:'ch5_r3_settlement' },
     ch5_r3b: { id:'ch5_r3b', type:'narrative', chapter:5, round:3, title:'逃避者', leftPage:{ speaker:'奥雷里亚诺上校', speakerColor:'#1a3a4a', paragraphs:['你没有回去。你指挥了下一场战役，再下一场，再下一场。你打了胜仗——但你不记得胜利的感觉。你只记得糖苹果。只记得那只蜜蜂。只记得她从楼梯上摔下来的时候手里还攥着什么——你不知道是什么。你永远也不会知道。','这就是你惩罚自己的方式：不回去，不让泪水落下来，不让她的死成为真的。只要还在打仗，她就还没有走远。']}, choices:null, nextScene:'ch5_r3_settlement' },
