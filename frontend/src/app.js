@@ -51,6 +51,15 @@ function init() {
   document.getElementById('bookmarks-overlay').addEventListener('click', (e) => {
     if (e.target === e.currentTarget) closeArchiveBookmarks();
   });
+  document.getElementById('gameplay-overlay').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeGameplayIntro();
+  });
+  document.getElementById('tagcollection-overlay').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeTagCollection();
+  });
+  document.getElementById('cluecollection-overlay').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeClueCollection();
+  });
 
   // 设置
   document.getElementById('btn-settings').addEventListener('click', () => SettingsPanel.open());
@@ -77,6 +86,7 @@ function init() {
 
   // 重置游戏
   document.getElementById('btn-reset-game').addEventListener('click', () => SettingsPanel.resetGame());
+  document.getElementById('btn-nuke-all').addEventListener('click', () => SettingsPanel.nukeAll());
 
   // 底部栏
   document.getElementById('btn-save').addEventListener('click', () => SaveLoadPanel.open('save'));
@@ -116,7 +126,10 @@ function init() {
         document.getElementById('settings-overlay').classList.contains('open') ||
         document.getElementById('saveload-overlay').classList.contains('open') ||
         document.getElementById('achievements-overlay').classList.contains('open') ||
-        document.getElementById('bookmarks-overlay').classList.contains('open');
+        document.getElementById('bookmarks-overlay').classList.contains('open') ||
+        document.getElementById('gameplay-overlay').classList.contains('open') ||
+        document.getElementById('tagcollection-overlay').classList.contains('open') ||
+        document.getElementById('cluecollection-overlay').classList.contains('open');
 
       if (anyOpen) {
         // 关闭全部面板
@@ -127,6 +140,9 @@ function init() {
         SettingsPanel.close();
         SaveLoadPanel.close();
         hideMainMenu();
+        closeGameplayIntro();
+        closeTagCollection();
+        closeClueCollection();
         closeAchievements();
         closeArchiveBookmarks();
       } else {

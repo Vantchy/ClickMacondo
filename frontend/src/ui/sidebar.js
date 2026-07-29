@@ -89,6 +89,23 @@ const SidebarManager = {
       html += '<div style="text-align:center;color:var(--gold-dim);padding:20px;font-style:italic;">尚未解锁任何记忆碎片。<br>在游戏中做出选择来收集它们。</div>';
     }
 
+    // v2.0: 隐藏线索分类
+    html += '<div style="margin-top:24px;padding-top:16px;border-top:1px solid rgba(184,137,62,0.18);">';
+    html += '<div style="font-size:0.75rem;color:var(--gold-dim);margin:12px 0 8px;">🔍 隐藏线索</div>';
+    if (typeof CLUE_DEFS !== 'undefined') {
+      const clueEntries = Object.values(CLUE_DEFS);
+      // 按章节排序
+      clueEntries.sort((a, b) => (a.chapter || 0) - (b.chapter || 0));
+      clueEntries.forEach(clue => {
+        const found = GameState.hasClue ? GameState.hasClue(clue.id) : false;
+        html += '<div class="clue-collection-item ' + (found ? 'found' : 'missing') + '">';
+        html += '<span>' + (found ? '🔍 ' : '？ ') + '</span>';
+        html += '<span>' + (found ? clue.name : '尚未发现 — ' + (clue.chapter ? '第' + clue.chapter + '章' : '未知')) + '</span>';
+        html += '</div>';
+      });
+    }
+    html += '</div>';
+
     content.innerHTML = html;
     overlay.classList.add('open');
     panel.classList.add('open');
@@ -118,63 +135,329 @@ const SidebarManager = {
     html += `<p class="profile-choice-log">章节进度：${chapterTitle} · 第${Math.max(0, GameState.round)}轮</p>`;
     html += '</div>';
 
-    // 已获得标签
+    // v2.1: 标签按章节下拉查看
     html += '<div class="profile-section">';
-    html += '<h4>已获得标签</h4>';
-    html += '<div class="profile-tags">';
-    if (GameState.tags.length === 0) {
-      html += '<span style="color:var(--gold-dim);font-style:italic;">暂无标签</span>';
-    } else {
-      GameState.tags.forEach(t => {
-        html += `<span class="tag-badge">${t}</span>`;
-      });
-    }
-    html += '</div></div>';
+    html += '<h4>🏷️ 标签收集 <span style="font-size:0.6rem;color:var(--gold-dim);">(' + GameState.tags.length + ' 已获得)</span></h4>';
+    html += this._renderTagDropdown();
+    html += '</div>';
 
-    // 选择记录
+    // 选择记录 (精简)
     html += '<div class="profile-section">';
-    html += '<h4>选择记录</h4>';
+    html += '<h4>📝 选择记录</h4>';
     if (GameState.choiceLog.length === 0) {
       html += '<p class="profile-choice-log" style="color:var(--gold-dim);font-style:italic;">尚未做出选择。</p>';
     } else {
-      GameState.choiceLog.forEach((log, i) => {
-        html += `<p class="profile-choice-log">第${log.round}轮：<strong>${log.label}</strong> → ${log.tags.join('、')}</p>`;
+      // 只显示最近10条
+      const recentLogs = GameState.choiceLog.slice(-10);
+      recentLogs.forEach((log, i) => {
+        const chNum = log.chapter || '?';
+        html += `<p class="profile-choice-log">Ch${chNum}.R${log.round}：<strong>${log.label}</strong> → ${(log.tags||[]).join('、') || '无标签'}</p>`;
       });
+      if (GameState.choiceLog.length > 10) {
+        html += `<p class="profile-choice-log" style="text-align:center;color:var(--gold-dim);">……还有 ${GameState.choiceLog.length - 10} 条记录</p>`;
+      }
     }
     html += '</div>';
 
-    // 可玩性增强：角色关系值
+    // v2.0: 角色关系值（显示档位+精确数值）
     html += '<div class="profile-section">';
     html += '<h4>🤝 羁绊之人</h4>';
     if (!GameState.relationships || Object.keys(GameState.relationships).length === 0) {
       html += '<p class="profile-choice-log" style="color:var(--gold-dim);font-style:italic;">尚未建立与他人的羁绊。<br>继续旅程来影响你与他人的关系。</p>';
     } else {
       const relEntries = Object.entries(GameState.relationships);
-      // 按关系值从高到低排列
       relEntries.sort((a, b) => b[1] - a[1]);
-      const displayedChars = relEntries.slice(0, 8); // 最多显示8个
+      const displayedChars = relEntries.slice(0, 10);
       displayedChars.forEach(([charName, value]) => {
-        const level = GameState.getRelationshipLevel
-          ? GameState.getRelationshipLevel(charName)
-          : null;
-        const tierLabel = level ? level.tier : '';
-        const tierColor = level ? level.color : 'var(--gold-dim)';
-        const barColor = value >= 66 ? '#6a9a5a' : value >= 34 ? '#c4910a' : '#a05040';
+        const tier = GameState.getRelationshipTier
+          ? GameState.getRelationshipTier(charName)
+          : GameState.getRelationshipLevel(charName);
+        const tierLabel = tier ? tier.tier : '';
+        const tierColor = tier ? tier.color : 'var(--gold-dim)';
+        const tierDesc = tier ? (tier.desc || '') : '';
+        const barColor = value >= 70 ? '#6a9a5a' : value >= 30 ? '#c4910a' : '#a05040';
         html += '<div class="relationship-item">';
-        html += '<div class="rel-name">' + charName + ' <span style="color:' + tierColor + ';font-size:0.65rem;">— ' + tierLabel + '</span></div>';
+        html += '<div class="rel-name">' + charName + ' <span style="color:' + tierColor + ';font-size:0.65rem;">— ' + tierLabel + '</span><span style="float:right;font-size:0.7rem;color:' + tierColor + ';font-weight:600;">' + value + '/100</span></div>';
         html += '<div class="rel-bar-wrap"><div class="rel-bar-fill" style="width:' + value + '%;background:' + barColor + ';"></div></div>';
-        html += '<div class="rel-label">' + value + ' / 100</div>';
+        html += '<div class="rel-label">' + tierDesc + '</div>';
         html += '</div>';
       });
-      if (relEntries.length > 8) {
-        html += '<p class="profile-choice-log" style="text-align:center;color:var(--gold-dim);">……还有 ' + (relEntries.length - 8) + ' 人</p>';
+      if (relEntries.length > 10) {
+        html += '<p class="profile-choice-log" style="text-align:center;color:var(--gold-dim);">……还有 ' + (relEntries.length - 10) + ' 人</p>';
       }
     }
+    html += '</div>';
+
+    // v2.0: 当前象限
+    html += '<div class="profile-section">';
+    html += '<h4>🧭 当前象限 <span class="help-icon" onclick="event.stopPropagation();SidebarManager.showDefinitionsPopup(\'quadrant\')" title="点击查看象限定义">？</span></h4>';
+    const quadrant = (typeof GameEngine !== 'undefined' && GameEngine.getCurrentQuadrant)
+      ? GameEngine.getCurrentQuadrant()
+      : (typeof getQuadrantLabel !== 'undefined' ? getQuadrantLabel(GameState.fateCounter || 0, GameState.bondCounter || 0) : null);
+    if (quadrant) {
+      html += '<div class="quadrant-label" style="color:' + quadrant.color + ';font-size:0.9rem;text-align:center;margin:6px 0;">' + quadrant.name + '</div>';
+      html += '<p class="profile-choice-log" style="color:var(--gold-dim);font-style:italic;text-align:center;">' + quadrant.desc + '</p>';
+    } else {
+      html += '<p class="profile-choice-log" style="color:var(--gold-dim);font-style:italic;">尚未形成象限……</p>';
+    }
+    html += '</div>';
+
+    // v2.0: 宿命烙印
+    html += '<div class="profile-section">';
+    html += '<h4>⭐ 宿命烙印 <span class="help-icon" onclick="event.stopPropagation();SidebarManager.showDefinitionsPopup(\'fateImprint\')" title="点击查看烙印定义">？</span></h4>';
+    html += this._renderImprintTrack(GameState.fateImprint || {}, 'fate');
+    html += '</div>';
+
+    // v2.0: 羁绊烙印
+    html += '<div class="profile-section">';
+    html += '<h4>🤝 羁绊烙印 <span class="help-icon" onclick="event.stopPropagation();SidebarManager.showDefinitionsPopup(\'bondImprint\')" title="点击查看烙印定义">？</span></h4>';
+    html += this._renderImprintTrack(GameState.bondImprint || {}, 'bond');
+    html += '</div>';
+
+    // v2.0: 线索收集
+    html += '<div class="profile-section">';
+    html += '<h4>🔍 隐藏线索</h4>';
+    const foundClues = (GameState.clueFragments || []).length;
+    const totalClues = (typeof CLUE_DEFS !== 'undefined') ? Object.keys(CLUE_DEFS).length : 30;
+    html += '<p class="profile-choice-log" style="text-align:center;color:var(--gold-dim);">已发现 ' + foundClues + ' / ' + totalClues + ' 条</p>';
     html += '</div>';
 
     content.innerHTML = html;
     overlay.classList.add('open');
     panel.classList.add('open');
+  },
+
+  /* v2.0: 渲染烙印色块行 */
+  _renderImprintTrack(imprint, type) {
+    if (!imprint || Object.keys(imprint).length === 0) {
+      return '<p class="profile-choice-log" style="color:var(--gold-dim);font-style:italic;">尚未记录烙印……<br>完成章节后烙印将在此显示。</p>';
+    }
+    const CHAPTER_NAMES = {
+      1:'一',2:'二',3:'三',4:'四',5:'五',6:'六',7:'七',8:'八',9:'九',10:'十',
+      11:'十一',12:'十二',13:'十三',14:'十四',15:'十五',16:'十六',17:'十七',18:'十八',19:'十九',20:'二十'
+    };
+    let html = '<div class="imprint-track">';
+    const entries = Object.entries(imprint).sort((a, b) => parseInt(a[0]) - parseInt(b[0]));
+    entries.forEach(([chNum, level]) => {
+      const title = CHAPTER_NAMES[chNum] ? ('Ch' + CHAPTER_NAMES[chNum]) : ('Ch' + chNum);
+      html += '<span class="imprint-dot ' + level + '" title="' + title + ': ' + level + '"></span>';
+    });
+    html += '</div>';
+    return html;
+  },
+
+  /* v2.0: 显示定义说明弹窗 */
+  showDefinitionsPopup(topic) {
+    // 移除已有弹窗
+    const existing = document.getElementById('definitions-popup');
+    if (existing) existing.remove();
+
+    let title = '';
+    let html = '';
+
+    if (topic === 'quadrant' || !topic) {
+      title = '🧭 象限说明';
+      html += '<div class="def-section"><div class="def-section-title">四象限体系</div>';
+      html += '<p class="def-text">你的宿命值（⭐）和羁绊值（🤝）共同决定你所在的象限。每个象限不是标签——是一种阅读命运的方式。</p>';
+      html += '<div class="def-grid">';
+      html += '<div class="def-card"><div class="def-card-name" style="color:var(--gold-light);">🏠 家族守望者</div><div class="def-card-desc">高宿命 + 高羁绊<br>理解一切，仍选择连接。<br>你在羊皮卷每一页边缘都写了注释。</div></div>';
+      html += '<div class="def-card"><div class="def-card-name" style="color:#8a9ab0;">🔭 孤绝先知</div><div class="def-card-desc">高宿命 + 低羁绊<br>看透一切，与谁都不相连。<br>你理解了全部——代价是独自一人。</div></div>';
+      html += '<div class="def-card"><div class="def-card-name" style="color:var(--gold);">🌊 命运追随者</div><div class="def-card-desc">低宿命 + 高羁绊<br>顺从命运的流动。<br>你让某些人活得更久、死得更暖。</div></div>';
+      html += '<div class="def-card"><div class="def-card-name" style="color:#a05040;">🔥 孤独反抗者</div><div class="def-card-desc">低宿命 + 低羁绊<br>搏斗命运，独自一人。<br>你和命运互相撕扯——最后谁都没赢。</div></div>';
+      html += '</div></div>';
+    }
+
+    if (topic === 'fateImprint' || !topic) {
+      title = title || '📖 烙印说明';
+      html += '<div class="def-section"><div class="def-section-title">⭐ 宿命烙印档位</div>';
+      html += '<p class="def-text">每章结束时，根据宿命值占比判定本章烙印。烙印永久保存，影响终局判定和下一章的起始动量。</p>';
+      html += '<div class="def-list">';
+      html += '<div class="def-item"><span class="def-dot fate-rebel"></span><strong>抗争者</strong> — 宿命值 ≤ 1/3 最大值。下一章起始宿命 = 0（从空白开始）</div>';
+      html += '<div class="def-item"><span class="def-dot fate-follower"></span><strong>追随者</strong> — 宿命值在 1/3 ~ 2/3 之间。下一章起始宿命 = 最大值 × 1/3</div>';
+      html += '<div class="def-item"><span class="def-dot fate-witness"></span><strong>见证者</strong> — 宿命值 ≥ 2/3 最大值。下一章起始宿命 = 最大值 × 2/3（惯性最强）</div>';
+      html += '</div></div>';
+    }
+
+    if (topic === 'bondImprint' || !topic) {
+      title = title || '📖 烙印说明';
+      html += '<div class="def-section"><div class="def-section-title">🤝 羁绊烙印档位</div>';
+      html += '<p class="def-text">每章结束时，根据羁绊值占比判定本章羁绊烙印。与宿命烙印平行运作。</p>';
+      html += '<div class="def-list">';
+      html += '<div class="def-item"><span class="def-dot bond-estranged"></span><strong>疏离者</strong> — 羁绊值 ≤ 1/3 最大值。与家族若即若离，独自面对命运</div>';
+      html += '<div class="def-item"><span class="def-dot bond-bonded"></span><strong>羁绊者</strong> — 羁绊值在 1/3 ~ 2/3 之间。与他人相连，在关系中找到意义</div>';
+      html += '<div class="def-item"><span class="def-dot bond-soul_of_family"></span><strong>家族的魂</strong> — 羁绊值 ≥ 2/3 最大值。成为家族的心脏——每一次跳动都牵动所有人</div>';
+      html += '</div></div>';
+    }
+
+    html += '<div class="def-section"><div class="def-section-title">🔄 动量规则</div>';
+    html += '<p class="def-text">上一章的烙印决定下一章的起始值——选择有惯性，但不是锁死。你可以转向，但要用力。</p>';
+    html += '</div>';
+
+    // 创建弹窗
+    const popup = document.createElement('div');
+    popup.id = 'definitions-popup';
+    popup.className = 'definitions-popup';
+    popup.innerHTML = `
+      <div class="definitions-popup-inner">
+        <div class="definitions-popup-header">
+          <span>${title}</span>
+          <button class="definitions-popup-close" onclick="SidebarManager.closeDefinitionsPopup()">✕</button>
+        </div>
+        <div class="definitions-popup-body">${html}</div>
+        <div class="definitions-popup-footer">
+          <span style="font-size:0.6rem;color:var(--gold-dim);">点击其他 ？可查看对应说明</span>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(popup);
+
+    // 点击遮罩关闭
+    popup.addEventListener('click', function(e) {
+      if (e.target === popup) SidebarManager.closeDefinitionsPopup();
+    });
+  },
+
+  /** 关闭定义弹窗 */
+  closeDefinitionsPopup() {
+    const popup = document.getElementById('definitions-popup');
+    if (popup) {
+      popup.classList.add('closing');
+      setTimeout(() => popup.remove(), 300);
+    }
+  },
+
+  /* v2.1: 下拉式章节标签查看 */
+  _renderTagDropdown() {
+    // 从所有已注册章节中提取可能的标签
+    const chapterTags = {};
+    const allTags = new Set(GameState.tags);
+
+    Object.values(chapters).forEach(chData => {
+      const chNum = chData.chapterNumber;
+      if (!chNum || chNum === 0) return;
+      if (!chapterTags[chNum]) {
+        chapterTags[chNum] = { title: chData.title || ('第' + chNum + '章'), all: new Set(), obtained: new Set(), missing: new Set() };
+      }
+      if (chData.scenes) {
+        Object.values(chData.scenes).forEach(scene => {
+          if (scene.type === 'choice' && scene.choices) {
+            scene.choices.forEach(choice => {
+              if (choice.effects && choice.effects.tags) {
+                choice.effects.tags.forEach(t => {
+                  chapterTags[chNum].all.add(t);
+                  if (allTags.has(t)) chapterTags[chNum].obtained.add(t);
+                  else chapterTags[chNum].missing.add(t);
+                });
+              }
+            });
+          }
+        });
+      }
+    });
+
+    const sortedChapters = Object.entries(chapterTags).sort((a, b) => parseInt(a[0]) - parseInt(b[0]));
+    const currentChapter = GameState.chapter;
+
+    // 章节下拉选择器
+    let html = '<select id="tag-chapter-select" onchange="SidebarManager._switchTagChapter(this.value)" style="width:100%;padding:6px 10px;background:#14100c;color:#d4b070;border:1px solid rgba(184,137,62,0.3);border-radius:6px;font-family:var(--font-ui);font-size:0.75rem;margin-bottom:8px;cursor:pointer;">';
+    html += '<option value="all">📊 全部章节概览</option>';
+    sortedChapters.forEach(([chNum, ct]) => {
+      const total = ct.all.size;
+      const got = ct.obtained.size;
+      const pct = total > 0 ? Math.round((got/total)*100) : 0;
+      const bar = '█'.repeat(Math.round(pct/10)) + '░'.repeat(10-Math.round(pct/10));
+      const marker = chNum == currentChapter ? ' 📍' : '';
+      html += '<option value="' + chNum + '"' + (chNum == currentChapter ? ' selected' : '') + '>第' + chNum + '章 ' + ct.title.split('·')[0] + ' [' + got + '/' + total + '] ' + bar + marker + '</option>';
+    });
+    html += '</select>';
+
+    // 当前选中章节的详情（默认显示当前所在章节）
+    const showChapter = currentChapter || (sortedChapters.length > 0 ? sortedChapters[0][0] : null);
+    html += '<div id="tag-detail-area" style="max-height:300px;overflow-y:auto;">';
+    html += this._renderTagDetail(showChapter, chapterTags);
+    html += '</div>';
+
+    return html;
+  },
+
+  /** 切换标签查看章节 */
+  _switchTagChapter(chNum) {
+    const area = document.getElementById('tag-detail-area');
+    if (!area) return;
+    const chapterTags = {};
+    const allTags = new Set(GameState.tags);
+    Object.values(chapters).forEach(chData => {
+      const cn = chData.chapterNumber;
+      if (!cn || cn === 0) return;
+      if (!chapterTags[cn]) chapterTags[cn] = { title: chData.title || '', all: new Set(), obtained: new Set(), missing: new Set() };
+      if (chData.scenes) {
+        Object.values(chData.scenes).forEach(scene => {
+          if (scene.type === 'choice' && scene.choices) {
+            scene.choices.forEach(choice => {
+              if (choice.effects && choice.effects.tags) {
+                choice.effects.tags.forEach(t => {
+                  chapterTags[cn].all.add(t);
+                  if (allTags.has(t)) chapterTags[cn].obtained.add(t);
+                  else chapterTags[cn].missing.add(t);
+                });
+              }
+            });
+          }
+        });
+      }
+    });
+    area.innerHTML = this._renderTagDetail(chNum, chapterTags);
+  },
+
+  /** 渲染单个章节的标签详情 */
+  _renderTagDetail(chNum, chapterTags) {
+    if (chNum === 'all' || !chNum) {
+      // 全部章节概览
+      let html = '<div style="display:flex;flex-direction:column;gap:3px;">';
+      const sorted = Object.entries(chapterTags).sort((a,b) => parseInt(a[0])-parseInt(b[0]));
+      sorted.forEach(([cn, ct]) => {
+        if (ct.all.size === 0) return;
+        const got = ct.obtained.size, total = ct.all.size;
+        const pct = total > 0 ? Math.round((got/total)*100) : 0;
+        const barColor = pct >= 100 ? '#6a9a5a' : pct >= 50 ? '#c4910a' : '#a05040';
+        html += '<div style="display:flex;align-items:center;gap:6px;padding:3px 0;border-bottom:1px solid rgba(184,137,62,0.06);">';
+        html += '<span style="font-size:0.65rem;color:var(--gold-dim);min-width:36px;">Ch' + cn + '</span>';
+        html += '<div style="flex:1;height:5px;background:rgba(184,137,62,0.08);border-radius:3px;overflow:hidden;">';
+        html += '<div style="width:' + pct + '%;height:100%;background:' + barColor + ';border-radius:3px;"></div></div>';
+        html += '<span style="font-size:0.6rem;color:var(--gold-dim);min-width:30px;text-align:right;">' + got + '/' + total + '</span>';
+        html += '</div>';
+      });
+      html += '</div>';
+      return html;
+    }
+
+    const ct = chapterTags[chNum];
+    if (!ct || ct.all.size === 0) return '<p style="color:var(--gold-dim);font-style:italic;text-align:center;padding:10px;">本章无标签</p>';
+
+    const got = ct.obtained.size, total = ct.all.size;
+    let html = '<div style="text-align:center;margin-bottom:6px;font-size:0.65rem;color:var(--gold-dim);">进度：' + got + '/' + total + ' (' + Math.round((got/total)*100) + '%)</div>';
+
+    // 已获得
+    if (ct.obtained.size > 0) {
+      html += '<div style="margin-bottom:6px;"><span style="font-size:0.58rem;color:#8ab880;">✅ 已获得 (' + ct.obtained.size + ')</span></div>';
+      html += '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;">';
+      [...ct.obtained].sort().forEach(t => {
+        html += '<span class="tag-badge tag-obtained">' + t + '</span>';
+      });
+      html += '</div>';
+    }
+
+    // 未获得
+    if (ct.missing.size > 0) {
+      html += '<div style="margin-bottom:6px;"><span style="font-size:0.58rem;color:#a09080;">⬜ 未获得 (' + ct.missing.size + ')</span></div>';
+      html += '<div style="display:flex;flex-wrap:wrap;gap:4px;">';
+      [...ct.missing].sort().forEach(t => {
+        html += '<span class="tag-badge tag-missing">' + t + '</span>';
+      });
+      html += '</div>';
+    }
+
+    return html;
   },
 
   closeProfile() {

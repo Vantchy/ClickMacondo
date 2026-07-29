@@ -52,10 +52,9 @@ const SettingsPanel = {
   },
 
   resetGame() {
-    if (confirm('确定要重置游戏吗？所有进度和存档（包括全部6个存档位）将被清除，此操作不可撤销。')) {
+    if (confirm('确定要重置游戏吗？\n\n所有进度和存档将被清除。\n但成就、标签收集、隐藏线索和记忆碎片的收集记录将保留。\n\n如需彻底清除一切记录，请使用"清除全部痕迹"。')) {
       GameEngine.resetGame();
       StorageManager.clearAll();
-      clearAchievements();
       GameState.currentScene = 'void_awakening';
       GameState.history = ['void_awakening'];
       GameState.historyIndex = 0;
@@ -64,7 +63,46 @@ const SettingsPanel = {
       GameEngine.encounterChapterMembers();
       showCover();
       this.close();
-      showToast('游戏已重置');
+      showToast('游戏已重置（收集记录已保留）');
+    }
+  },
+
+  /** 清除全部痕迹——包括成就、标签、线索、记忆等所有持久化数据 */
+  nukeAll() {
+    if (confirm('⚠️ 此操作将清除一切：\n\n• 所有存档（6个存档位 + 自动存档）\n• 成就记录\n• 标签收集记录\n• 隐藏线索记录\n• 记忆碎片记录\n• 设置\n\n此操作不可撤销。确定继续？')) {
+      // 第二次确认
+      if (confirm('最后一次确认：真的要清除全部痕迹吗？\n\n这将把游戏恢复到第一次打开时的状态。')) {
+        // 清除所有 localStorage
+        const keysToKeep = []; // 不保留任何东西
+        const allKeys = Object.keys(localStorage);
+        allKeys.forEach(k => {
+          if (k.startsWith('cien_anos') || k.startsWith('settings_') || k.includes('achievement')) {
+            localStorage.removeItem(k);
+          }
+        });
+        // 确保全部覆盖
+        localStorage.removeItem('cien_anos_autosave');
+        for (let i = 1; i <= 6; i++) localStorage.removeItem('cien_anos_slot_' + i);
+        localStorage.removeItem('cien_anos_tags_persistent');
+        localStorage.removeItem('cien_anos_clues_persistent');
+        localStorage.removeItem('cien_anos_memories_persistent');
+        localStorage.removeItem('settings_fontSize');
+        localStorage.removeItem('settings_volume');
+        // 也清除成就（使用已有的clearAchievements函数）
+        if (typeof clearAchievements === 'function') clearAchievements();
+
+        // 重置游戏状态
+        GameEngine.resetGame();
+        GameState.currentScene = 'void_awakening';
+        GameState.history = ['void_awakening'];
+        GameState.historyIndex = 0;
+        GameState.chapter = 0;
+        Renderer.render();
+        GameEngine.encounterChapterMembers();
+        showCover();
+        this.close();
+        showToast('全部痕迹已清除——游戏已恢复如初');
+      }
     }
   }
 };

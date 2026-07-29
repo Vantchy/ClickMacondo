@@ -59,6 +59,9 @@ registerChapter({
         quotes: ['"每一个被召唤的灵魂，都要自己决定从哪里开始读。"'],
         postQuote: [
           '他摊开三卷羊皮纸。"从哪儿开始，就从哪儿结束。这就是宿命的法则。"'
+        ],
+        clues: [
+          { triggerText: '三卷羊皮纸', itemId: 'sanskrit_first_line', narrative: '羊皮卷上的第一个句子——梵文。你不认识这些弯曲的符号，但它们让你想起了什么。不是记忆——是一种比记忆更古老的东西。像你在出生之前就见过这些字。', unlocksIn: ['epilogue'] }
         ]
       },
       choices: null, nextScene: 'era_choice'
@@ -86,21 +89,21 @@ registerChapter({
           id: 'era_a', label: '建村之初',
           description: '降临在建村之初，附身于何塞·阿尔卡蒂奥·布恩迪亚。从吉卜赛人到冰块，完整经历马孔多的百年命运。',
           nextScene: 'era_a_narrative',
-          effects: { tags: ['从头开始'], memory: null, targetChapter: 1 },
+          effects: { tags: ['从头开始'], memory: null, targetChapter: 1, fate: 1, bond: 1 },
           alternativeNarrative: '若你选择从家族鼎盛开始——你将错过磁铁在手中嗡鸣的那个早晨。何塞·阿尔卡蒂奥·布恩迪亚会独自拖着磁铁走进丛林，乌尔苏拉站在门口，手叉着腰——这个画面永远只存在于羊皮卷的前几页。'
         },
         {
           id: 'era_b', label: '家族鼎盛',
           description: '降临在家族最辉煌的时刻，附身于奥雷里亚诺。见证失眠症瘟疫、丽贝卡的到来与钢琴曲的忧伤。',
           nextScene: 'era_b_narrative',
-          effects: { tags: ['中途降临'], memory: null, targetChapter: 2 },
+          effects: { tags: ['中途降临'], memory: null, targetChapter: 2, fate: 0, bond: 2 },
           alternativeNarrative: '若你选择从建村之初开始——你将赤脚踩在马孔多最初的泥地上。那二十多间芦竹房子在河岸边排开时，还没有人知道失眠症、战争和香蕉公司会长成后来那么多的鬼魂。'
         },
         {
           id: 'era_c', label: '战争年代',
           description: '降临在战争爆发的前夜，附身于奥雷里亚诺上校。站在自由党和保守党之间，手握一封信和一把枪。',
           nextScene: 'era_c_narrative',
-          effects: { tags: ['战争降临者'], memory: null, targetChapter: 5 },
+          effects: { tags: ['战争降临者'], memory: null, targetChapter: 5, fate: 2, bond: -1 },
           alternativeNarrative: '若你选择从战争年代开始——你将直接从枪口下理解"孤独"的含义。但你将错过冰块、失眠症和自动钢琴——那些让战争之所以成为战争的事物。'
         }
       ],
@@ -197,6 +200,7 @@ registerChapter({
     ch2_opening: {
       id: 'ch2_opening', type: 'narrative', chapter: 2, round: 0,
       title: '第二幕开启 · 血与记忆',
+      echoText: '你听说过失眠症——但当它真正降临时，你才发现遗忘比任何你在路上见过的风景都更空旷。像一座没有回声的山谷。',
       leftPage: {
         speaker: '旁白', speakerColor: '#4a2a18',
         paragraphs: [
@@ -222,9 +226,9 @@ registerChapter({
         transition: '你选择——'
       },
       choices: [
-        { id: 'ch2_r1_a', label: '埋葬普鲁登西奥', description: '在栗树下挖一个坑，给他一个体面的坟墓。但死人的灵魂不会轻易安息……', nextScene: 'ch2_r1a', effects: { tags: ['罪与埋葬'], memory: '栗树下的声音' } },
-        { id: 'ch2_r1_b', label: '拖出村子埋葬', description: '用旧蓆裹住尸体，拖到河对岸的密林里，埋在吉贝树下，矛尖朝下。', nextScene: 'ch2_r1b', effects: { tags: ['远离血债'], memory: null } },
-        { id: 'ch2_r1_c', label: '告知全村人', description: '把村民们叫来，公开承认你做了什么，接受他们的审判。', nextScene: 'ch2_r1c', effects: { tags: ['公开忏悔者'], memory: '村庄的审判' } }
+        { id: 'ch2_r1_a', label: '埋葬普鲁登西奥', description: '在栗树下挖一个坑，给他一个体面的坟墓。但死人的灵魂不会轻易安息……', nextScene: 'ch2_r1a', effects: { tags: ['罪与埋葬'], memory: '栗树下的声音', fate: 1, bond: 1 } },
+        { id: 'ch2_r1_b', label: '拖出村子埋葬', description: '用旧蓆裹住尸体，拖到河对岸的密林里，埋在吉贝树下，矛尖朝下。', nextScene: 'ch2_r1b', effects: { tags: ['远离血债'], memory: null, fate: -1, bond: 2 } },
+        { id: 'ch2_r1_c', label: '告知全村人', description: '把村民们叫来，公开承认你做了什么，接受他们的审判。', nextScene: 'ch2_r1c', effects: { tags: ['公开忏悔者'], memory: '村庄的审判', fate: 0, bond: 2 } }
       ],
       settlement: 'ch2_r1_settlement'
     },
@@ -233,7 +237,14 @@ registerChapter({
     ch2_r1b: { id: 'ch2_r1b', type: 'narrative', chapter: 2, round: 1, title: '远离血债', leftPage: { speaker: '何塞·阿尔卡蒂奥·布恩迪亚', speakerColor: '#1a3a4a', paragraphs: ['你用旧蓆裹住普鲁登西奥，拖着他穿过整个村子。天还没亮透，街道上没有人。你把他拖到河边，塞进独木舟，在密林深处选了一棵吉贝树，在树根之间埋了他。', '你回来的时候，乌尔苏拉已经把院子里的血迹冲洗干净了。她什么也没说，只是把一碗汤放在桌上。汤里漂着几根鸡毛——你不知道她是不是故意的。'] }, choices: null, nextScene: 'ch2_r1_settlement' },
     ch2_r1c: { id: 'ch2_r1c', type: 'narrative', chapter: 2, round: 1, title: '公开忏悔', leftPage: { speaker: '何塞·阿尔卡蒂奥·布恩迪亚', speakerColor: '#1a3a4a', paragraphs: ['你把村民们叫来，站在尸体旁边，说了实话。没有人说话。没有人指责你。他们只是看着你——用一种你从未见过的目光：不是恐惧，是疏远。', '那天之后，马孔多的人遇见你时会主动绕开。没有人再请你帮他们修理农具。但乌尔苏拉却开始挽着你的手臂走过村子的主街。她从来没有问过你为什么要杀他。'] }, choices: null, nextScene: 'ch2_r1_settlement' },
 
-    ch2_r1_settlement: { id: 'ch2_r1_settlement', type: 'settlement', chapter: 2, round: 1, title: '第一轮 · 结算', leftPage: { speaker: null, speakerColor: null, paragraphs: ['普鲁登西奥的尸体处理了。但他的灵魂没有。从此以后，每个满月的夜晚，你会听见栗树下有人在走动。乌尔苏拉说她听不见。但你知道——是他在等着你。'] }, settlement: { summary: '第一轮选择完成。血债已埋，但灵魂未安。', nextScene: 'ch2_r2_choice', nextLabel: '进入第二轮' } },
+    ch2_r1_settlement: { id: 'ch2_r1_settlement', type: 'settlement', chapter: 2, round: 1, title: '第一轮 · 结算', leftPage: { speaker: null, speakerColor: null, paragraphs: ['普鲁登西奥的尸体处理了。但他的灵魂没有。从此以后，每个满月的夜晚，你会听见栗树下有人在走动。乌尔苏拉说她听不见。但你知道——是他在等着你。你给栗树挂了一张标签——栗树上的标签被雨水打湿了，字迹正在褪色。'], clues: [
+          { triggerText: '栗树上的标签', itemId: 'forgotten_label', narrative: '标签上的墨水正在褪色——"栗树"两个字已经模糊了。但树还在那里。标签可以被冲走，树不会。你用手指描摹那些笔画——有些东西刻得太深，连遗忘都带不走。', unlocksIn: ['chapter11'] }
+        ] }, settlement: { summary: '第一轮选择完成。血债已埋，但灵魂未安。', nextScene: 'ch2_r2_choice', nextLabel: '进入第二轮', quadrantNarratives: {
+          guardian: '你在遗忘的瘟疫中选择记住——不是为自己，是为那些即将忘记自己名字的人。',
+          prophet: '你对抗遗忘——但你对抗的方式是独自一人的。标签是你写的，但没有人读。',
+          follower: '在失眠症的阴影下，你选择陪伴而不是对抗。遗忘会来——但有人握着你的手时，它来得慢一些。',
+          rebel: '你不接受遗忘。你与它搏斗——用标签、用绳子、用一切你能找到的工具。不是因为你相信会赢——是因为你拒绝躺下。'
+        } } },
 
     ch2_r2_choice: {
       id: 'ch2_r2_choice', type: 'choice', chapter: 2, round: 2,
@@ -248,9 +259,9 @@ registerChapter({
         transition: '你选择——'
       },
       choices: [
-        { id: 'ch2_r2_a', label: '用标签标记一切', description: '在每件物品上写下名字：桌子、椅子、门、奶牛——你必须阻止遗忘。', nextScene: 'ch2_r2a', effects: { tags: ['标记者'], memory: '标签上的墨水' } },
-        { id: 'ch2_r2_b', label: '寻找梅尔基亚德斯', description: '吉卜赛人知道一切。也许他知道如何治愈失眠症。骑上骡子去找他。', nextScene: 'ch2_r2b', effects: { tags: ['求索者'], memory: null } },
-        { id: 'ch2_r2_c', label: '接受遗忘', description: '也许遗忘不是诅咒——也许它是一种释放。让记忆自己选择留下还是离开。', nextScene: 'ch2_r2c', effects: { tags: ['接受遗忘者'], memory: '遗忘的平静',} }
+        { id: 'ch2_r2_a', label: '用标签标记一切', description: '在每件物品上写下名字：桌子、椅子、门、奶牛——你必须阻止遗忘。', nextScene: 'ch2_r2a', effects: { tags: ['标记者'], memory: '标签上的墨水', fate: 2, bond: 0 } },
+        { id: 'ch2_r2_b', label: '寻找梅尔基亚德斯', description: '吉卜赛人知道一切。也许他知道如何治愈失眠症。骑上骡子去找他。', nextScene: 'ch2_r2b', effects: { tags: ['求索者'], memory: null, fate: -2, bond: 1 } },
+        { id: 'ch2_r2_c', label: '接受遗忘', description: '也许遗忘不是诅咒——也许它是一种释放。让记忆自己选择留下还是离开。', nextScene: 'ch2_r2c', effects: { tags: ['接受遗忘者'], memory: '遗忘的平静', fate: 0, bond: 0 } }
       ],
       settlement: 'ch2_r2_settlement'
     },
@@ -259,7 +270,12 @@ registerChapter({
     ch2_r2b: { id: 'ch2_r2b', type: 'narrative', chapter: 2, round: 2, title: '求索者', leftPage: { speaker: '何塞·阿尔卡蒂奥·布恩迪亚', speakerColor: '#1a3a4a', paragraphs: ['你骑上骡子，在河边找到了梅尔基亚德斯。他已经老了很多。你告诉他失眠症的事，他沉默了一会儿，然后说："我可以帮你——但代价很高。你愿意用什么来换清醒？"', '"……你要什么？""我要你记得的一切关于你父亲的事。全部。"你发现你已经没有什么可以给他了——你上次已经把面容的记忆卖给了他。你忽然笑了，笑得苦涩。"我已经付不起了。"'] }, choices: null, nextScene: 'ch2_r2_settlement' },
     ch2_r2c: { id: 'ch2_r2c', type: 'narrative', chapter: 2, round: 2, title: '接受遗忘', leftPage: { speaker: '何塞·阿尔卡蒂奥·布恩迪亚', speakerColor: '#1a3a4a', paragraphs: ['你坐在院子里，看着全村人一个接一个地忘记事物的名字。你没有在墙上写字。你没有去求梅尔基亚德斯。你只是坐在栗树下，手握着一小块冰——它正在慢慢融化。', '你忽然想：也许遗忘不是诅咒。也许它是唯一能让人重新开始的恩赐。那天晚上你睡着了——自从失眠症开始以来第一次。你梦见你父亲的脸——清晰，完整，带着笑。你不记得你醒着的时候是否还记得他。但在梦里，他一直都在。'] }, choices: null, nextScene: 'ch2_r2_settlement' },
 
-    ch2_r2_settlement: { id: 'ch2_r2_settlement', type: 'settlement', chapter: 2, round: 2, title: '第二轮 · 结算', leftPage: { speaker: null, speakerColor: null, paragraphs: ['失眠症像潮水一样淹没了整个村子。有人在墙上写满了标签。有人在河边等待永远不回来的吉卜赛人。有人在遗忘中睡着了——并从此再也没有醒来。', '但马孔多没有死去。它只是学会了在一半的记忆中继续生活。'] }, settlement: { summary: '第二轮选择完成。你选择了对抗遗忘的方式——或选择接受它。', nextScene: 'ch2_r3_choice', nextLabel: '进入第三轮' } },
+    ch2_r2_settlement: { id: 'ch2_r2_settlement', type: 'settlement', chapter: 2, round: 2, title: '第二轮 · 结算', leftPage: { speaker: null, speakerColor: null, paragraphs: ['失眠症像潮水一样淹没了整个村子。有人在墙上写满了标签。有人在河边等待永远不回来的吉卜赛人。有人在遗忘中睡着了——并从此再也没有醒来。', '但马孔多没有死去。它只是学会了在一半的记忆中继续生活。'] }, settlement: { summary: '第二轮选择完成。你选择了对抗遗忘的方式——或选择接受它。', nextScene: 'ch2_r3_choice', nextLabel: '进入第三轮', quadrantNarratives: {
+          guardian: '你在遗忘的瘟疫中选择记住——不是为自己，是为那些即将忘记自己名字的人。',
+          prophet: '你对抗遗忘——但你对抗的方式是独自一人的。标签是你写的，但没有人读。',
+          follower: '在失眠症的阴影下，你选择陪伴而不是对抗。遗忘会来——但有人握着你的手时，它来得慢一些。',
+          rebel: '你不接受遗忘。你与它搏斗——用标签、用绳子、用一切你能找到的工具。不是因为你相信会赢——是因为你拒绝躺下。'
+        } } },
 
     ch2_r3_choice: {
       id: 'ch2_r3_choice', type: 'choice', chapter: 2, round: 3,
@@ -274,9 +290,9 @@ registerChapter({
         transition: '你选择——'
       },
       choices: [
-        { id: 'ch2_r3_a', label: '带她去教堂祈祷', description: '也许她的痛苦需要的是救赎，而不是隐藏。带她去见镇上的神父。', nextScene: 'ch2_r3a', effects: { tags: ['信仰的引路人'], memory: null } },
-        { id: 'ch2_r3_b', label: '陪她一起吃泥土', description: '你蹲在她身边，把手伸进骨灰盒，拿起一小块泥土放进嘴里。', nextScene: 'ch2_r3b', effects: { tags: ['共苦者'], memory: '泥土的味道' } },
-        { id: 'ch2_r3_c', label: '把骨灰盒锁起来', description: '你不能让她继续这样下去。把盒子拿走，告诉她：从现在开始，这里就是你的家。', nextScene: 'ch2_r3c', effects: { tags: ['剪断脐带者'], memory: null } }
+        { id: 'ch2_r3_a', label: '带她去教堂祈祷', description: '也许她的痛苦需要的是救赎，而不是隐藏。带她去见镇上的神父。', nextScene: 'ch2_r3a', effects: { tags: ['信仰的引路人'], memory: null, fate: 2, bond: 0 } },
+        { id: 'ch2_r3_b', label: '陪她一起吃泥土', description: '你蹲在她身边，把手伸进骨灰盒，拿起一小块泥土放进嘴里。', nextScene: 'ch2_r3b', effects: { tags: ['共苦者'], memory: '泥土的味道', fate: -1, bond: 2 } },
+        { id: 'ch2_r3_c', label: '把骨灰盒锁起来', description: '你不能让她继续这样下去。把盒子拿走，告诉她：从现在开始，这里就是你的家。', nextScene: 'ch2_r3c', effects: { tags: ['剪断脐带者'], memory: null, fate: 1, bond: -1 } }
       ],
       settlement: 'ch2_r3_settlement'
     },
@@ -285,7 +301,12 @@ registerChapter({
     ch2_r3b: { id: 'ch2_r3b', type: 'narrative', chapter: 2, round: 3, title: '共苦者', leftPage: { speaker: '何塞·阿尔卡蒂奥·布恩迪亚', speakerColor: '#1a3a4a', paragraphs: ['你蹲在她身边，把手伸进骨灰盒，拿起一小块泥土放进嘴里。泥在舌尖上化开——湿的，凉的，带着一种深埋在地下的气味。像河底的淤泥，像被雨水浸透的墓穴。', '丽贝卡看着你。她的眼睛瞪得很大。然后她笑了——那是你第一次看见她笑。她的牙齿上沾着泥，但你忽然觉得，那比任何人的微笑都更接近快乐。', '你们并肩坐着，吃着泥土，没有说话。窗外马孔多的夜晚正在缓缓降临。失眠症还在蔓延——但今晚你不怕。'] }, choices: null, nextScene: 'ch2_r3_settlement' },
     ch2_r3c: { id: 'ch2_r3c', type: 'narrative', chapter: 2, round: 3, title: '剪断脐带', leftPage: { speaker: '何塞·阿尔卡蒂奥·布恩迪亚', speakerColor: '#1a3a4a', paragraphs: ['你拿走了骨灰盒。丽贝卡尖叫着扑向你——她的手指抓碎了你的衣领。但你没有松手。你把骨灰盒锁进柜子里，钥匙放进口袋。', '"从现在开始，这里就是你的家。"你说。她蹲在柜子前面，哭了整整一个下午。但第二天早上，她走到厨房里，拿了一块面包——不是泥。这是她第一次自己拿起面包。'] }, choices: null, nextScene: 'ch2_r3_settlement' },
 
-    ch2_r3_settlement: { id: 'ch2_r3_settlement', type: 'settlement', chapter: 2, round: 3, title: '第三轮 · 结算', leftPage: { speaker: null, speakerColor: null, paragraphs: ['丽贝卡开始在这个家里有了位置。她帮乌尔苏拉揉面，帮你在实验室里递工具。她仍然会在夜晚醒来，站在窗口看着远山。但她不再只是一个"来的人"——她正在变成"我们的人"。'] }, settlement: { summary: '第三轮选择完成。丽贝卡的秘密被你触碰了——结果取决于你的方式。', nextScene: 'ch2_r4_choice', nextLabel: '进入第四轮' } },
+    ch2_r3_settlement: { id: 'ch2_r3_settlement', type: 'settlement', chapter: 2, round: 3, title: '第三轮 · 结算', leftPage: { speaker: null, speakerColor: null, paragraphs: ['丽贝卡开始在这个家里有了位置。她帮乌尔苏拉揉面，帮你在实验室里递工具。她仍然会在夜晚醒来，站在窗口看着远山。但她不再只是一个"来的人"——她正在变成"我们的人"。'] }, settlement: { summary: '第三轮选择完成。丽贝卡的秘密被你触碰了——结果取决于你的方式。', nextScene: 'ch2_r4_choice', nextLabel: '进入第四轮', quadrantNarratives: {
+          guardian: '你在遗忘的瘟疫中选择记住——不是为自己，是为那些即将忘记自己名字的人。',
+          prophet: '你对抗遗忘——但你对抗的方式是独自一人的。标签是你写的，但没有人读。',
+          follower: '在失眠症的阴影下，你选择陪伴而不是对抗。遗忘会来——但有人握着你的手时，它来得慢一些。',
+          rebel: '你不接受遗忘。你与它搏斗——用标签、用绳子、用一切你能找到的工具。不是因为你相信会赢——是因为你拒绝躺下。'
+        } } },
 
     ch2_r4_choice: {
       id: 'ch2_r4_choice', type: 'choice', chapter: 2, round: 4,
@@ -300,9 +321,9 @@ registerChapter({
         transition: '你选择——'
       },
       choices: [
-        { id: 'ch2_r4_a', label: '自己先喝下药水', description: '承受代价——忘记你最快乐的一天，然后把这药分给全村人。', nextScene: 'ch2_r4a', effects: { tags: ['牺牲者'], memory: '失去温度的一天' } },
-        { id: 'ch2_r4_b', label: '让全镇投票决定', description: '你不能替别人做这个决定。把全村人叫来，把药瓶和代价都摆在桌上。', nextScene: 'ch2_r4b', effects: { tags: ['民主者'], memory: null } },
-        { id: 'ch2_r4_c', label: '拒绝——寻找别的办法', description: '"一定有别的方法。"你把药瓶还给梅尔基亚德斯。你不想用记忆换清醒。', nextScene: 'ch2_r4c', effects: { tags: ['不屈者'], memory: null,} }
+        { id: 'ch2_r4_a', label: '自己先喝下药水', description: '承受代价——忘记你最快乐的一天，然后把这药分给全村人。', nextScene: 'ch2_r4a', effects: { tags: ['牺牲者'], memory: '失去温度的一天', fate: 2, bond: -1 } },
+        { id: 'ch2_r4_b', label: '让全镇投票决定', description: '你不能替别人做这个决定。把全村人叫来，把药瓶和代价都摆在桌上。', nextScene: 'ch2_r4b', effects: { tags: ['民主者'], memory: null, fate: 0, bond: 1 } },
+        { id: 'ch2_r4_c', label: '拒绝——寻找别的办法', description: '"一定有别的方法。"你把药瓶还给梅尔基亚德斯。你不想用记忆换清醒。', nextScene: 'ch2_r4c', effects: { tags: ['不屈者'], memory: null, fate: -1, bond: 0} }
       ],
       settlement: 'ch2_r4_settlement'
     },
@@ -311,7 +332,12 @@ registerChapter({
     ch2_r4b: { id: 'ch2_r4b', type: 'narrative', chapter: 2, round: 4, title: '民主者', leftPage: { speaker: '何塞·阿尔卡蒂奥·布恩迪亚', speakerColor: '#1a3a4a', paragraphs: ['你把全村人叫到广场上。梅尔基亚德斯站在中间，把药瓶举起来，解释了代价。村民们沉默了很长时间。', '最后是乌尔苏拉第一个站起来。"我喝。"她说，"我宁愿忘记阳光的感觉，也不要忘记勺子的名字——因为我还要给一家人做饭。"人们一个一个站起来。那天马孔多有七十三个人喝了那瓶药水。', '每个人都有了自己永远失去温度的那一天。但每个人也都记住了勺子的名字。'] }, choices: null, nextScene: 'ch2_r4_settlement' },
     ch2_r4c: { id: 'ch2_r4c', type: 'narrative', chapter: 2, round: 4, title: '不屈者', leftPage: { speaker: '何塞·阿尔卡蒂奥·布恩迪亚', speakerColor: '#1a3a4a', paragraphs: ['你把药瓶还给梅尔基亚德斯。他看了你很久，然后说："你是第一个拒绝我的人。"他把药瓶收进袖子里。', '"失眠症不靠药水，"他说，"靠的是反复——反复地做一件事，反复地说一个名字，反复地在心上刻一条痕迹。遗忘不是被治好的——是被更用力地记住的。"那天晚上你在栗树下坐到很晚。你开始用鹅毛笔写下你记得的每一件事——不是为了对抗遗忘。是为了告诉它：你可以来这里，但我不搬走。'] }, choices: null, nextScene: 'ch2_r4_settlement' },
 
-    ch2_r4_settlement: { id: 'ch2_r4_settlement', type: 'settlement', chapter: 2, round: 4, title: '第四轮 · 结算', leftPage: { speaker: null, speakerColor: null, paragraphs: ['失眠症开始退去。不是因为药水，就是因为时间。遗忘的潮水退去之后，马孔多的海滩上留下了许多贝壳——那些是人们在墙上写下的标签，在彼此手上划过的痕迹，在夜里说过无数次的名字。'] }, settlement: { summary: '第四轮选择完成。失眠症的退去不是因为药水——而是因为有人坚持记住了。', nextScene: 'ch2_r5_choice', nextLabel: '进入最终轮' } },
+    ch2_r4_settlement: { id: 'ch2_r4_settlement', type: 'settlement', chapter: 2, round: 4, title: '第四轮 · 结算', leftPage: { speaker: null, speakerColor: null, paragraphs: ['失眠症开始退去。不是因为药水，就是因为时间。遗忘的潮水退去之后，马孔多的海滩上留下了许多贝壳——那些是人们在墙上写下的标签，在彼此手上划过的痕迹，在夜里说过无数次的名字。'] }, settlement: { summary: '第四轮选择完成。失眠症的退去不是因为药水——而是因为有人坚持记住了。', nextScene: 'ch2_r5_choice', nextLabel: '进入最终轮', quadrantNarratives: {
+          guardian: '你在遗忘的瘟疫中选择记住——不是为自己，是为那些即将忘记自己名字的人。',
+          prophet: '你对抗遗忘——但你对抗的方式是独自一人的。标签是你写的，但没有人读。',
+          follower: '在失眠症的阴影下，你选择陪伴而不是对抗。遗忘会来——但有人握着你的手时，它来得慢一些。',
+          rebel: '你不接受遗忘。你与它搏斗——用标签、用绳子、用一切你能找到的工具。不是因为你相信会赢——是因为你拒绝躺下。'
+        } } },
 
     ch2_r5_choice: {
       id: 'ch2_r5_choice', type: 'choice', chapter: 2, round: 5,
@@ -327,9 +353,9 @@ registerChapter({
         transition: '你选择——'
       },
       choices: [
-        { id: 'ch2_r5_a', label: '让他留在栗树下', description: '绑住他——不是为了惩罚，是为了保护。让他在树下度过最后的岁月。', nextScene: 'ch2_r5a', effects: { tags: ['守护者'], memory: '栗树下的绳结' } },
-        { id: 'ch2_r5_b', label: '带他去河边', description: '你不信他疯了。解开他的绳子，带他去河边——也许他只是需要看见更大的东西。', nextScene: 'ch2_r5b', effects: { tags: ['解放者'], memory: '河边的午后' } },
-        { id: 'ch2_r5_c', label: '和他一起画圆圈', description: '你蹲在他身边，拿起另一根树枝。你和他一起画——磁铁、放大镜、冰块。', nextScene: 'ch2_r5c', effects: { tags: ['同行至终点'], memory: '画在泥土中的永恒' } }
+        { id: 'ch2_r5_a', label: '让他留在栗树下', description: '绑住他——不是为了惩罚，是为了保护。让他在树下度过最后的岁月。', nextScene: 'ch2_r5a', effects: { tags: ['守护者'], memory: '栗树下的绳结', fate: 0, bond: 2 } },
+        { id: 'ch2_r5_b', label: '带他去河边', description: '你不信他疯了。解开他的绳子，带他去河边——也许他只是需要看见更大的东西。', nextScene: 'ch2_r5b', effects: { tags: ['解放者'], memory: '河边的午后', fate: 1, bond: 1 } },
+        { id: 'ch2_r5_c', label: '和他一起画圆圈', description: '你蹲在他身边，拿起另一根树枝。你和他一起画——磁铁、放大镜、冰块。', nextScene: 'ch2_r5c', effects: { tags: ['同行至终点'], memory: '画在泥土中的永恒', fate: 0, bond: 2 } }
       ],
       settlement: 'ch2_r5_settlement'
     },
@@ -338,7 +364,12 @@ registerChapter({
     ch2_r5b: { id: 'ch2_r5b', type: 'narrative', chapter: 2, round: 5, title: '解放者', leftPage: { speaker: '旁白', speakerColor: '#4a2a18', paragraphs: ['你解开他的绳子。他站起来，揉了揉手腕。他看了看你——眼神很清醒。"走吧。"你说。', '你们走到河边。河水在夕阳下像一条正在融化的金色道路。他蹲下来，把手伸进水里。"水是湿的。"他说——像在告诉自己。"是的，水是湿的。"你回答。"那我还没忘记。"他笑了。那天晚上他自己走回家，坐在饭桌上，吃了三碗汤。'] }, choices: null, nextScene: 'ch2_r5_settlement' },
     ch2_r5c: { id: 'ch2_r5c', type: 'narrative', chapter: 2, round: 5, title: '同行至终点', leftPage: { speaker: '旁白', speakerColor: '#4a2a18', paragraphs: ['你蹲在他身边，拿起另一根树枝。你没有说话。你只是和他一起画——磁铁、放大镜、冰块。一遍，又一遍，又一遍。', '乌尔苏拉从厨房窗口看着你们两个人蹲在栗树下、用手在泥土里画着彼此看不懂的图形。她没有出来阻止。她只是站在那里，把手在围裙上擦了又擦。', '很多年后，当有人问起何塞·阿尔卡蒂奥·布恩迪亚是怎么变疯的，她会说："他没有疯。他只是去了一个我们不敢陪他去的地方。但有一个人陪他去了。"'] }, choices: null, nextScene: 'ch2_r5_settlement' },
 
-    ch2_r5_settlement: { id: 'ch2_r5_settlement', type: 'settlement', chapter: 2, round: 5, title: '第五轮 · 结算', leftPage: { speaker: null, speakerColor: null, paragraphs: ['失眠症远去了。马孔多的人又开始睡着了——但那种睡眠和以前不一样了。以前的睡眠是遗忘，现在的睡眠是休息。人们在墙上写下的标签被雨水冲淡，但他们的手还记得碗的弧度，勺子的重量，爱人的名字。'] }, settlement: { summary: '最终轮选择完成。你决定了何塞·阿尔卡蒂奥·布恩迪亚在栗树下的命运——也决定了你自己的。', nextScene: 'chapter2_end', nextLabel: '查看章末结算' } },
+    ch2_r5_settlement: { id: 'ch2_r5_settlement', type: 'settlement', chapter: 2, round: 5, title: '第五轮 · 结算', leftPage: { speaker: null, speakerColor: null, paragraphs: ['失眠症远去了。马孔多的人又开始睡着了——但那种睡眠和以前不一样了。以前的睡眠是遗忘，现在的睡眠是休息。人们在墙上写下的标签被雨水冲淡，但他们的手还记得碗的弧度，勺子的重量，爱人的名字。'] }, settlement: { summary: '最终轮选择完成。你决定了何塞·阿尔卡蒂奥·布恩迪亚在栗树下的命运——也决定了你自己的。', nextScene: 'chapter2_end', nextLabel: '查看章末结算', quadrantNarratives: {
+          guardian: '你在遗忘的瘟疫中选择记住——不是为自己，是为那些即将忘记自己名字的人。',
+          prophet: '你对抗遗忘——但你对抗的方式是独自一人的。标签是你写的，但没有人读。',
+          follower: '在失眠症的阴影下，你选择陪伴而不是对抗。遗忘会来——但有人握着你的手时，它来得慢一些。',
+          rebel: '你不接受遗忘。你与它搏斗——用标签、用绳子、用一切你能找到的工具。不是因为你相信会赢——是因为你拒绝躺下。'
+        } } },
 
     chapter2_end: {
       id: 'chapter2_end', type: 'settlement', chapter: 2, round: 6,

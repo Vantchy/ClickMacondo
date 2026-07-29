@@ -269,6 +269,16 @@ function exitToCover() {
   showCover();
 }
 
+/* ---- v2.0: 玩法介绍 ---- */
+function openGameplayIntro() {
+  hideMainMenu();
+  document.getElementById('gameplay-overlay').classList.add('open');
+}
+function closeGameplayIntro() {
+  document.getElementById('gameplay-overlay').classList.remove('open');
+  showMainMenu();
+}
+
 function openMainMenu() {
   updateBigSave();
   refreshBigSaveCard();
@@ -332,6 +342,207 @@ function openBookmarksPage() {
 
 function closeArchiveBookmarks() {
   document.getElementById('bookmarks-overlay').classList.remove('open');
+}
+
+/* ---- v2.1: 标签收集册（跨存档持久化） ---- */
+const TAG_PERSIST_KEY = 'cien_anos_tags_persistent';
+
+/** 将新获得的标签加入持久存储 */
+function persistTags(newTags) {
+  if (!newTags || newTags.length === 0) return;
+  let stored = [];
+  try {
+    const raw = localStorage.getItem(TAG_PERSIST_KEY);
+    if (raw) stored = JSON.parse(raw);
+  } catch(e) { stored = []; }
+  let changed = false;
+  newTags.forEach(t => {
+    if (!stored.includes(t)) { stored.push(t); changed = true; }
+  });
+  if (changed) localStorage.setItem(TAG_PERSIST_KEY, JSON.stringify(stored));
+}
+
+/** 获取所有持久化标签 */
+function getPersistentTags() {
+  try {
+    const raw = localStorage.getItem(TAG_PERSIST_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) { return []; }
+}
+
+/** 打开标签收集册 */
+function openTagCollectionPage() {
+  const overlay = document.getElementById('tagcollection-overlay');
+  const grid = document.getElementById('tagcollection-grid');
+  if (!overlay || !grid) return;
+
+  const persistentTags = new Set(getPersistentTags());
+  const currentTags = new Set(GameState.tags);
+
+  // 从章节数据提取所有可能标签
+  const chapterTags = {};
+  Object.values(chapters).forEach(chData => {
+    const chNum = chData.chapterNumber;
+    if (!chNum || chNum === 0) return;
+    if (!chapterTags[chNum]) chapterTags[chNum] = { title: chData.title || '', all: new Set() };
+    if (chData.scenes) {
+      Object.values(chData.scenes).forEach(scene => {
+        if (scene.type === 'choice' && scene.choices) {
+          scene.choices.forEach(choice => {
+            if (choice.effects && choice.effects.tags) {
+              choice.effects.tags.forEach(t => chapterTags[chNum].all.add(t));
+            }
+          });
+        }
+      });
+    }
+  });
+
+  // 统计
+  let totalAll = 0, totalGot = 0;
+  Object.values(chapterTags).forEach(ct => { totalAll += ct.all.size; });
+
+  let html = '';
+  const sorted = Object.entries(chapterTags).sort((a,b) => parseInt(a[0])-parseInt(b[0]));
+  sorted.forEach(([chNum, ct]) => {
+    if (ct.all.size === 0) return;
+    const tags = [...ct.all].sort();
+    const gotCount = tags.filter(t => persistentTags.has(t)).length;
+    const allCount = tags.length;
+    totalGot += gotCount;
+    const pct = Math.round((gotCount/allCount)*100);
+    const barColor = pct >= 100 ? '#6a9a5a' : pct >= 50 ? '#c4910a' : '#8a6a50';
+    const isComplete = gotCount >= allCount;
+
+    html += '<div style="border:1px solid ' + (isComplete ? 'rgba(120,160,120,0.3)' : 'rgba(184,137,62,0.12)') + ';border-radius:8px;padding:8px 12px;background:' + (isComplete ? 'rgba(120,160,120,0.04)' : 'rgba(184,137,62,0.02)') + ';">';
+    html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">';
+    html += '<span style="font-size:0.72rem;color:var(--gold-light);font-family:var(--font-title);">Ch' + chNum + ' ' + ct.title.split('·')[0] + '</span>';
+    html += '<span style="margin-left:auto;font-size:0.6rem;color:var(--gold-dim);">' + gotCount + '/' + allCount + '</span>';
+    if (isComplete) html += '<span style="font-size:0.6rem;">✅</span>';
+    html += '</div>';
+    // 进度条
+    html += '<div style="height:4px;background:rgba(184,137,62,0.08);border-radius:2px;margin-bottom:6px;"><div style="width:' + pct + '%;height:100%;background:' + barColor + ';border-radius:2px;"></div></div>';
+    // 标签列表
+    html += '<div style="display:flex;flex-wrap:wrap;gap:3px;">';
+    tags.forEach(t => {
+      const has = persistentTags.has(t);
+      const cur = currentTags.has(t);
+      let cls = 'tag-badge';
+      if (has) cls += ' tag-obtained';
+      else cls += ' tag-missing';
+      html += '<span class="' + cls + '" style="font-size:0.62rem;padding:2px 7px;">' + t + (cur && !has ? ' 🟢' : '') + '</span>';
+    });
+    html += '</div></div>';
+  });
+
+  // 全局进度
+  const globalPct = totalAll > 0 ? Math.round((totalGot/totalAll)*100) : 0;
+  html = '<div style="text-align:center;margin-bottom:12px;font-size:0.75rem;color:var(--gold-light);">📊 全局收集进度：<strong>' + totalGot + '/' + totalAll + ' (' + globalPct + '%)</strong></div>' + html;
+
+  grid.innerHTML = html;
+  overlay.classList.add('open');
+}
+
+function closeTagCollection() {
+  document.getElementById('tagcollection-overlay').classList.remove('open');
+}
+
+/* ---- v2.1: 隐藏线索册（跨存档持久化） ---- */
+const CLUE_PERSIST_KEY = 'cien_anos_clues_persistent';
+
+/** 将新获得的线索加入持久存储 */
+function persistClue(clueId) {
+  if (!clueId) return;
+  let stored = [];
+  try {
+    const raw = localStorage.getItem(CLUE_PERSIST_KEY);
+    if (raw) stored = JSON.parse(raw);
+  } catch(e) { stored = []; }
+  if (!stored.includes(clueId)) {
+    stored.push(clueId);
+    localStorage.setItem(CLUE_PERSIST_KEY, JSON.stringify(stored));
+  }
+}
+
+/** 获取所有持久化线索 */
+function getPersistentClues() {
+  try {
+    const raw = localStorage.getItem(CLUE_PERSIST_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) { return []; }
+}
+
+/** 记忆碎片持久化 */
+const MEM_PERSIST_KEY = 'cien_anos_memories_persistent';
+function persistMemory(memId) {
+  if (!memId) return;
+  let stored = [];
+  try { const raw = localStorage.getItem(MEM_PERSIST_KEY); if (raw) stored = JSON.parse(raw); } catch(e) { stored = []; }
+  if (!stored.includes(memId)) { stored.push(memId); localStorage.setItem(MEM_PERSIST_KEY, JSON.stringify(stored)); }
+}
+function getPersistentMemories() {
+  try { const raw = localStorage.getItem(MEM_PERSIST_KEY); return raw ? JSON.parse(raw) : []; } catch(e) { return []; }
+}
+
+/** 打开隐藏线索册 */
+function openClueCollectionPage() {
+  const overlay = document.getElementById('cluecollection-overlay');
+  const grid = document.getElementById('cluecollection-grid');
+  if (!overlay || !grid) return;
+
+  const persistentClues = new Set(getPersistentClues());
+  const currentClues = new Set(GameState.clueFragments || []);
+
+  // 按章节分组线索
+  const chapterClues = {};
+  if (typeof CLUE_DEFS !== 'undefined') {
+    Object.values(CLUE_DEFS).forEach(clue => {
+      const chNum = clue.chapter || 0;
+      if (!chapterClues[chNum]) chapterClues[chNum] = [];
+      chapterClues[chNum].push(clue);
+    });
+  }
+
+  let totalAll = Object.values(chapterClues).reduce((s, arr) => s + arr.length, 0);
+  let totalGot = 0;
+
+  let html = '';
+  const sorted = Object.entries(chapterClues).sort((a, b) => parseInt(a[0]) - parseInt(b[0]));
+  sorted.forEach(([chNum, clues]) => {
+    const gotCount = clues.filter(c => persistentClues.has(c.id)).length;
+    totalGot += gotCount;
+    const allCount = clues.length;
+    const pct = Math.round((gotCount / allCount) * 100);
+    const isComplete = gotCount >= allCount;
+    const barColor = isComplete ? '#6a9a5a' : pct >= 50 ? '#c4910a' : '#8a6a50';
+
+    html += '<div style="border:1px solid ' + (isComplete ? 'rgba(192,128,208,0.3)' : 'rgba(184,137,62,0.12)') + ';border-radius:8px;padding:8px 12px;background:' + (isComplete ? 'rgba(192,128,208,0.04)' : 'rgba(184,137,62,0.02)') + ';">';
+    html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">';
+    html += '<span style="font-size:0.7rem;color:var(--gold-light);font-family:var(--font-title);">' + (chNum == 0 ? '序章' : '第' + chNum + '章') + '</span>';
+    html += '<span style="margin-left:auto;font-size:0.6rem;color:var(--gold-dim);">' + gotCount + '/' + allCount + '</span>';
+    if (isComplete) html += '<span style="font-size:0.6rem;">✅</span>';
+    html += '</div>';
+    html += '<div style="height:4px;background:rgba(184,137,62,0.08);border-radius:2px;margin-bottom:6px;"><div style="width:' + pct + '%;height:100%;background:' + barColor + ';border-radius:2px;"></div></div>';
+    html += '<div style="display:flex;flex-wrap:wrap;gap:4px;">';
+    clues.forEach(clue => {
+      const found = persistentClues.has(clue.id);
+      const cur = currentClues.has(clue.id);
+      let cls = found ? 'clue-collection-item found' : 'clue-collection-item missing';
+      const marker = cur && !found ? ' 🟢' : '';
+      html += '<span class="' + cls + '" style="font-size:0.6rem;padding:2px 8px;border-radius:10px;">' + (found ? '🔍 ' : '？') + clue.name + marker + '</span>';
+    });
+    html += '</div></div>';
+  });
+
+  const globalPct = totalAll > 0 ? Math.round((totalGot / totalAll) * 100) : 0;
+  html = '<div style="text-align:center;margin-bottom:12px;font-size:0.75rem;color:#c0a0d0;">📊 线索收集进度：<strong>' + totalGot + '/' + totalAll + ' (' + globalPct + '%)</strong></div>' + html;
+
+  grid.innerHTML = html;
+  overlay.classList.add('open');
+}
+
+function closeClueCollection() {
+  document.getElementById('cluecollection-overlay').classList.remove('open');
 }
 
 /* ---- 终章评价 ---- */

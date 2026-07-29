@@ -252,8 +252,6 @@ const ACHIEVEMENTS = [
   { id:'ach_three_eras', icon:'🔮', name:'三种视角', desc:'分别通过序章的三个时代入口进入过马孔多。',
     cond: s => (s._eraVisited || []).length >= 3 },
   /* 可玩性增强：新成就 */
-  { id:'ach_alt_path', icon:'📜', name:'羊皮卷的另一页', desc:'在结算时阅读过一次"另一种可能"。',
-    cond: s => (s._altNarrativeSeen || false) },
   { id:'ach_clue_finder', icon:'🔍', name:'线索猎人', desc:'使用一条线索碎片解锁了隐藏选项。',
     cond: s => (s._secretOptionChosen || false) },
   { id:'ach_bond_master', icon:'🤝', name:'羁绊之人', desc:'与任意角色的关系值达到至交（≥85）。',
@@ -263,50 +261,279 @@ const ACHIEVEMENTS = [
   { id:'ach_second_playthrough', icon:'🔄', name:'轮回之人', desc:'完成第二次通关——你再次回到了马孔多。',
     cond: s => (s.playthroughCount || 0) >= 2 },
   { id:'ach_marginalia_reader', icon:'✍️', name:'边缘的读者', desc:'累计阅读过10条边缘文字。',
-    cond: s => (s._marginaliaRead || 0) >= 10 }
+    cond: s => (s._marginaliaRead || 0) >= 10 },
+  /* v2.0 烙印统计型成就 */
+  { id:'ach_consecutive_witness', icon:'👁️', name:'连续的见证者', desc:'连续3章以上保持见证者烙印——你在命运中找到了节奏。',
+    cond: s => (s.getImprintStats ? s.getImprintStats().maxConsecutive >= 3 : false) },
+  { id:'ach_consecutive_rebel', icon:'🔥', name:'不熄的反抗', desc:'连续3章以上保持抗争者烙印——你从未向命运低头。',
+    cond: s => {
+      if (!s.fateImprint) return false;
+      const entries = Object.entries(s.fateImprint);
+      let max = 0, cur = 1;
+      for (let i = 1; i < entries.length; i++) {
+        if (entries[i][1] === 'rebel' && entries[i-1][1] === 'rebel') { cur++; } else { max = Math.max(max, cur); cur = 1; }
+      }
+      return Math.max(max, cur) >= 3;
+    }},
+  { id:'ach_pendulum', icon:'🔄', name:'命运的摆锤', desc:'烙印档位翻转5次以上——你在命运的两端之间反复摇摆。',
+    cond: s => (s.getImprintStats ? s.getImprintStats().pendulumSwings >= 5 : false) },
+  { id:'ach_shapeless', icon:'🌫️', name:'无定形之人', desc:'无任何档位过半——梅尔基亚德斯写不了你，因为你从不静止。',
+    cond: s => {
+      const stats = s.getImprintStats ? s.getImprintStats() : null;
+      if (!stats || stats.total < 5) return false;
+      return stats.rebelPct < 50 && stats.followerPct < 50 && stats.witnessPct < 50;
+    }},
+  { id:'ach_clue_collector_10', icon:'🔍', name:'线索收集者', desc:'收集10条以上隐藏线索。',
+    cond: s => (s.clueFragments || []).length >= 10 },
+  { id:'ach_clue_collector_all', icon:'🔮', name:'全知之眼', desc:'集齐全部24条隐藏线索——你找到了梅尔基亚德斯藏在羊皮卷里的一切。',
+    cond: s => (s.clueFragments || []).length >= 24 },
+  { id:'ach_all_endings', icon:'🌟', name:'宿命的全貌', desc:'触发过所有7种结局——你读完了羊皮卷的每一页。',
+    cond: s => {
+      if (!s._endingsSeen) return false;
+      const required = ['coauthor','prophet','lover','hurricane','rebel','balanced','bystander'];
+      return required.every(e => s._endingsSeen.includes(e));
+    }},
+  { id:'ach_quadrant_shift', icon:'🧭', name:'象限行者', desc:'在单次游玩中经历了至少3个不同象限。',
+    cond: s => {
+      if (!s.fateImprint || !s.bondImprint) return false;
+      const quadrants = new Set();
+      const fateEntries = Object.entries(s.fateImprint);
+      fateEntries.forEach(([ch, fLevel]) => {
+        const bLevel = s.bondImprint[ch] || 'estranged';
+        const fVal = fLevel === 'witness' ? 6 : fLevel === 'follower' ? 3 : 0;
+        const bVal = bLevel === 'soul_of_family' ? 6 : bLevel === 'bonded' ? 3 : 0;
+        quadrants.add(getQuadrantLabel(fVal, bVal).id);
+      });
+      return quadrants.size >= 3;
+    }},
+  { id:'ach_soul_of_family', icon:'🏠', name:'家族的魂', desc:'累计5章以上保持"家族的魂"羁绊烙印。',
+    cond: s => Object.values(s.bondImprint || {}).filter(b => b === 'soul_of_family').length >= 5 }
 ];
 
-/* ---- 结局定义注册表（数据驱动，章节数据可覆盖） ---- */
+/* ---- 结局定义注册表（v2.0: 7种结局 — 4象限×3烙印模式+全线索） ---- */
 const ENDING_DEFS = {
+  coauthor: {
+    id: 'coauthor',
+    title: '合著者',
+    color: 'var(--gold-light)',
+    initialScene: 'epilogue_coauthor',
+    summary: '你理解了命运的必然，但在羊皮卷每一页边缘都写了注释。梅尔基亚德斯合上书时对你点了点头——"你不仅是读者。你是合著者。"'
+  },
+  prophet: {
+    id: 'prophet',
+    title: '孤独智者',
+    color: '#8a9ab0',
+    initialScene: 'epilogue_prophet',
+    summary: '你看了全部，理解了全部，但从未属于其中任何一页。你站在飓风边缘，看着马孔多被抹去——像一个读完书却无法合上的人。'
+  },
+  lover: {
+    id: 'lover',
+    title: '为爱赴死',
+    color: '#c06050',
+    initialScene: 'epilogue_lover',
+    summary: '你没能改变结局，但你让某些人活得更久、死得更暖。乌尔苏拉在最后一页抬起头——"你回来了？汤还热着。"'
+  },
+  hurricane: {
+    id: 'hurricane',
+    title: '飓风中的人',
+    color: '#6a5040',
+    initialScene: 'epilogue_hurricane',
+    summary: '你和命运互相撕扯，最后谁都没赢。飓风带走了一切——包括你的名字。但你的脚印留在了马孔多的泥土里。'
+  },
   rebel: {
     id: 'rebel',
-    title: '反抗者',
+    title: '反抗者烙印',
     color: 'var(--gold)',
-    condition: function(state) {
-      return state.tags.includes('不屈者') || state.tags.includes('解放者') || state.tags.includes('反抗者');
-    },
     initialScene: 'epilogue_rebel',
-    summary: '你从未屈服。飓风中你抓住一块羊皮卷碎片——上面有一行字，不是梅尔基亚德斯写的。是你自己写的。'
+    summary: '羊皮卷有一页是空白的——"这一页是我撕掉的。"梅尔基亚德斯看着那页空白——然后笑了。"我写不了你。"'
   },
-  witness: {
-    id: 'witness',
-    title: '宿命见证者',
-    color: 'var(--gold-light)',
-    condition: function(state) {
-      return state.memories.length >= 10;
-    },
-    initialScene: 'epilogue_witness',
-    summary: '你理解了命运的必然。临终前，你与梅尔基亚德斯对坐，他合上羊皮卷——"你已经读完了。"'
+  balanced: {
+    id: 'balanced',
+    title: '均衡烙印',
+    color: 'var(--gold-dim)',
+    initialScene: 'epilogue_balanced',
+    summary: '你的轮廓在羊皮卷上是模糊的——梅尔基亚德斯说："我写不了你。你不是任何一个固定的形状——你在每一页之间流动。"'
   },
   bystander: {
     id: 'bystander',
     title: '宿命旁观者',
     color: 'var(--gold-dim)',
-    condition: function(state) {
-      return true; // 默认兜底结局
-    },
     initialScene: 'epilogue_bystander',
     summary: '你只是一个在时间里走过的人。蚂蚁带走最后一个布恩迪亚时你站在门外——"我见证过，仅此而已。"'
+  },
+  witness: {
+    id: 'witness',
+    title: '见证者',
+    color: 'var(--gold-light)',
+    initialScene: 'epilogue_witness',
+    summary: '你见证了全部——羊皮卷在你眼前一页页翻过。梅尔基亚德斯合上书："你读完了。现在合上它吧——回到你自己的故事里去。"'
+  },
+  // 全线索变体
+  coauthor_all_clues: {
+    id: 'coauthor_all_clues', title: '合著者 · 全知', color: 'var(--gold-light)',
+    initialScene: 'epilogue_coauthor',
+    summary: '你找到了我藏的所有东西。现在——找你自己。梅尔基亚德斯站起身，把鹅毛笔递给你。"剩下的你自己写。"'
+  },
+  prophet_all_clues: {
+    id: 'prophet_all_clues', title: '孤独智者 · 全知', color: '#8a9ab0',
+    initialScene: 'epilogue_prophet',
+    summary: '你找到了所有线索——但线索越多，你越明白：理解一切的人注定独自一人。'
+  },
+  lover_all_clues: {
+    id: 'lover_all_clues', title: '为爱赴死 · 全知', color: '#c06050',
+    initialScene: 'epilogue_lover',
+    summary: '你收集了每一片线索——不是为了力量，是为了让那些你爱的人被记住。'
+  },
+  hurricane_all_clues: {
+    id: 'hurricane_all_clues', title: '飓风中的人 · 全知', color: '#6a5040',
+    initialScene: 'epilogue_hurricane',
+    summary: '飓风带走了马孔多——但你没有。你带着所有的线索，所有的记忆——成为了另一个世界的种子。'
+  },
+  witness_all_clues: {
+    id: 'witness_all_clues', title: '见证者 · 全知', color: 'var(--gold-light)',
+    initialScene: 'epilogue_witness',
+    summary: '你见证了全部——也找到了全部。梅尔基亚德斯说："你找到了我藏的所有东西。现在——找你自己。"'
+  },
+  balanced_all_clues: {
+    id: 'balanced_all_clues', title: '均衡 · 全知', color: 'var(--gold-dim)',
+    initialScene: 'epilogue_balanced',
+    summary: '你不是任何一个形状——你收集了每一片线索，却拒绝成为任何一种人。'
+  },
+  bystander_all_clues: {
+    id: 'bystander_all_clues', title: '旁观者 · 全知', color: 'var(--gold-dim)',
+    initialScene: 'epilogue_bystander',
+    summary: '你旁观了百年——也收集了百年。梅尔基亚德斯看着你："我以为你会做些什么。但你只是看着——也许这就是你该做的事。"'
   }
 };
 
 /** 根据当前游戏状态决定终章结局类型 */
 function determineEnding(state) {
-  // 按优先级检查条件：反抗者 > 见证者 > 旁观者
-  if (ENDING_DEFS.rebel.condition(state)) return 'rebel';
-  if (ENDING_DEFS.witness.condition(state)) return 'witness';
-  return 'bystander';
+  // v2.0: 按 imprint 统计判定结局
+  const stats = state.getImprintStats ? state.getImprintStats() : computeImprintStats(state.fateImprint || {}, state.bondImprint || {});
+  const totalChapters = stats.total || 0;
+
+  // 集齐全部 24 个线索 → 特殊台词
+  const allClues = (state.clueFragments || []).length >= 24;
+
+  // 反抗者烙印 ≥ 60% → 反抗者结局
+  if (stats.rebelPct >= 60) return 'rebel';
+
+  // 无档位过半 → 均衡烙印
+  if (stats.rebelPct < 50 && stats.followerPct < 50 && stats.witnessPct < 50 && totalChapters >= 3) {
+    return allClues ? 'balanced_all_clues' : 'balanced';
+  }
+
+  // 高 fate + 高 bond → 合著者（通过 quadrant 判定）
+  const quadrant = state.getQuadrant ? state.getQuadrant() : getQuadrantLabel(state.fateCounter || 0, state.bondCounter || 0);
+  if (quadrant.id === 'guardian') return allClues ? 'coauthor_all_clues' : 'coauthor';
+  if (quadrant.id === 'prophet') return allClues ? 'prophet_all_clues' : 'prophet';
+  if (quadrant.id === 'follower') return allClues ? 'lover_all_clues' : 'lover';
+
+  // 低 fate + 高 bond → 为爱赴死
+  const fateImprint = state.fateImprint || {};
+  const bondImprint = state.bondImprint || {};
+  const fateEntries = Object.values(fateImprint);
+  const bondEntries = Object.values(bondImprint);
+  const highBondCount = bondEntries.filter(b => b === 'soul_of_family').length;
+  const lowFateCount = fateEntries.filter(f => f === 'rebel').length;
+  if (lowFateCount > highBondCount && highBondCount > 0) return allClues ? 'lover_all_clues' : 'lover';
+
+  // 低 fate + 低 bond → 飓风中的人
+  if (stats.rebelPct >= 40 && bondEntries.filter(b => b === 'estranged').length >= bondEntries.length * 0.4) {
+    return allClues ? 'hurricane_all_clues' : 'hurricane';
+  }
+
+  // 默认：见证者
+  if (stats.witnessPct >= 33) return allClues ? 'witness_all_clues' : 'witness';
+
+  return allClues ? 'bystander_all_clues' : 'bystander';
 }
+
+/* ---- v2.0 双轴 × 三层宿命 常量 ---- */
+
+/** 单章最大值 */
+const MAX_FATE = 6;
+const MAX_BOND = 6;
+
+/** 羁绊三档 */
+const BOND_LEVELS = {
+  estranged:  { min: 0, max: 2, label: '疏离者', desc: '与家族若即若离，独自面对命运' },
+  bonded:     { min: 3, max: 4, label: '羁绊者', desc: '与他人相连，在关系中找到意义' },
+  soulFamily: { min: 5, max: 6, label: '家族的魂', desc: '成为家族的心脏——每一次跳动都牵动所有人' }
+};
+
+/** 烙印判定比例 */
+const IMPRINT_THRESHOLDS = {
+  rebel:    { maxRatio: 1/3, label: '抗争者', color: '#a05040' },
+  follower: { minRatio: 1/3, maxRatio: 2/3, label: '追随者', color: '#c4910a' },
+  witness:  { minRatio: 2/3, label: '见证者', color: 'var(--gold-light)' }
+};
+
+/** 动量规则：上章烙印 → 下章起始值 = 最大值 × 系数 */
+const MOMENTUM_RULES = {
+  witness:  { factor: 2/3, desc: '见证者——你带着上一章的洞察进入新的一页' },
+  follower: { factor: 1/3, desc: '追随者——有些东西残留了下来，有些已经消散' },
+  rebel:    { factor: 0,   desc: '抗争者——你撕掉了上一页，从空白开始' }
+};
+
+/** 线索道具注册表（24个线索，按章节分布） */
+const CLUE_DEFS = {
+  // 序章
+  'sanskrit_first_line':   { id: 'sanskrit_first_line',   name: '梵文的第一行',   desc: '羊皮卷上第一个梵文句子——你看不懂，但它让你想起了什么。', chapter: 0, unlocksIn: ['epilogue'] },
+  // Ch1
+  'magnet_hum':            { id: 'magnet_hum',            name: '磁铁的嗡鸣',     desc: '磁铁在你手中发出低沉的嗡鸣——不是声音，是一种你从未感受过的振动。', chapter: 1, unlocksIn: ['chapter5'] },
+  'melquiades_mirror':     { id: 'melquiades_mirror',     name: '梅尔基亚德斯的镜子', desc: '一面铜镜——镜面模糊，但你能看见自己的眼睛里有一行倒写的字。', chapter: 1, unlocksIn: ['chapter17'] },
+  // Ch2
+  'forgotten_label':       { id: 'forgotten_label',       name: '遗忘的标签',     desc: '栗树上的一张标签——墨水正在褪色，但你还能辨认出上面写着"栗树"。', chapter: 2, unlocksIn: ['chapter11'] },
+  // Ch3
+  'taste_of_mud':          { id: 'taste_of_mud',          name: '泥土的味道',     desc: '一小撮干涸的泥土——丽贝卡吃的那种。不是饥饿，是渴望。', chapter: 3, unlocksIn: ['chapter8'] },
+  // Ch4
+  'unsent_score':          { id: 'unsent_score',          name: '未寄出的乐谱',   desc: '一张手写乐谱——皮埃特罗写的，但没有署名，也没有寄出。', chapter: 4, unlocksIn: ['chapter13'] },
+  // Ch5
+  'candied_shell':         { id: 'candied_shell',         name: '凝固的糖壳',     desc: '糖苹果的碎壳——蕾梅黛丝站在街对面的那个下午凝固成的琥珀。', chapter: 5, unlocksIn: ['chapter15'] },
+  'bullet_holes_wall':     { id: 'bullet_holes_wall',     name: '墙上的弹孔',     desc: '行刑队墙上的一排弹孔——每一个都是一个人最后的姿势。', chapter: 5, unlocksIn: ['chapter10'] },
+  // Ch6
+  'gold_thread_pocket':    { id: 'gold_thread_pocket',    name: '口袋上的金线字', desc: '军装口袋上绣着"布恩迪亚"——金线已经磨得发白。', chapter: 6, unlocksIn: ['chapter10'] },
+  // Ch7
+  'goldfish_cycle':        { id: 'goldfish_cycle',        name: '金鱼的循环',     desc: '一条小金鱼——你知道做好之后就会被熔掉，重新开始。不是徒劳——是仪式。', chapter: 7, unlocksIn: ['chapter17'] },
+  // Ch8
+  'weight_of_wind':        { id: 'weight_of_wind',        name: '风的重量',       desc: '晾床单的绳子还在晃——风带走了什么，你不知道。', chapter: 8, unlocksIn: ['chapter19'] },
+  // Ch9
+  'carnival_mask':         { id: 'carnival_mask',         name: '狂欢节的面具',   desc: '一个半截面具——狂欢节的血溅在上面，变成了干涸的褐色斑点。', chapter: 9, unlocksIn: ['chapter10'] },
+  // Ch10
+  'machinegun_position':   { id: 'machinegun_position',   name: '三挺机枪的位置', desc: '你记住了机枪的位置——它们在火车站台两侧，和一棵香蕉树后面。', chapter: 10, unlocksIn: ['chapter19'] },
+  'train_direction':       { id: 'train_direction',       name: '两百节车厢的方向', desc: '火车往海边开了。两百节车厢——里面装的是人。', chapter: 10, unlocksIn: ['chapter14'] },
+  // Ch11
+  'water_stained_parchment':{id: 'water_stained_parchment',name: '水渍羊皮纸',    desc: '被雨水浸透的羊皮纸——字迹模糊了，但你能感觉到纸上残留的温度。', chapter: 11, unlocksIn: ['chapter17'] },
+  // Ch12
+  'last_stitch':           { id: 'last_stitch',           name: '最后一针',       desc: '缝纫机上的最后一根针——乌尔苏拉缝了一辈子，这一针她没来得及缝完。', chapter: 12, unlocksIn: ['epilogue'] },
+  // Ch13
+  'butterfly_wing':        { id: 'butterfly_wing',        name: '蝴蝶的翅膀',     desc: '一片黄蝴蝶的翅膀——它落在地上时还在轻轻颤动。', chapter: 13, unlocksIn: ['chapter15'] },
+  // Ch14
+  'banana_company_seal':   { id: 'banana_company_seal',   name: '香蕉公司的印章', desc: '一枚铁质印章——上面的字已经锈了，但"联合果品公司"还隐约可辨。', chapter: 14, unlocksIn: ['chapter19'] },
+  // Ch15
+  'bastard_name':          { id: 'bastard_name',          name: '私生子的名字',   desc: '一张小纸条——上面写着一个名字。墨水很新——是最近写的。', chapter: 15, unlocksIn: ['chapter17'] },
+  // Ch16
+  'return_ticket':         { id: 'return_ticket',         name: '回程的船票',     desc: '一张从布鲁塞尔到马孔多的船票——票根还在，但人已经到了。', chapter: 16, unlocksIn: ['chapter17'] },
+  // Ch17
+  'melquiades_handwriting':{ id: 'melquiades_handwriting',name: '梅尔基亚德斯的笔迹', desc: '一页羊皮卷残片——上面是老人的笔迹。你在某个句子里认出了自己的名字。', chapter: 17, unlocksIn: ['epilogue'] },
+  // Ch18
+  'baby_blanket':          { id: 'baby_blanket',          name: '婴儿的襁褓',     desc: '一块绣着布恩迪亚家徽的襁褓——还没有用过。', chapter: 18, unlocksIn: ['epilogue'] },
+  // Ch19
+  'ant_trail':             { id: 'ant_trail',             name: '蚂蚁的行军路线', desc: '你蹲下来——蚂蚁排成一列，正在搬运什么东西。你不敢看。', chapter: 19, unlocksIn: ['epilogue'] },
+  // Ch20
+  'circle_on_tree':        { id: 'circle_on_tree',        name: '刻在树上的圆',   desc: '栗树树干上刻着一个完美的圆——不知是谁刻的，不知是什么时候刻的。', chapter: 20, unlocksIn: ['epilogue'] }
+};
+
+/** 结局条件定义（v2.0：按 imprint 统计判定） */
+const ENDING_CONDITIONS = {
+  coauthor:  { quadrant: 'guardian', desc: '高 fate + 高 bond —— 你理解了命运的必然，但在每一页边缘都写了注释' },
+  prophet:   { quadrant: 'prophet',  desc: '高 fate + 低 bond —— 你看了全部，理解了全部，但从未属于其中任何一页' },
+  lover:     { quadrant: 'follower', desc: '低 fate + 高 bond —— 你没能改变结局，但你让某些人活得更久、死得更暖' },
+  hurricane: { quadrant: 'rebel',    desc: '低 fate + 低 bond —— 你和命运互相撕扯，最后谁都没赢' },
+  rebel:     { condition: 'rebelPct >= 60', desc: '抗争者烙印占大多数 —— 羊皮卷有一页是空白的' },
+  balanced:  { condition: 'noDominant',      desc: '无档位过半 —— 你的轮廓在羊皮卷上是模糊的' }
+};
 
 /* ---- 附身角色情绪状态注册表（数据驱动，章节数据可扩展） ---- */
 const CHAPTER_MOODS = {};

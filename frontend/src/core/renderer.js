@@ -73,10 +73,10 @@ const Renderer = {
         html += `<div class="speaker-label ${colorClass}" style="color: ${lp.speakerColor || ''}">${lp.speaker}：</div>`;
       }
 
-      // 正文段落
+      // 正文段落（v2.0: 处理线索文字高亮）
       if (lp.paragraphs) {
         lp.paragraphs.forEach(p => {
-          html += `<p class="narrative-paragraph">${p}</p>`;
+          html += `<p class="narrative-paragraph">${this._processClueText(p, scene)}</p>`;
         });
       }
 
@@ -90,7 +90,7 @@ const Renderer = {
       // 引用后正文
       if (lp.postQuote) {
         lp.postQuote.forEach(p => {
-          html += `<p class="narrative-paragraph">${p}</p>`;
+          html += `<p class="narrative-paragraph">${this._processClueText(p, scene)}</p>`;
         });
       }
 
@@ -104,13 +104,33 @@ const Renderer = {
       // 引用2后正文
       if (lp.postQuote2) {
         lp.postQuote2.forEach(p => {
-          html += `<p class="narrative-paragraph">${p}</p>`;
+          html += `<p class="narrative-paragraph">${this._processClueText(p, scene)}</p>`;
         });
       }
 
       // 过渡文字
       if (lp.transition) {
-        html += `<div class="transition-text">${lp.transition}</div>`;
+        html += `<div class="transition-text">${this._processClueText(lp.transition, scene)}</div>`;
+      }
+
+      // v2.0: 回声文本
+      if (scene.echoText) {
+        const echoCondition = scene.echoCondition;
+        let showEcho = true;
+        if (echoCondition) {
+          if (echoCondition.flag && echoCondition.min) {
+            showEcho = GameState.getFlag(echoCondition.flag) >= echoCondition.min;
+          }
+          if (echoCondition.memory && !GameState.memories.includes(echoCondition.memory)) {
+            showEcho = false;
+          }
+          if (echoCondition.clue && !GameState.hasClue(echoCondition.clue)) {
+            showEcho = false;
+          }
+        }
+        if (showEcho) {
+          html += `<div class="echo-text">${scene.echoText}</div>`;
+        }
       }
 
       leftPage.innerHTML = html;
@@ -152,22 +172,13 @@ const Renderer = {
           if (isChosen) btnClass += ' choice-chosen';
           else if (isLocked) btnClass += ' choice-dimmed';
 
-          // 情感成本标记
-          let costGainHtml = '';
-          if (choice.emotionalCost) {
-            costGainHtml += `<span class="choice-cost">⚠ 失去：${choice.emotionalCost}</span>`;
-          }
-          if (choice.emotionalGain) {
-            costGainHtml += `<span class="choice-gain">✦ 获得：${choice.emotionalGain}</span>`;
-          }
-
+          // v2.0: 不再展示情感代价/收益标签——后果在叙事中自然浮现
           const onclickAttr = isLocked ? '' : `onclick="selectChoice('${choice.id}')"`;
           const selectedClass = (!isLocked && _selectedChoiceId === choice.id) ? ' choice-selected' : '';
           html += `
             <div class="${btnClass}${selectedClass}" data-choice-id="${choice.id}" ${onclickAttr}>
               <span class="choice-label">${isChosen ? '▶ ' : ''}${choice.label}</span>
               <span class="choice-desc">${choice.description}</span>
-              ${costGainHtml}
             </div>`;
         });
         html += `</div>`;
@@ -194,13 +205,13 @@ const Renderer = {
           }
         }
 
-        // 可玩性增强：展示"羊皮卷的另一页"（未选选项的叙事）
-        html += this._renderAlternativeNarratives();
+        // v2.0: 展示宿命/羁绊值变化
+        html += this._renderFateBondChanges();
 
-        // 可玩性增强：展示关系值变化
+        // v2.0: 展示好感度变化
         html += this._renderRelationshipChanges();
 
-        // 可玩性增强：展示情感结算
+        // v2.0: 展示情感结算（保留羊皮卷的回响，不展示数字）
         html += this._renderEmotionalCost();
 
 
@@ -311,6 +322,16 @@ const Renderer = {
       moodLabel.textContent = moodText;
     }
 
+    // v2.0: 更新双轴显示
+    const fateDisplay = document.getElementById('fate-display');
+    const bondDisplay = document.getElementById('bond-display');
+    if (fateDisplay) {
+      fateDisplay.textContent = '⭐ ' + GameState.fateCounter;
+    }
+    if (bondDisplay) {
+      bondDisplay.textContent = '🤝 ' + GameState.bondCounter;
+    }
+
     // 阅读进度条 + 页码
     const progressFill = document.getElementById('reading-progress-fill');
     const progressThumb = document.getElementById('reading-progress-thumb');
@@ -330,6 +351,24 @@ const Renderer = {
   /* 更新书签/进度指示 */
   updateBookmark() {
     // 预留：可在顶部栏显示进度条
+  },
+
+  /* v2.0: 处理线索文字——将 triggerText 包裹为可点击 span */
+  _processClueText(text, scene) {
+    if (!text || !scene || !scene.leftPage || !scene.leftPage.clues) return text;
+    let result = text;
+    scene.leftPage.clues.forEach(clue => {
+      const trigger = clue.triggerText;
+      if (!result.includes(trigger)) return;
+      const discovered = GameState.hasClue(clue.itemId);
+      const cls = discovered ? 'clue-text discovered' : 'clue-text';
+      const onclick = discovered ? '' : `onclick="event.stopPropagation();handleClueClick('${clue.itemId}')"`;
+      result = result.replace(
+        trigger,
+        `<span class="${cls}" data-clue-id="${clue.itemId}" ${onclick} title="${discovered ? '已发现：' + clue.itemId : '点击发现线索'}">${trigger}</span>`
+      );
+    });
+    return result;
   },
 
   /* 获取说话者CSS类 */
@@ -354,42 +393,35 @@ const Renderer = {
     }
   },
 
-  /* 可玩性增强：渲染"羊皮卷的另一页" */
-  _renderAlternativeNarratives() {
-    const chapterData = getCurrentChapterData();
-    if (!chapterData || !chapterData.scenes) return '';
-    const lastChoiceLog = GameState.choiceLog.length > 0
-      ? GameState.choiceLog[GameState.choiceLog.length - 1]
-      : null;
-    if (!lastChoiceLog) return '';
+  /* v2.0: 渲染宿命/羁绊值变化 */
+  _renderFateBondChanges() {
+    const fateChange = GameState._lastFateChange || 0;
+    const bondChange = GameState._lastBondChange || 0;
+    if (fateChange === 0 && bondChange === 0) return '';
 
-    // 找到包含被选中选项的选择场景（通过 choice ID 匹配）
-    let choiceScene = null;
-    for (const scene of Object.values(chapterData.scenes)) {
-      if (scene.type === 'choice' && scene.choices) {
-        const found = scene.choices.some(c => c.id === lastChoiceLog.choiceId);
-        if (found) { choiceScene = scene; break; }
-      }
-    }
-    if (!choiceScene) return '';
+    let html = '<div class="fatebond-change-panel">';
+    html += '<div class="fatebond-change-title">📜 本次选择的影响</div>';
+    html += '<div class="fatebond-change-items">';
 
-    const unselectedChoices = choiceScene.choices.filter(
-      c => c.id !== lastChoiceLog.choiceId && c.alternativeNarrative
-    );
-
-    if (unselectedChoices.length === 0) return '';
-
-    // 追踪"另一种可能"已读
-    if (typeof GameEngine !== 'undefined' && GameEngine.trackAltNarrativeSeen) {
-      setTimeout(() => GameEngine.trackAltNarrativeSeen(), 100);
+    if (fateChange !== 0) {
+      const sign = fateChange > 0 ? '+' : '';
+      const cls = fateChange > 0 ? 'fb-change-positive' : 'fb-change-negative';
+      const label = fateChange > 0 ? '宿命值上升' : '宿命值下降';
+      html += `<span class="fb-change-item ${cls}">⭐ ${label} ${sign}${fateChange}</span>`;
     }
 
-    let html = '<div class="alt-narrative-panel">';
-    html += '<div class="alt-narrative-title">📜 羊皮卷的另一页</div>';
-    unselectedChoices.forEach(choice => {
-      html += '<div class="alt-narrative-item">' + choice.alternativeNarrative + '</div>';
-    });
-    html += '</div>';
+    if (bondChange !== 0) {
+      const sign = bondChange > 0 ? '+' : '';
+      const cls = bondChange > 0 ? 'fb-change-positive' : 'fb-change-negative';
+      const label = bondChange > 0 ? '羁绊值上升' : '羁绊值下降';
+      html += `<span class="fb-change-item ${cls}">🤝 ${label} ${sign}${bondChange}</span>`;
+    }
+
+    if (fateChange === 0 && bondChange === 0) {
+      html += '<span class="fb-change-item fb-change-neutral">— 无变化 —</span>';
+    }
+
+    html += '</div></div>';
     return html;
   },
 
@@ -576,6 +608,71 @@ function handleExplorationContinue(nextSceneId) {
   // 跳转到下一个场景
   GameEngine.goToScene(nextSceneId);
   Renderer.render();
+}
+
+/* ---- v2.0: 隐藏线索点击处理 ---- */
+
+/** 点击线索文字 */
+function handleClueClick(clueId) {
+  // 查找线索定义
+  const clueDef = (typeof CLUE_DEFS !== 'undefined') ? CLUE_DEFS[clueId] : null;
+  if (!clueDef) return;
+
+  // 已发现的不重复触发
+  if (GameState.hasClue(clueId)) return;
+
+  // 添加到游戏状态
+  GameState.addClueFragment(clueId);
+  GameState._lastClueFound = clueId;
+  // v2.1: 持久化线索
+  if (typeof persistClue === 'function') persistClue(clueId);
+
+  // 显示线索弹窗
+  showCluePopup(clueDef);
+
+  // 更新该线索文字的样式
+  const clueEls = document.querySelectorAll('.clue-text[data-clue-id="' + clueId + '"]');
+  clueEls.forEach(el => {
+    el.classList.add('discovered');
+    el.removeAttribute('onclick');
+    el.title = '已发现：' + clueDef.name;
+  });
+
+  // 自动存档
+  if (typeof StorageManager !== 'undefined') StorageManager.autoSave();
+}
+
+/** 显示线索发现弹窗 */
+function showCluePopup(clueDef) {
+  // 移除已有弹窗
+  const existing = document.getElementById('clue-popup');
+  if (existing) existing.remove();
+
+  const popup = document.createElement('div');
+  popup.id = 'clue-popup';
+  popup.className = 'clue-popup';
+  popup.innerHTML = `
+    <div class="clue-popup-icon">🔍</div>
+    <div class="clue-popup-title">${clueDef.name}</div>
+    <div class="clue-popup-desc">${clueDef.desc}</div>
+    <div class="clue-popup-hint">已加入线索藏品 · ${clueDef.unlocksIn ? '可在后续章节解锁隐藏选项' : ''}</div>
+    <button class="clue-popup-close" onclick="closeCluePopup()">收下线索</button>
+  `;
+  document.body.appendChild(popup);
+
+  // 4.5 秒后自动关闭
+  setTimeout(() => {
+    closeCluePopup();
+  }, 5000);
+}
+
+/** 关闭线索弹窗 */
+function closeCluePopup() {
+  const popup = document.getElementById('clue-popup');
+  if (popup) {
+    popup.classList.add('closing');
+    setTimeout(() => popup.remove(), 400);
+  }
 }
 
 /* ---- 记忆碎片弹窗（右下角滑入/滑出） ---- */

@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>百年孤独 · 分支树状图</title>
+<style>
+:root{--bg:#060403;--gold:#b8893e;--gl:#e8c870;--gd:#d4b070;--tx:#d4c0a0;--pn:rgba(14,10,5,.96)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);font-family:'Noto Serif SC',Georgia,serif;overflow:hidden;height:100vh;width:100vw;color:var(--tx)}
+canvas{display:block}
+#wrap{position:fixed;inset:0;z-index:1}
+#bar{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;align-items:center;gap:6px;padding:5px 12px;background:linear-gradient(180deg,rgba(6,4,3,.97),rgba(6,4,3,.5));backdrop-filter:blur(8px);flex-wrap:wrap;min-height:38px}
+#bar h1{font-family:Cinzel,'Noto Serif SC',serif;font-size:.78rem;color:var(--gl);letter-spacing:.06em;white-space:nowrap}
+#bar .sp{flex:1}
+#bar button,#bar select{padding:3px 10px;border:1px solid rgba(184,137,62,.25);border-radius:12px;background:rgba(8,6,4,.55);color:var(--gd);cursor:pointer;font-size:.62rem;font-family:inherit;letter-spacing:.03em;transition:all .25s;white-space:nowrap}
+#bar button:hover,#bar select:hover{background:rgba(184,137,62,.14);border-color:var(--gold);color:var(--gl)}
+#bar button.on{background:rgba(184,137,62,.22);border-color:var(--gl);color:var(--gl)}
+#bar input{padding:3px 8px;border:1px solid rgba(184,137,62,.25);border-radius:12px;background:rgba(8,6,4,.55);color:var(--tx);font-size:.62rem;font-family:inherit;outline:none;width:120px}
+#bar input:focus{border-color:var(--gold)}
+#bar input::placeholder{color:rgba(184,137,62,.3)}
+
+#leg{position:fixed;bottom:8px;left:8px;z-index:15;display:flex;gap:8px;flex-wrap:wrap;padding:5px 10px;background:rgba(6,4,3,.8);border:1px solid rgba(184,137,62,.1);border-radius:8px;font-size:.58rem;color:var(--gd);backdrop-filter:blur(4px)}
+.ld{display:flex;align-items:center;gap:3px}.ld span{width:8px;height:8px;border-radius:50%;display:inline-block}
+#hint{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);z-index:12;font-size:.58rem;color:rgba(184,137,62,.35);pointer-events:none;letter-spacing:.03em}
+
+#pn{position:fixed;top:46px;right:10px;z-index:25;width:320px;max-height:calc(100vh-70px);overflow-y:auto;background:var(--pn);border:1px solid rgba(184,137,62,.22);border-radius:12px;padding:16px;display:none;backdrop-filter:blur(12px);box-shadow:0 0 32px rgba(0,0,0,.55);font-size:.68rem;line-height:1.6;animation:pi .2s ease}
+@keyframes pi{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+#pn.on{display:block}
+#pn h3{font-family:Cinzel,'Noto Serif SC',serif;font-size:.78rem;color:var(--gl);letter-spacing:.05em;margin-bottom:2px;padding-right:20px}
+#pn .tp{display:inline-block;padding:2px 7px;border-radius:7px;font-size:.55rem;margin-bottom:6px;letter-spacing:.03em}
+.tc{background:rgba(232,200,112,.14);color:var(--gl);border:1px solid rgba(232,200,112,.25)}
+.tn{background:rgba(100,145,185,.14);color:#8ab8d8;border:1px solid rgba(100,145,185,.25)}
+.ts{background:rgba(120,165,120,.14);color:#90c090;border:1px solid rgba(120,165,120,.25)}
+.tl{background:rgba(185,125,190,.14);color:#c0a0d0;border:1px solid rgba(185,125,190,.25)}
+#pn .r{display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px solid rgba(184,137,62,.05)}
+#pn .rl{color:var(--gd);font-size:.6rem}#pn .rv{color:var(--tx);text-align:right;font-size:.65rem}
+.fp{color:#e8c870}.bp{color:#c0b8d0}.lk{color:#e0a0d0;font-size:.58rem}.mk{color:#80c0d0;font-size:.58rem}
+#pn .ds{font-size:.62rem;color:#908070;font-style:italic;line-height:1.5;margin-top:5px;padding-top:5px;border-top:1px solid rgba(184,137,62,.07)}
+#pn .el{border-left:2px solid var(--gold);padding-left:6px;margin-top:4px;color:#c0b090;font-size:.6rem}
+#pn .hl{border-left:2px solid #c080d0;padding-left:6px;margin-top:3px;font-size:.58rem;color:#d0b0e0}
+#pn .rl2{border-left:2px solid #80b890;padding-left:6px;margin-top:3px;font-size:.58rem;color:#90c8a0}
+#pn .close{position:absolute;top:6px;right:8px;width:18px;height:18px;line-height:18px;text-align:center;background:rgba(184,137,62,.08);border:1px solid rgba(184,137,62,.15);border-radius:50%;color:var(--gd);cursor:pointer;font-size:.55rem}
+#pn .close:hover{background:rgba(184,137,62,.22);color:var(--gl)}
+@media(max-width:768px){#pn{width:270px;right:2px;top:40px}#bar h1{font-size:.7rem}#bar input{width:80px}}
+</style>
+</head>
+<body>
+<div id="bar">
+  <h1>🌳 宿命之环 · 分支树</h1>
+  <span class="sp"></span>
+  <input id="s" placeholder="搜索…" oninput="srch(this.value)">
+  <select id="chsel" onchange="chg(+this.value)"><option value="-1">📖 全部章节</option></select>
+  <button id="bcl" onclick="tClue()">💠 线索链</button>
+  <button onclick="rst()">🔍 复位</button>
+  <span style="font-size:.6rem;color:var(--gd)">节点:<span id="nc">0</span></span>
+</div>
+<div id="wrap"><canvas id="c"></canvas></div>
+<div id="pn"><button class="close" onclick="clP()">✕</button><div id="pc"></div></div>
+<div id="leg">
+  <span class="ld"><span style="background:#e8c870;box-shadow:0 0 4px #e8c870"></span>选择</span>
+  <span class="ld"><span style="background:#6a9ac0;box-shadow:0 0 4px #6a9ac0"></span>叙事</span>
+  <span class="ld"><span style="background:#7ab87a;box-shadow:0 0 4px #7ab87a"></span>结算</span>
+  <span class="ld"><span style="background:#c080d0;box-shadow:0 0 4px #c080d0"></span>线索</span>
+  <span class="ld"><span style="background:#e06040"></span>🔒隐藏</span>
+  <span class="ld"><span style="background:#f0c040"></span>⭐结局</span>
+  <span>| 🖱拖拽 滚轮缩放 点击节点</span>
+</div>
+<div id="hint">金色=选择 蓝色=叙事 绿色=结算 紫色=线索 红框=需解锁 星标=结局相关</div>
+
+<script>
+// ========== DATA: extracted from dev-tree-diagram.md ==========
+var D=[
+{ n:0, t:"序章 · 羊皮卷的召唤", p:"被召唤的灵魂", nd:[
+  ["void_awakening","n","虚无中醒来",0,{},"colors_unfold"],
+  ["colors_unfold","n","颜色的展开",0,{},"era_choice"],
+  ["era_choice","c","时代选择",1,{},null],
+  ["era_a","c","建村之初",1,{f:1,b:1,g:"从头开始"},"era_a_narrative"],
+  ["era_b","c","家族鼎盛",1,{f:0,b:2,g:"中途降临"},"era_b_narrative"],
+  ["era_c","c","战争年代",1,{f:2,b:-1,g:"战争降临者"},"era_c_narrative"],
+  ["era_a_narrative","n","建村之初·降临",1,{},"prologue_end"],
+  ["era_b_narrative","n","家族鼎盛·降临",1,{},"prologue_end"],
+  ["era_c_narrative","n","战争年代·降临",1,{},"prologue_end"],
+  ["prologue_end","s","序章结算",2,{end:1},""]
+],cl:[["sanskrit_first_line","梵文的第一行","终章","colors_unfold"]] },
+{ n:1, t:"第一章 · 宿命之环", p:"何塞·阿尔卡蒂奥·布恩迪亚", nd:[
+  ["prologue","n","你醒来了",0,{},"round1_choice"],
+  ["round1_choice","c","R1·磁铁",1,{},null],
+  ["r1_a","c","拖着磁铁走进丛林",1,{f:2,b:-1,g:"执着勘探者",ff:"obsession_path:1",rl:"乌尔苏拉:-10,梅尔基亚德斯:5"},"round1_a_narrative"],
+  ["r1_b","c","把磁铁还给梅尔基亚德斯",1,{f:-1,b:2,g:"家庭的守望者",ff:"ursula_cared:1",rl:"乌尔苏拉:15,梅尔基亚德斯:-5"},"round1_b_narrative"],
+  ["r1_c","c","把磁铁卖给村里人",1,{f:0,b:1,g:"精明的妥协者",ff:"anti_fate_choice:1",rl:"乌尔苏拉:5,梅尔基亚德斯:-10"},"round1_c_narrative"],
+  ["round1_a_narrative","n","执着勘探者",1,{},"round1_settlement"],
+  ["round1_b_narrative","n","家庭的守望者",1,{},"round1_settlement"],
+  ["round1_c_narrative","n","精明的妥协者",1,{},"round1_settlement"],
+  ["round1_settlement","s","R1结算",1,{},"round2_choice"],
+  ["round2_choice","c","R2·放大镜",2,{},null],
+  ["r2_a","c","用乌尔苏拉金币购买",2,{f:1,b:-2,g:"科学与牺牲",ff:"betrayed_ursula_trust:1",rl:"乌尔苏拉:-15"},"round2_a_narrative"],
+  ["r2_b","c","用记忆交换放大镜",2,{f:2,b:0,g:"代价与收获,失去面容的人",ff:"paid_with_memory:1",rl:"梅尔基亚德斯:10"},"round2_b_narrative"],
+  ["r2_c","c","先向乌尔苏拉坦白",2,{f:-1,b:2,g:"清醒的狂热者",ff:"ursula_cared:1",rl:"乌尔苏拉:10"},"round2_c_narrative"],
+  ["round2_settlement","s","R2结算",2,{},"round3_choice"],
+  ["round3_choice","c","R3·冰块",3,{},null],
+  ["r3_a","c","带他们去看冰块",3,{f:2,b:-1,g:"冰块的导师",ff:"showed_ice:1"},"round3_a_narrative"],
+  ["r3_b","c","带他们看吉卜赛纸牌",3,{f:-1,b:2,g:"命运的揭示者",ff:"heard_prophecy:1"},"round3_b_narrative"],
+  ["r3_c","c","带他们看望远镜",3,{f:0,b:2,g:"观看者"},"round3_c_narrative"],
+  ["round3_settlement","s","R3结算",3,{},"round4_choice"],
+  ["round4_choice","c","R4·远山",4,{},null],
+  ["r4_a","c","独自出发寻找大海",4,{f:2,b:-1,g:"远行者",m:"不是海的海",ff:"left_alone:1"},"round4_a_narrative"],
+  ["r4_b","c","说服全家一起迁徙",4,{f:-1,b:2,g:"同行者",m:"一只手",ff:"ursula_cared:1,family_together:1"},"round4_b_narrative"],
+  ["r4_c","c","建造看不见的城市",4,{f:0,b:0,g:"造梦者",m:"泥土中的马孔多",ff:"built_city:1,anti_fate_choice:1"},"round4_c_narrative"],
+  ["round4_settlement","s","R4结算",4,{},"round5_choice"],
+  ["round5_choice","c","R5·冰上的手",5,{},null],
+  ["r5_a","c","把手放在冰块上",5,{g:"冰上的手",m:"覆手"},"round5_a_narrative"],
+  ["r5_b","c","退后一步旁观",5,{g:"旁观者",m:"一步之遥"},"round5_b_narrative"],
+  ["r5_c","c","举起冰块照亮全村",5,{g:"举冰者",m:"蓝白色的光"},"round5_c_narrative"],
+  ["round5_settlement","s","R5结算",5,{},"chapter1_end"],
+  ["chapter1_end","s","第一章章末结算",6,{end:1},""]
+],cl:[["magnet_hum","磁铁的嗡鸣","Ch5","prologue"],["melquiades_mirror","梅尔基亚德斯的镜子","Ch17","prologue"]],ec:[["round1_a_narrative","你记得磁铁在手中的嗡鸣…","r1_a"],["round1_b_narrative","你记得她端出那碗汤时没有看你…","r1_b"]] },
+{ n:2, t:"第二章 · 失眠症", p:"何塞·阿尔卡蒂奥·布恩迪亚", nd:[
+  ["ch2_opening","n","失眠症降临",0,{},"ch2_r1_choice"],
+  ["ch2_r1_choice","c","R1·亡魂",1,{},null],
+  ["ch2_r1_a","c","埋葬普鲁登西奥",1,{f:1,b:1,g:"罪与埋葬",m:"栗树下的声音"},"ch2_r1a"],
+  ["ch2_r1_b","c","拖出村子埋葬",1,{f:-1,b:2,g:"远离血债"},"ch2_r1b"],
+  ["ch2_r1_c","c","告知全村人",1,{f:0,b:2,g:"公开忏悔者",m:"村庄的审判"},"ch2_r1c"],
+  ["ch2_r1_settlement","s","R1结算",1,{},"ch2_r2_choice"],
+  ["ch2_r2_choice","c","R2·对抗遗忘",2,{},null],
+  ["ch2_r2_a","c","用标签标记一切",2,{f:2,b:0,g:"标记者",m:"标签上的墨水"},"ch2_r2a"],
+  ["ch2_r2_b","c","寻找梅尔基亚德斯",2,{f:-2,b:1,g:"求索者"},"ch2_r2b"],
+  ["ch2_r2_c","c","接受遗忘",2,{f:0,b:0,g:"接受遗忘者",m:"遗忘的平静"},"ch2_r2c"],
+  ["ch2_r2_settlement","s","R2结算",2,{},"ch2_r3_choice"],
+  ["ch2_r3_choice","c","R3·丽贝卡的泥土",3,{},null],
+  ["ch2_r3_a","c","带她去教堂祈祷",3,{f:2,b:0,g:"信仰的引路人"},"ch2_r3a"],
+  ["ch2_r3_b","c","陪她一起吃泥土",3,{f:-1,b:2,g:"共苦者",m:"泥土的味道"},"ch2_r3b"],
+  ["ch2_r3_c","c","把骨灰盒锁起来",3,{f:1,b:-1,g:"剪断脐带者"},"ch2_r3c"],
+  ["ch2_r3_settlement","s","R3结算",3,{},"ch2_r4_choice"],
+  ["ch2_r4_choice","c","R4·药水",4,{},null],
+  ["ch2_r4_a","c","自己先喝下药水",4,{g:"牺牲者",m:"失去温度的一天"},"ch2_r4a"],
+  ["ch2_r4_b","c","让全镇投票决定",4,{g:"民主者"},"ch2_r4b"],
+  ["ch2_r4_c","c","拒绝寻找别的办法",4,{g:"不屈者"},"ch2_r4c"],
+  ["ch2_r4_settlement","s","R4结算",4,{},"ch2_r5_choice"],
+  ["ch2_r5_choice","c","R5·栗树下的父亲",5,{},null],
+  ["ch2_r5_a","c","让他留在栗树下",5,{g:"守护者",m:"栗树下的绳结"},"ch2_r5a"],
+  ["ch2_r5_b","c","带他去河边",5,{g:"解放者",m:"河边的午后"},"ch2_r5b"],
+  ["ch2_r5_c","c","和他一起画圆圈",5,{g:"同行至终点",m:"画在泥土中的永恒"},"ch2_r5c"],
+  ["ch2_r5_settlement","s","R5结算",5,{},"chapter2_end"],
+  ["chapter2_end","s","第二章章末结算",6,{end:1},""]
+],cl:[["forgotten_label","遗忘的标签","Ch11","ch2_r1_settlement"]],ec:[["ch2_opening","你听说过失眠症——但当它真正降临时，你才发现遗忘比任何风景都更空旷…",""]] },
+{ n:3, t:"第三章 · 丽贝卡 ⭐关卡", p:"奥雷里亚诺", nd:[
+  ["ch3_opening","n","丽贝卡敲门",0,{},"ch3_r1_choice"],
+  ["ch3_r1_choice","c","R1·收养与陌生",1,{},null],
+  ["ch3_r1_a","c","保守她的秘密",1,{f:0,b:1,g:"沉默的守护者"},"ch3_r1a"],
+  ["ch3_r1_b","c","告诉乌尔苏拉",1,{f:0,b:1,g:"告密者"},"ch3_r1b"],
+  ["ch3_r1_c","c","给她一块面包",1,{f:0,b:2,g:"温柔的替代者",m:"面包与泥"},"ch3_r1c"],
+  ["ch3_r1_settlement","s","R1结算",1,{},"ch3_r2_choice"],
+  ["ch3_r2_choice","c","R2·失眠症再袭",2,{},null],
+  ["ch3_r2_a","c","发明绳结记事",2,{f:2,b:0,g:"记忆发明家",m:"绳结记事"},"ch3_r2a"],
+  ["ch3_r2_b","c","让丽贝卡做记忆",2,{f:0,b:2,g:"寄托者"},"ch3_r2b"],
+  ["ch3_r2_c","c","写下一切",2,{f:1,b:0,g:"记录者",m:"箱底的纸卷"},"ch3_r2c"],
+  ["ch3_r2_settlement","s","R2结算",2,{},"ch3_r3_choice"],
+  ["ch3_r3_choice","c","R3·家宅扩建",3,{},null],
+  ["ch3_r3_a","c","帮她一起扩建",3,{f:-1,b:2,g:"建设者"},"ch3_r3a"],
+  ["ch3_r3_b","c","建秘密实验室",3,{f:1,b:0,g:"隐秘建设者",m:"暗室之门"},"ch3_r3b"],
+  ["ch3_r3_c","c","反对扩建够住就好",3,{f:1,b:-1,g:"朴素者"},"ch3_r3c"],
+  ["ch3_r3_settlement","s","R3结算",3,{},"ch3_r4_choice"],
+  ["ch3_r4_choice","c","R4·镇长的到来",4,{},null],
+  ["ch3_r4_a","c","支持父亲抵抗政府",4,{f:1,b:1,g:"抵抗者"},"ch3_r4a"],
+  ["ch3_r4_b","c","调解找到妥协",4,{f:0,b:2,g:"调解人"},"ch3_r4b"],
+  ["ch3_r4_c","c","支持镇长拥抱秩序",4,{f:1,b:-1,g:"秩序拥护者",m:"父与子的裂痕"},"ch3_r4c"],
+  ["ch3_r4_settlement","s","R4结算",4,{},"ch3_r5_choice"],
+  ["ch3_r5_choice","c","R5·家族的未来",5,{},null],
+  ["ch3_r5_a","c","专注于炼金术",5,{f:2,b:-1,g:"孤独的炼金术士"},"ch3_r5a"],
+  ["ch3_r5_b","c","承担家族责任",5,{f:-1,b:2,g:"家族支柱"},"ch3_r5b"],
+  ["ch3_r5_c","c","离开去看世界",5,{f:1,b:-2,g:"出走者",m:"未完成的地图"},"ch3_r5c"],
+  ["ch3_r5_settlement","s","R5结算",5,{},"chapter3_end"],
+  ["chapter3_end","s","第三章章末结算",6,{end:1},""]
+],cl:[["taste_of_mud","泥土的味道","Ch8","ch3_opening"]] },
+{ n:4, t:"第四章 · 自动钢琴", p:"丽贝卡", nd:[
+  ["ch4_opening","n","钢琴响起",0,{},"ch4_r1_choice"],
+  ["ch4_r1_choice","c","R1·爱情的种子",1,{},null],
+  ["ch4_r1_a","c","帮助丽贝卡表达爱意",1,{f:0,b:1,g:"爱的推手"},"ch4_r1a"],
+  ["ch4_r1_b","c","帮助阿玛兰妲",1,{f:0,b:1,g:"爱的导师"},"ch4_r1b"],
+  ["ch4_r1_c","c","不介入让她们自己解决",1,{f:1,b:-1,g:"旁观者",m:"走廊的阴影"},"ch4_r1c"],
+  ["ch4_r1_settlement","s","R1结算",1,{},"ch4_r2_choice"],
+  ["ch4_r2_choice","c","R2·嫉妒的毒药",2,{},null],
+  ["ch4_r2_a","c","警告丽贝卡",2,{f:0,b:1,g:"保护者"},"ch4_r2a"],
+  ["ch4_r2_b","c","找阿玛兰妲谈话",2,{f:0,b:1,g:"劝解者"},"ch4_r2b"],
+  ["ch4_r2_c","c","静观其变",2,{f:1,b:-1,g:"命运观察者"},"ch4_r2c"],
+  ["ch4_r2_settlement","s","R2结算",2,{},"ch4_r3_choice"],
+  ["ch4_r3_choice","c","R3·婚礼与毒药",3,{},null],
+  ["ch4_r3_a","c","与乌尔苏拉保护丽贝卡",3,{f:-1,b:2,g:"家族守护者"},"ch4_r3a"],
+  ["ch4_r3_b","c","私下警告阿玛兰妲",3,{f:1,b:-1,g:"私密的劝诫者"},"ch4_r3b"],
+  ["ch4_r3_c","c","让婚礼取消",3,{f:0,b:0,g:"破坏者",m:"破碎的婚约"},"ch4_r3c"],
+  ["ch4_r3_settlement","s","R3结算",3,{},"ch4_r4_choice"],
+  ["ch4_r4_choice","c","R4·归来的巨人",4,{},null],
+  ["ch4_r4_a","c","祝福他们",4,{g:"祝福者"},"ch4_r4a"],
+  ["ch4_r4_b","c","反对这是乱伦",4,{g:"道德守卫者"},"ch4_r4b"],
+  ["ch4_r4_c","c","沉默见证",4,{g:"沉默的见证人"},"ch4_r4c"],
+  ["ch4_r4_settlement","s","R4结算",4,{},"ch4_r5_choice"],
+  ["ch4_r5_choice","c","R5·钢琴最后旋律",5,{},null],
+  ["ch4_r5_a","c","弹最后一支曲",5,{g:"送别者",m:"最后的音符"},"ch4_r5a"],
+  ["ch4_r5_b","c","把钢琴送给教堂",5,{g:"给予者"},"ch4_r5b"],
+  ["ch4_r5_c","c","保持沉默",5,{g:"沉默的守护者",m:"尘封的琴弦"},"ch4_r5c"],
+  ["ch4_r5_settlement","s","R5结算",5,{},"chapter4_end"],
+  ["chapter4_end","s","第四章章末结算",6,{end:1},""]
+],cl:[["unsent_score","未寄出的乐谱","Ch13","ch4_opening"]] },
+{ n:5, t:"第五章 · 蕾梅黛丝与初战 ⭐⭐核心", p:"奥雷里亚诺·布恩迪亚上校", nd:[
+  ["ch5_opening","n","她在吃糖苹果",0,{},"ch5_r1_choice"],
+  ["ch5_r1_choice","c","R1·初恋的宣言",1,{},null],
+  ["ch5_r1_a","c","向她父亲提亲",1,{f:1,b:1,g:"勇敢的求婚者"},"ch5_r1a"],
+  ["ch5_r1_b","c","等待她长大",1,{f:-1,b:2,g:"耐心的等待者"},"ch5_r1b"],
+  ["ch5_r1_c","c","扼杀这份感情",1,{f:0,b:-1,g:"自我克制者",m:"未说出口的爱"},"ch5_r1c"],
+  ["ch5_r1_settlement","s","R1结算",1,{},"ch5_r2_choice"],
+  ["ch5_r2_choice","c","R2·战争来到马孔多",2,{},null,"","","⭐结局:r2_a→反抗者线"],
+  ["ch5_r2_a","c","拿起武器加入自由党",2,{f:2,b:-1,g:"革命者",ff:"joined_war:1",rl:"乌尔苏拉:-10"},"ch5_r2a","","","⭐反抗者结局"],
+  ["ch5_r2_b","c","保护家人保持中立",2,{f:-1,b:2,g:"家族堡垒",ff:"ursula_cared:1,family_first:1",rl:"乌尔苏拉:15"},"ch5_r2b"],
+  ["ch5_r2_c","c","试图与两边谈判",2,{f:0,b:2,g:"和平使者",m:"谈判桌的空椅子",ff:"tried_peace:1"},"ch5_r2c"],
+  ["ch5_r2_settlement","s","R2结算",2,{},"ch5_r3_choice"],
+  ["ch5_r3_choice","c","R3·蕾梅黛丝之死",3,{},null,"","","⭐结局:r3_a→为爱赴死"],
+  ["ch5_r3_a","c","回家守在她墓前",3,{f:-1,b:2,g:"悲痛的丈夫",m:"糖苹果与墓石",ff:"returned_for_love:1",rl:"乌尔苏拉:10"},"ch5_r3a","","","⭐为爱赴死结局"],
+  ["ch5_r3_b","c","留在前线麻痹自己",3,{f:2,b:-1,g:"逃避者",ff:"fled_from_grief:1",rl:"乌尔苏拉:-15"},"ch5_r3b"],
+  ["ch5_r3_c","c","写信然后继续战斗",3,{f:1,b:1,g:"沉默的纪念者",m:"写给亡妻的信",ff:"wrote_for_dead:1",rl:"乌尔苏拉:5"},"ch5_r3c"],
+  ["ch5_r3_settlement","s","R3结算",3,{},"ch5_r4_choice"],
+  ["ch5_r4_choice","c","R4·权力的诱惑",4,{},null],
+  ["ch5_r4_a","c","拥抱权力成为领袖",4,{f:2,b:-1,g:"权力的拥抱者"},"ch5_r4a"],
+  ["ch5_r4_b","c","拒绝回到马孔多",4,{f:-1,b:1,g:"归隐者",m:"被拒绝的银手枪"},"ch5_r4b"],
+  ["ch5_r4_c","c","寻找中间道路",4,{f:1,b:0,g:"正义的骑手"},"ch5_r4c"],
+  ["ch5_r4_settlement","s","R4结算",4,{},"ch5_r5_choice"],
+  ["ch5_r5_choice","c","R5·行刑队与不朽",5,{},null,"","","⭐结局:r5_a→不屈者"],
+  ["ch5_r5_a","c","直视行刑队拒绝蒙眼",5,{f:2,b:0,g:"不屈者",m:"行刑队前的微笑"},"ch5_r5a","","","⭐tag不屈者→反抗者结局"],
+  ["ch5_r5_b","c","要求最后的请求",5,{f:-1,b:2,g:"感恩的告别者",m:"最后一封信"},"ch5_r5b"],
+  ["ch5_r5_c","c","试图逃跑",5,{f:2,b:0,g:"至死不屈者",m:"墙边的弹孔"},"ch5_r5c"],
+  ["ch5_r5_settlement","s","R5结算",5,{},"ch5_r6_choice"],
+  ["ch5_r6_choice","c","R6·回家的路",6,{},null],
+  ["ch5_r6_a","c","走回家脱下军装",6,{f:-1,b:2,g:"归乡者",m:"盔甲旁的军装"},"ch5_r6a"],
+  ["ch5_r6_b","c","再次出征",6,{f:2,b:-1,g:"永不停歇者"},"ch5_r6b"],
+  ["ch5_r6_c","c","站在路口不知何去何从",6,{f:0,b:0,g:"迷途者",m:"路口的风"},"ch5_r6c"],
+  ["ch5_r6_settlement","s","R6结算",6,{},"chapter5_end"],
+  ["chapter5_end","s","第五章章末结算",7,{end:1},""]
+],cl:[["candied_shell","凝固的糖壳","Ch15","ch5_opening"],["bullet_holes_wall","墙上的弹孔","Ch10","ch5_opening"]],ec:[["ch5_opening","你记得冰块的温度——不是冷。是父亲的手覆在你手背上的重量…",""]] },
+{ n:6, t:"第六章 · 第一次战争、阿尔卡蒂奥暴政", p:"奥雷里亚诺·布恩迪亚上校", nd:[
+  ["ch6_opening","n","穿上军装",0,{},"ch6_r1_choice"],
+  ["ch6_r1_choice","c","R1·初战",1,{},null],
+  ["ch6_r1_a","c","夜袭以少胜多",1,{f:1,b:0,g:"游击战术家"},"ch6_r1a"],
+  ["ch6_r1_b","c","撤退保存实力",1,{f:-1,b:1,g:"谨慎的指挥官"},"ch6_r1b"],
+  ["ch6_r1_c","c","正面迎战鼓舞士气",1,{f:2,b:0,g:"勇敢的领袖"},"ch6_r1c"],
+  ["ch6_r1_settlement","s","R1结算",1,{},"ch6_r2_choice"],
+  ["ch6_r2_choice","c","R2·阿尔卡蒂奥暴政",2,{},null],
+  ["ch6_r2_a","c","回去制止阿尔卡蒂奥",2,{f:0,b:2,g:"纠正者"},"ch6_r2a"],
+  ["ch6_r2_b","c","写信警告他",2,{f:0,b:1,g:"远程的父亲"},"ch6_r2b"],
+  ["ch6_r2_c","c","信任乌尔苏拉",2,{f:-1,b:1,g:"放手者"},"ch6_r2c"],
+  ["ch6_r2_settlement","s","R2结算",2,{},"ch6_r3_choice"],
+  ["ch6_r3_choice","c","R3·处决令",3,{},null],
+  ["ch6_r3_a","c","否决处决救他",3,{f:-1,b:2,g:"公正的裁决者"},"ch6_r3a"],
+  ["ch6_r3_b","c","签署处决令",3,{f:2,b:-1,g:"铁血指挥官",m:"签署的名字"},"ch6_r3b"],
+  ["ch6_r3_c","c","放他逃走",3,{f:1,b:1,g:"暗中救赎者"},"ch6_r3c"],
+  ["ch6_r3_settlement","s","R3结算",3,{},"ch6_r4_choice"],
+  ["ch6_r4_choice","c","R4·孤独的将军",4,{},null],
+  ["ch6_r4_a","c","继续战斗直到胜利",4,{f:2,b:-1,g:"至死不渝者"},"ch6_r4a"],
+  ["ch6_r4_b","c","寻求和平谈判",4,{f:-1,b:1,g:"和平寻求者",m:"停战协议"},"ch6_r4b"],
+  ["ch6_r4_c","c","退回做小金鱼",4,{f:-2,b:0,g:"疲倦的归乡者",m:"作坊里的金鱼"},"ch6_r4c"],
+  ["ch6_r4_settlement","s","R4结算",4,{},"ch6_r5_choice"],
+  ["ch6_r5_choice","c","R5·权力的终局",5,{},null],
+  ["ch6_r5_a","c","永远留在作坊里",5,{f:0,b:-2,g:"永远的隐士",m:"金鱼的永恒循环"},"ch6_r5a"],
+  ["ch6_r5_b","c","偶尔出来陪乌尔苏拉",5,{f:-1,b:2,g:"孝子"},"ch6_r5b"],
+  ["ch6_r5_c","c","重新开始另一种方式",5,{f:0,b:1,g:"重生者",m:"作坊外的阳光"},"ch6_r5c"],
+  ["ch6_r5_settlement","s","R5结算",5,{},"chapter6_end"],
+  ["chapter6_end","s","第六章章末结算",6,{end:1},""]
+] },
+{ n:7, t:"第七章 · 战争循环 ⭐关卡", p:"奥雷里亚诺·布恩迪亚上校", nd:[
+  ["ch7_opening","n","蛇咬住了自己的尾巴",0,{},"ch7_r1_choice"],
+  ["ch7_r1_choice","c","R1·自杀未遂",1,{},null],
+  ["ch7_r1_a","c","放下枪继续活着",1,{f:-1,b:1,g:"幸存者"},"ch7_r1a"],
+  ["ch7_r1_b","c","扣下扳机结束一切",1,{f:2,b:-2,g:"自我毁灭者",m:"枪口的硝烟"},"ch7_r1b"],
+  ["ch7_r1_c","c","朝天开枪释放信号",1,{f:1,b:0,g:"宣言者",m:"天空中的枪声"},"ch7_r1c"],
+  ["ch7_r1_settlement","s","R1结算",1,{},"ch7_r2_choice"],
+  ["ch7_r2_choice","c","R2·十七个儿子",2,{},null],
+  ["ch7_r2_a","c","召集儿子保护他们",2,{f:0,b:2,g:"保护者父亲"},"ch7_r2a"],
+  ["ch7_r2_b","c","让他们不要来找你",2,{f:1,b:-1,g:"放手的父亲"},"ch7_r2b"],
+  ["ch7_r2_c","c","追查凶手复仇",2,{f:1,b:1,g:"复仇的父亲",m:"十七封信的灰烬"},"ch7_r2c"],
+  ["ch7_r2_settlement","s","R2结算",2,{},"ch7_r3_choice"],
+  ["ch7_r3_choice","c","R3·勋章与拒绝",3,{},null],
+  ["ch7_r3_a","c","拒绝勋章",3,{f:1,b:0,g:"拒绝荣誉者"},"ch7_r3a"],
+  ["ch7_r3_b","c","接受转送阵亡家属",3,{f:1,b:-1,g:"转赠者"},"ch7_r3b"],
+  ["ch7_r3_c","c","放在蕾梅黛丝墓前",3,{f:0,b:0,g:"永恒的爱人",m:"墓前的勋章"},"ch7_r3c"],
+  ["ch7_r3_settlement","s","R3结算",3,{},"ch7_r4_choice"],
+  ["ch7_r4_choice","c","R4·回归与空虚",4,{},null],
+  ["ch7_r4_a","c","继续做金鱼修行",4,{f:1,b:0,g:"工匠"},"ch7_r4a"],
+  ["ch7_r4_b","c","写回忆录",4,{f:1,b:0,g:"记录者",m:"未完成的回忆录"},"ch7_r4b"],
+  ["ch7_r4_c","c","帮助重建马孔多",4,{f:0,b:1,g:"重建者"},"ch7_r4c"],
+  ["ch7_r4_settlement","s","R4结算",4,{},"ch7_r5_choice"],
+  ["ch7_r5_choice","c","R5·死亡的到来",5,{},null,"","","⭐见证者/追随者烙印"],
+  ["ch7_r5_a","c","在作坊里安静离世",5,{f:1,b:0,g:"安详的终结",m:"最后一条金鱼"},"ch7_r5a"],
+  ["ch7_r5_b","c","走到栗树下等死",5,{f:-1,b:2,g:"回归的儿子",m:"栗树下的重逢"},"ch7_r5b"],
+  ["ch7_r5_c","c","等乌尔苏拉摆碗筷",5,{f:-1,b:2,g:"感恩的告别",m:"最后一碗汤"},"ch7_r5c"],
+  ["ch7_r5_settlement","s","R5结算",5,{},"chapter7_end"],
+  ["chapter7_end","s","第七章章末结算",6,{end:1},""]
+],cl:[["goldfish_cycle","金鱼的循环","Ch17","ch7_opening"]],ec:[["ch7_opening","你记得蕾梅黛丝——不是她的脸，是她举着糖苹果站在街对面的姿势…",""]] },
+{ n:8, t:"第八章 · 何塞·阿尔卡蒂奥归来", p:"奥雷里亚诺第二", nd:[
+  ["ch8_opening","n","巨人归来",0,{},"ch8_r1_choice"],
+  ["ch8_r1_choice","c","R1·迎接巨人",1,{},null],
+  ["ch8_r1_a","c","张开双臂欢迎他",1,{f:-1,b:2,g:"欢迎的拥抱"},"ch8_r1a"],
+  ["ch8_r1_b","c","警惕问清楚",1,{f:1,b:-1,g:"审慎的家属"},"ch8_r1b"],
+  ["ch8_r1_c","c","让他自己找到路",1,{f:0,b:0,g:"沉默的接纳者",m:"门廊上的等待"},"ch8_r1c"],
+  ["ch8_r1_settlement","s","R1结算",1,{},"ch8_r2_choice"],
+  ["ch8_r2_choice","c","R2·美人儿蕾梅黛丝",2,{},null],
+  ["ch8_r2_a","c","保护她藏在家里",2,{f:1,b:0,g:"过度保护者"},"ch8_r2a"],
+  ["ch8_r2_b","c","让她自由",2,{f:0,b:0,g:"自由主义者"},"ch8_r2b"],
+  ["ch8_r2_c","c","教她应对世界",2,{f:0,b:1,g:"引导者",m:"床单与风"},"ch8_r2c"],
+  ["ch8_r2_settlement","s","R2结算",2,{},"ch8_r3_choice"],
+  ["ch8_r3_choice","c","R3·升天",3,{},null],
+  ["ch8_r3_a","c","伸手抓住她",3,{f:0,b:1,g:"试图挽留者"},"ch8_r3a"],
+  ["ch8_r3_b","c","目送她升天",3,{f:-1,b:2,g:"目送者",m:"升天的床单"},"ch8_r3b"],
+  ["ch8_r3_c","c","闭上眼睛记住",3,{f:1,b:-1,g:"内心的铭记者",m:"闭眼看见的光"},"ch8_r3c"],
+  ["ch8_r3_settlement","s","R3结算",3,{},"ch8_r4_choice"],
+  ["ch8_r4_choice","c","R4·何塞之死",4,{},null],
+  ["ch8_r4_a","c","追查凶手",4,{f:1,b:-1,g:"追查者"},"ch8_r4a"],
+  ["ch8_r4_b","c","安葬他保守秘密",4,{f:0,b:1,g:"沉默的送葬者"},"ch8_r4b"],
+  ["ch8_r4_c","c","锁起房子",4,{f:0,b:-1,g:"封存者",m:"锁上的房门"},"ch8_r4c"],
+  ["ch8_r4_settlement","s","R4结算",4,{},"ch8_r5_choice"],
+  ["ch8_r5_choice","c","R5·新篇章",5,{},null],
+  ["ch8_r5_a","c","投身家族狂欢",5,{f:1,b:1,g:"狂欢者"},"ch8_r5a"],
+  ["ch8_r5_b","c","保持清醒做准备",5,{f:1,b:0,g:"未雨绸缪者"},"ch8_r5b"],
+  ["ch8_r5_c","c","写家族历史",5,{f:0,b:1,g:"家族史官",m:"家族编年史"},"ch8_r5c"],
+  ["ch8_r5_settlement","s","R5结算",5,{},"chapter8_end"],
+  ["chapter8_end","s","第八章章末结算",6,{end:1},""]
+] },
+{ n:9, t:"第九章 · 狂欢节屠杀、费尔南达登场", p:"奥雷里亚诺第二", nd:[
+  ["ch9_opening","n","狂欢节",0,{},"ch9_r1_choice"],
+  ["ch9_r1_choice","c","R1·费尔南达",1,{},null],
+  ["ch9_r1_a","c","支持他追求费尔南达",1,{f:0,b:1,g:"支持者"},"ch9_r1a"],
+  ["ch9_r1_b","c","警告他不合适",1,{f:1,b:0,g:"警告者"},"ch9_r1b"],
+  ["ch9_r1_c","c","不干涉让他决定",1,{f:0,b:-1,g:"沉默的旁观者"},"ch9_r1c"],
+  ["ch9_r1_settlement","s","R1结算",1,{},"ch9_r2_choice"],
+  ["ch9_r2_choice","c","R2·狂欢节悲剧",2,{},null],
+  ["ch9_r2_a","c","救人拉人逃走",2,{f:1,b:1,g:"拯救者"},"ch9_r2a"],
+  ["ch9_r2_b","c","面对士兵阻止屠杀",2,{f:0,b:1,g:"对峙者"},"ch9_r2b"],
+  ["ch9_r2_c","c","躲起来活下去",2,{f:-1,b:-1,g:"幸存者",m:"狂欢节的枪声"},"ch9_r2c"],
+  ["ch9_r2_settlement","s","R2结算",2,{},"ch9_r3_choice"],
+  ["ch9_r3_choice","c","R3·费尔南达家规",3,{},null],
+  ["ch9_r3_a","c","抵制维护自由",3,{f:2,b:-1,g:"抵抗者"},"ch9_r3a"],
+  ["ch9_r3_b","c","妥协给空间",3,{f:0,b:1,g:"妥协者"},"ch9_r3b"],
+  ["ch9_r3_c","c","搬出去离开家",3,{f:1,b:-1,g:"出走者",m:"空荡的走廊"},"ch9_r3c"],
+  ["ch9_r3_settlement","s","R3结算",3,{},"ch9_r4_choice"],
+  ["ch9_r4_choice","c","R4·逃离",4,{},null],
+  ["ch9_r4_a","c","劝他回家挽回婚姻",4,{f:0,b:1,g:"劝和者"},"ch9_r4a"],
+  ["ch9_r4_b","c","支持留在情妇身边",4,{f:1,b:1,g:"自由的支持者"},"ch9_r4b"],
+  ["ch9_r4_c","c","不评判让他选",4,{f:0,b:0,g:"中立者"},"ch9_r4c"],
+  ["ch9_r4_settlement","s","R4结算",4,{},"ch9_r5_choice"],
+  ["ch9_r5_choice","c","R5·面具之下",5,{},null],
+  ["ch9_r5_a","c","记住发誓不忘记",5,{f:0,b:1,g:"记忆的守护者",m:"埋藏的假面"},"ch9_r5a"],
+  ["ch9_r5_b","c","放手继续生活",5,{f:1,b:0,g:"前行者"},"ch9_r5b"],
+  ["ch9_r5_c","c","化作行动对抗不公",5,{f:2,b:-1,g:"行动者"},"ch9_r5c"],
+  ["ch9_r5_settlement","s","R5结算",5,{},"chapter9_end"],
+  ["chapter9_end","s","第九章章末结算",6,{end:1},""]
+] },
+{ n:10, t:"第十章 · 三千人大屠杀 ⭐⭐最大关卡", p:"何塞·阿尔卡蒂奥第二", nd:[
+  ["ch10_opening","n","罢工前夜",0,{},"ch10_r1_choice"],
+  ["ch10_r1_choice","c","R1·罢工前夜",1,{},null,"","","⭐见证者/反抗者烙印"],
+  ["ch10_r1_a","c","领导罢工",1,{f:1,b:1,g:"罢工领袖"},"ch10_r1a"],
+  ["ch10_r1_b","c","幕后支持",1,{f:0,b:2,g:"幕后支持者"},"ch10_r1b"],
+  ["ch10_r1_c","c","劝阻暴力将临",1,{f:1,b:-1,g:"谨慎的预警者"},"ch10_r1c"],
+  ["ch10_r1_settlement","s","R1结算",1,{},"ch10_r2_choice"],
+  ["ch10_r2_choice","c","R2·三千人屠杀",2,{},null,"bullet_holes_wall","","🔒线索:Ch5墙上的弹孔→提前预警"],
+  ["ch10_r2_a","c","大喊让大家趴下",2,{f:2,b:1,g:"最后的呐喊者"},"ch10_r2a"],
+  ["ch10_r2_b","c","冲上去面对军官",2,{f:1,b:0,g:"对峙者"},"ch10_r2b"],
+  ["ch10_r2_c","c","用身体挡住",2,{f:-1,b:-1,g:"牺牲者",m:"三千人的名字"},"ch10_r2c"],
+  ["ch10_r2_settlement","s","R2结算",2,{},"ch10_r3_choice"],
+  ["ch10_r3_choice","c","R3·活着证词",3,{},null],
+  ["ch10_r3_a","c","继续讲述直到信",3,{f:1,b:0,g:"不倦的见证者"},"ch10_r3a"],
+  ["ch10_r3_b","c","写下记录藏起来",3,{f:-1,b:2,g:"秘密记录者",m:"被藏起的真相"},"ch10_r3b"],
+  ["ch10_r3_c","c","用沉默纪念",3,{f:0,b:-1,g:"沉默的铭记者",m:"刻在心里的名单"},"ch10_r3c"],
+  ["ch10_r3_settlement","s","R3结算",3,{},"ch10_r4_choice"],
+  ["ch10_r4_choice","c","R4·对抗遗忘",4,{},null],
+  ["ch10_r4_a","c","教年轻人真相",4,{f:1,b:0,g:"传道者"},"ch10_r4a"],
+  ["ch10_r4_b","c","建纪念碑",4,{f:0,b:1,g:"纪念碑建造者",m:"院子里的石头"},"ch10_r4b"],
+  ["ch10_r4_c","c","闭嘴保护自己",4,{f:0,b:-1,g:"沉默的保护者"},"ch10_r4c"],
+  ["ch10_r4_settlement","s","R4结算",4,{},"ch10_r5_choice"],
+  ["ch10_r5_choice","c","R5·最后见证",5,{},null],
+  ["ch10_r5_a","c","名字写进羊皮卷",5,{f:2,b:-1,g:"篡改者",m:"羊皮卷边缘的数字"},"ch10_r5a"],
+  ["ch10_r5_b","c","最后讲述一次",5,{f:1,b:0,g:"最后的讲述者"},"ch10_r5b"],
+  ["ch10_r5_c","c","安静等历史说话",5,{f:-1,b:1,g:"安详的告别者"},"ch10_r5c"],
+  ["ch10_r5_settlement","s","R5结算",5,{},"chapter10_end"],
+  ["chapter10_end","s","第十章章末结算",6,{end:1},""]
+],cl:[["machinegun_position","三挺机枪的位置","Ch19","ch10_opening"]],ec:[["ch10_opening","你记得狂欢节的血——不是颜色，是它在石板地上干涸的速度…",""]] },
+{ n:11, t:"第十一章 · 四年大雨 ⭐关卡", p:"奥雷里亚诺第二", nd:[
+  ["ch11_opening","n","雨开始落下",0,{},"ch11_r1_choice"],
+  ["ch11_r1_choice","c","R1·面对洪水",1,{},null],
+  ["ch11_r1_a","c","组织救援加固房子",1,{f:-1,b:2,g:"组织者"},"ch11_r1a"],
+  ["ch11_r1_b","c","等待相信雨会停",1,{f:1,b:0,g:"等待者"},"ch11_r1b"],
+  ["ch11_r1_c","c","离开去高处避雨",1,{f:1,b:-1,g:"撤离者"},"ch11_r1c"],
+  ["ch11_r1_settlement","s","R1结算",1,{},"ch11_r2_choice"],
+  ["ch11_r2_choice","c","R2·衰败迹象",2,{},null,"forgotten_label","","🔒线索:Ch2遗忘标签→场景变体"],
+  ["ch11_r2_a","c","坚持清理对抗腐坏",2,{f:0,b:2,g:"不屈者"},"ch11_r2a"],
+  ["ch11_r2_b","c","接受衰败保存核心",2,{f:-1,b:2,g:"务实者"},"ch11_r2b"],
+  ["ch11_r2_c","c","寻找雨停迹象",2,{f:1,b:0,g:"希望寻找者"},"ch11_r2c"],
+  ["ch11_r2_settlement","s","R2结算",2,{},"ch11_r3_choice"],
+  ["ch11_r3_choice","c","R3·佩特拉与费尔南达",3,{},null],
+  ["ch11_r3_a","c","留在佩特拉身边",3,{f:1,b:1,g:"忠诚的爱人"},"ch11_r3a"],
+  ["ch11_r3_b","c","回到费尔南达身边",3,{f:-1,b:2,g:"尽责的丈夫"},"ch11_r3b"],
+  ["ch11_r3_c","c","把两人接到一起",3,{f:1,b:1,g:"统一者"},"ch11_r3c"],
+  ["ch11_r3_settlement","s","R3结算",3,{},"ch11_r4_choice"],
+  ["ch11_r4_choice","c","R4·牲畜与生存",4,{},null],
+  ["ch11_r4_a","c","卖掉剩下牲口",4,{f:1,b:0,g:"理性者"},"ch11_r4a"],
+  ["ch11_r4_b","c","放它们自由",4,{f:0,b:1,g:"慈悲者"},"ch11_r4b"],
+  ["ch11_r4_c","c","和它们一起等死",4,{f:-1,b:2,g:"忠诚者",m:"最后一头牛的凝视"},"ch11_r4c"],
+  ["ch11_r4_settlement","s","R4结算",4,{},"ch11_r5_choice"],
+  ["ch11_r5_choice","c","R5·雨停了",5,{},null],
+  ["ch11_r5_a","c","开始重建",5,{f:1,b:1,g:"重建者"},"ch11_r5a"],
+  ["ch11_r5_b","c","跪下感谢天",5,{f:-1,b:1,g:"感恩者"},"ch11_r5b"],
+  ["ch11_r5_c","c","看着废墟茫然",5,{f:0,b:0,g:"茫然者",m:"四年雨后的阳光"},"ch11_r5c"],
+  ["ch11_r5_settlement","s","R5结算",5,{},"chapter11_end"],
+  ["chapter11_end","s","第十一章章末结算",6,{end:1},""]
+] },
+{ n:12, t:"第十二章 · 乌尔苏拉之死 ⭐⭐情感核心", p:"乌尔苏拉·伊瓜兰", nd:[
+  ["ch12_opening","n","失明的乌尔苏拉",0,{},"ch12_r1_choice"],
+  ["ch12_r1_choice","c","R1·失明",1,{},null,"","","⭐ursula_cared累计→三套临终场景"],
+  ["ch12_r1_a","c","去找她用你的方式",1,{f:-1,b:2,g:"看不见的母亲"},"ch12_r1a"],
+  ["ch12_r1_b","c","假装没听见",1,{f:1,b:0,g:"沉默的守护者"},"ch12_r1b"],
+  ["ch12_r1_c","c","叫人去帮她",1,{f:1,b:-1,g:"智慧的调度者"},"ch12_r1c"],
+  ["ch12_r1_settlement","s","R1结算",1,{},"ch12_r2_choice"],
+  ["ch12_r2_choice","c","R2·大扫除",2,{},null],
+  ["ch12_r2_a","c","召集家人大扫除",2,{f:-1,b:2,g:"不屈的家长"},"ch12_r2a"],
+  ["ch12_r2_b","c","封掉没用房间",2,{f:0,b:2,g:"务实者"},"ch12_r2b"],
+  ["ch12_r2_c","c","接受一起老去",2,{f:1,b:0,g:"顺应者",m:"老房子的呼吸"},"ch12_r2c"],
+  ["ch12_r2_settlement","s","R2结算",2,{},"ch12_r3_choice"],
+  ["ch12_r3_choice","c","R3·传承记忆",3,{},null],
+  ["ch12_r3_a","c","讲述传给下一代",3,{f:0,b:1,g:"讲述者"},"ch12_r3a"],
+  ["ch12_r3_b","c","把回忆写下来",3,{f:1,b:-2,g:"记录者",m:"摇椅上的口述"},"ch12_r3b"],
+  ["ch12_r3_c","c","沉默带进坟墓",3,{f:-1,b:2,g:"沉默的守护者"},"ch12_r3c"],
+  ["ch12_r3_settlement","s","R3结算",3,{},"ch12_r4_choice"],
+  ["ch12_r4_choice","c","R4·告别",4,{},null],
+  ["ch12_r4_a","c","叫每个人的名字",4,{f:0,b:1,g:"完整的告别",m:"最后的点名"},"ch12_r4a"],
+  ["ch12_r4_b","c","安静离开",4,{f:-1,b:1,g:"安静的告别"},"ch12_r4b"],
+  ["ch12_r4_c","c","把空间留给他们",4,{f:0,b:1,g:"日常的告别",m:"最后的晚饭"},"ch12_r4c"],
+  ["ch12_r4_settlement","s","R4结算",4,{},"chapter12_end"],
+  ["chapter12_end","s","第十二章章末结算",5,{end:1},""]
+],cl:[["last_stitch","最后一针","终章","ch12_opening"]],ec:[["ch12_opening","你记得她站在门口的样子——双手叉腰。\"别死。\"她只说了这两个字…",""]] },
+{ n:13, t:"第十三章 · 梅梅与马乌里肖", p:"梅梅", nd:[
+  ["ch13_opening","n","钢琴再次响起",0,{},"ch13_r1_choice"],
+  ["ch13_r1_choice","c","R1·爱情的种子",1,{},null,"unsent_score","","🔒线索:Ch4未寄出乐谱→额外叙事"],
+  ["ch13_r1_a","c","偷偷去不让母亲知道",1,{f:-1,b:2,g:"偷偷恋爱者"},"ch13_r1a"],
+  ["ch13_r1_b","c","告诉母亲争取理解",1,{f:1,b:1,g:"坦诚者"},"ch13_r1b"],
+  ["ch13_r1_c","c","拒绝保持安全距离",1,{f:1,b:-1,g:"自制者",m:"未赴的约"},"ch13_r1c"],
+  ["ch13_r1_settlement","s","R1结算",1,{},"ch13_r2_choice"],
+  ["ch13_r2_choice","c","R2·母亲反对",2,{},null],
+  ["ch13_r2_a","c","反抗维护你的爱",2,{f:0,b:2,g:"反抗的女儿"},"ch13_r2a"],
+  ["ch13_r2_b","c","低头暗地继续",2,{f:0,b:2,g:"伪装者"},"ch13_r2b"],
+  ["ch13_r2_c","c","妥协约定将来",2,{f:1,b:-1,g:"耐心的爱人"},"ch13_r2c"],
+  ["ch13_r2_settlement","s","R2结算",2,{},"ch13_r3_choice"],
+  ["ch13_r3_choice","c","R3·秘密约会",3,{},null],
+  ["ch13_r3_a","c","继续每晚见他",3,{f:0,b:2,g:"不悔的爱人"},"ch13_r3a"],
+  ["ch13_r3_b","c","减少频率更谨慎",3,{f:1,b:-1,g:"谨慎的爱人"},"ch13_r3b"],
+  ["ch13_r3_c","c","私奔去省城",3,{f:1,b:-1,g:"私奔者"},"ch13_r3c"],
+  ["ch13_r3_settlement","s","R3结算",3,{},"ch13_r4_choice"],
+  ["ch13_r4_choice","c","R4·枪击之后",4,{},null],
+  ["ch13_r4_a","c","去他医院陪着",4,{g:"忠诚的爱人"},"ch13_r4a"],
+  ["ch13_r4_b","c","留在家永不忘恨",4,{g:"怀恨者"},"ch13_r4b"],
+  ["ch13_r4_c","c","把自己关起来",4,{g:"沉默的囚徒",m:"沉默的监狱"},"ch13_r4c"],
+  ["ch13_r4_settlement","s","R4结算",4,{},"ch13_r5_choice"],
+  ["ch13_r5_choice","c","R5·被送走",5,{},null],
+  ["ch13_r5_a","c","顺从带着他记忆",5,{g:"带着爱的囚徒",m:"藏起照片的行李"},"ch13_r5a"],
+  ["ch13_r5_b","c","最后一次反抗",5,{g:"最后的反抗者"},"ch13_r5b"],
+  ["ch13_r5_c","c","发誓有一天回来",5,{g:"带着誓言的流放者"},"ch13_r5c"],
+  ["ch13_r5_settlement","s","R5结算",5,{},"chapter13_end"],
+  ["chapter13_end","s","第十三章章末结算",6,{end:1},""]
+],cl:[["butterfly_wing","蝴蝶的翅膀","Ch15","ch13_opening"]],ec:[["ch13_opening","你记得自动钢琴第一次奏响的那个晚上——皮埃特罗站在钢琴旁的姿势…",""]] },
+{ n:14, t:"第十四章 · 香蕉公司终结", p:"何塞·阿尔卡蒂奥第二", nd:[
+  ["ch14_opening","n","幸存者",0,{},"ch14_r1_choice"],
+  ["ch14_r1_choice","c","R1·幸存者",1,{},null],
+  ["ch14_r1_a","c","组织要求赔偿",1,{f:1,b:1,g:"不倦的组织者"},"ch14_r1a"],
+  ["ch14_r1_b","c","告诉他们真相",1,{f:0,b:-1,g:"真相传递者"},"ch14_r1b"],
+  ["ch14_r1_c","c","劝他们离开保命",1,{f:-1,b:2,g:"保护者"},"ch14_r1c"],
+  ["ch14_r1_settlement","s","R1结算",1,{},"ch14_r2_choice"],
+  ["ch14_r2_choice","c","R2·面对遗忘",2,{},null],
+  ["ch14_r2_a","c","继续讲述哪怕被当疯子",2,{f:2,b:0,g:"不屈的见证者"},"ch14_r2a"],
+  ["ch14_r2_b","c","退一步改用写作",2,{f:0,b:-1,g:"转向文字者",m:"被封存的真相"},"ch14_r2b"],
+  ["ch14_r2_c","c","放弃接受遗忘",2,{f:-1,b:1,g:"疲倦的放弃者"},"ch14_r2c"],
+  ["ch14_r2_settlement","s","R2结算",2,{},"ch14_r3_choice"],
+  ["ch14_r3_choice","c","R3·私生子",3,{},null],
+  ["ch14_r3_a","c","告诉他真相将来",3,{g:"真相的守护者"},"ch14_r3a"],
+  ["ch14_r3_b","c","服从费尔南达沉默",3,{g:"沉默的顺从者"},"ch14_r3b"],
+  ["ch14_r3_c","c","偷偷留下线索",3,{g:"线索的埋藏者",m:"留给男孩的信"},"ch14_r3c"],
+  ["ch14_r3_settlement","s","R3结算",3,{},"ch14_r4_choice"],
+  ["ch14_r4_choice","c","R4·官方否认",4,{},null],
+  ["ch14_r4_a","c","拒绝签字继续抗争",4,{g:"不屈服者"},"ch14_r4a"],
+  ["ch14_r4_b","c","假意配合暗地记录",4,{g:"地下记录者"},"ch14_r4b"],
+  ["ch14_r4_c","c","签字但留故事在别处",4,{g:"双面者"},"ch14_r4c"],
+  ["ch14_r4_settlement","s","R4结算",4,{},"ch14_r5_choice"],
+  ["ch14_r5_choice","c","R5·传递钥匙",5,{},null],
+  ["ch14_r5_a","c","留在房间直到最后",5,{g:"忠诚的守护者",m:"房间里的最后一眼"},"ch14_r5a"],
+  ["ch14_r5_b","c","走出去最后讲述",5,{g:"最后的呐喊者"},"ch14_r5b"],
+  ["ch14_r5_c","c","把钥匙交给男孩",5,{g:"传递者",m:"传递的钥匙"},"ch14_r5c"],
+  ["ch14_r5_settlement","s","R5结算",5,{},"chapter14_end"],
+  ["chapter14_end","s","第十四章章末结算",6,{end:1},""]
+] },
+{ n:15, t:"第十五章 · 私生子的出现 ⭐关卡", p:"奥雷里亚诺(私生子)", nd:[
+  ["ch15_opening","n","被囚禁的童年",0,{},"ch15_r1_choice"],
+  ["ch15_r1_choice","c","R1·被囚禁童年",1,{},null,"candied_shell","","🔒线索:Ch5凝固糖壳→童年秘密"],
+  ["ch15_r1_a","c","顺从在房子里找秘密",1,{f:-1,b:2,g:"内向的探索者"},"ch15_r1a"],
+  ["ch15_r1_b","c","反抗偷跑出去",1,{f:1,b:-1,g:"私自出逃者"},"ch15_r1b"],
+  ["ch15_r1_c","c","向费尔南达提问",1,{f:0,b:1,g:"质疑者"},"ch15_r1c"],
+  ["ch15_r1_settlement","s","R1结算",1,{},"ch15_r2_choice"],
+  ["ch15_r2_choice","c","R2·发现羊皮卷",2,{},null,"bastard_name","","🔒线索:Ch13私生子名→身世线索"],
+  ["ch15_r2_a","c","每天来尝试破译",2,{f:-1,b:2,g:"自学者"},"ch15_r2a"],
+  ["ch15_r2_b","c","找何塞第二帮助",2,{f:1,b:-1,g:"求助者"},"ch15_r2b"],
+  ["ch15_r2_c","c","放回原处时候未到",2,{f:0,b:1,g:"敬畏者"},"ch15_r2c"],
+  ["ch15_r2_settlement","s","R2结算",2,{},"ch15_r3_choice"],
+  ["ch15_r3_choice","c","R3·费尔南达衰老",3,{},null],
+  ["ch15_r3_a","c","原谅她照顾晚年",3,{g:"宽恕者"},"ch15_r3a"],
+  ["ch15_r3_b","c","离开找回生活",3,{g:"解放者"},"ch15_r3b"],
+  ["ch15_r3_c","c","留下不再顺从",3,{g:"成熟的监护者"},"ch15_r3c"],
+  ["ch15_r3_settlement","s","R3结算",3,{},"ch15_r4_choice"],
+  ["ch15_r4_choice","c","R4·第一次破译",4,{},null,"butterfly_wing","","🔒线索:Ch13蝴蝶翅膀→破译段落"],
+  ["ch15_r4_a","c","继续快速翻译",4,{g:"急切者"},"ch15_r4a"],
+  ["ch15_r4_b","c","慢慢来怕读到结局",4,{g:"谨慎者"},"ch15_r4b"],
+  ["ch15_r4_c","c","停下来去院子走走",4,{g:"暂停者"},"ch15_r4c"],
+  ["ch15_r4_settlement","s","R4结算",4,{},"chapter15_end"],
+  ["chapter15_end","s","第十五章章末结算",5,{end:1},""]
+],cl:[["bastard_name","私生子的名字","Ch17","ch15_opening"]] },
+{ n:16, t:"第十六章 · 阿玛兰妲·乌尔苏拉回归", p:"奥雷里亚诺", nd:[
+  ["ch16_opening","n","她回来了",0,{},"ch16_r1_choice"],
+  ["ch16_r1_choice","c","R1·相遇",1,{},null],
+  ["ch16_r1_a","c","告诉她羊皮卷秘密",1,{f:-1,b:2,g:"坦诚的守护者"},"ch16_r1a"],
+  ["ch16_r1_b","c","保持距离观察她",1,{f:1,b:-1,g:"谨慎者"},"ch16_r1b"],
+  ["ch16_r1_c","c","欢迎帮忙重建",1,{f:0,b:0,g:"合作者"},"ch16_r1c"],
+  ["ch16_r1_settlement","s","R1结算",1,{},"ch16_r2_choice"],
+  ["ch16_r2_choice","c","R2·加斯通",2,{},null],
+  ["ch16_r2_a","c","劝她留下",2,{f:-1,b:2,g:"挽留者"},"ch16_r2a"],
+  ["ch16_r2_b","c","不干涉让她选",2,{f:0,b:1,g:"尊重者"},"ch16_r2b"],
+  ["ch16_r2_c","c","告诉加斯通真相",2,{f:1,b:-1,g:"诚实者"},"ch16_r2c"],
+  ["ch16_r2_settlement","s","R2结算",2,{},"ch16_r3_choice"],
+  ["ch16_r3_choice","c","R3·爱情觉醒",3,{},null],
+  ["ch16_r3_a","c","吻她",3,{g:"勇敢的爱人"},"ch16_r3a"],
+  ["ch16_r3_b","c","等待保持友谊",3,{g:"克制的爱人"},"ch16_r3b"],
+  ["ch16_r3_c","c","用羊皮卷表达",3,{g:"以笔代口者",m:"羊皮卷边缘的情书"},"ch16_r3c"],
+  ["ch16_r3_settlement","s","R3结算",3,{},"ch16_r4_choice"],
+  ["ch16_r4_choice","c","R4·重建家园",4,{},null],
+  ["ch16_r4_a","c","全力帮忙重建",4,{g:"重建者"},"ch16_r4a"],
+  ["ch16_r4_b","c","保护羊皮卷",4,{g:"保护者"},"ch16_r4b"],
+  ["ch16_r4_c","c","反对不值得修",4,{g:"现实主义者"},"ch16_r4c"],
+  ["ch16_r4_settlement","s","R4结算",4,{},"ch16_r5_choice"],
+  ["ch16_r5_choice","c","R5·告白",5,{},null],
+  ["ch16_r5_a","c","说我爱你",5,{g:"告白者",m:"走廊上的告白"},"ch16_r5a"],
+  ["ch16_r5_b","c","用行动不是语言",5,{g:"沉默的恋人"},"ch16_r5b"],
+  ["ch16_r5_c","c","说不尽管爱",5,{g:"自我牺牲者",m:"被拒绝的走廊"},"ch16_r5c"],
+  ["ch16_r5_settlement","s","R5结算",5,{},"chapter16_end"],
+  ["chapter16_end","s","第十六章章末结算",6,{end:1},""]
+] },
+{ n:17, t:"第十七章 · 羊皮卷破译 ⭐⭐真相核心", p:"奥雷里亚诺", nd:[
+  ["ch17_opening","n","羊皮卷的低语",0,{},"ch17_r1_choice"],
+  ["ch17_r1_choice","c","R1·近亲之爱",1,{},null,"goldfish_cycle,melquiades_mirror,bastard_name","","🔒多重线索:金鱼循环+镜子+私生子名→额外段落"],
+  ["ch17_r1_a","c","拥抱爱情不管预言",1,{f:2,b:0,g:"无畏的爱人"},"ch17_r1a"],
+  ["ch17_r1_b","c","克制避免孩子",1,{f:-2,b:1,g:"谨慎的爱人"},"ch17_r1b"],
+  ["ch17_r1_c","c","停止翻译不看结局",1,{f:0,b:2,g:"逃避预言者"},"ch17_r1c"],
+  ["ch17_r1_settlement","s","R1结算",1,{},"ch17_r2_choice"],
+  ["ch17_r2_choice","c","R2·继续翻译",2,{},null],
+  ["ch17_r2_a","c","继续读面对全部真相",2,{f:1,b:2,g:"勇敢的读者"},"ch17_r2a"],
+  ["ch17_r2_b","c","出去走走消化",2,{f:1,b:-1,g:"暂停者"},"ch17_r2b"],
+  ["ch17_r2_c","c","撕掉那一页",2,{f:0,b:1,g:"反抗者",m:"被撕下的一页"},"ch17_r2c"],
+  ["ch17_r2_settlement","s","R2结算",2,{},"ch17_r3_choice"],
+  ["ch17_r3_choice","c","R3·她的恐惧",3,{},null],
+  ["ch17_r3_a","c","安慰她不会有事",3,{g:"安慰者"},"ch17_r3a"],
+  ["ch17_r3_b","c","诚实告诉不知道",3,{g:"诚实的伴侣"},"ch17_r3b"],
+  ["ch17_r3_c","c","重新翻译检查误解",3,{g:"学者"},"ch17_r3c"],
+  ["ch17_r3_settlement","s","R3结算",3,{},"ch17_r4_choice"],
+  ["ch17_r4_choice","c","R4·最后老布恩迪亚",4,{},null],
+  ["ch17_r4_a","c","陪他用古老语言说话",4,{g:"最后的对话者",m:"古老语言的对话"},"ch17_r4a"],
+  ["ch17_r4_b","c","解开绳子让他自由",4,{g:"解放者"},"ch17_r4b"],
+  ["ch17_r4_c","c","让他安静不打扰",4,{g:"尊重者"},"ch17_r4c"],
+  ["ch17_r4_settlement","s","R4结算",4,{},"ch17_r5_choice"],
+  ["ch17_r5_choice","c","R5·结局在望",5,{},null,"","","⭐结局:r5_a→接受,r5_c→焚书反抗"],
+  ["ch17_r5_a","c","翻到最后一页接受",5,{g:"接受者"},"ch17_r5a"],
+  ["ch17_r5_b","c","不翻用余生猜",5,{g:"悬念保持者"},"ch17_r5b"],
+  ["ch17_r5_c","c","把羊皮卷烧掉",5,{g:"焚书者",m:"灰烬中的字"},"ch17_r5c"],
+  ["ch17_r5_settlement","s","R5结算",5,{},"chapter17_end"],
+  ["chapter17_end","s","第十七章章末结算",6,{end:1},""]
+],cl:[["melquiades_handwriting","梅尔基亚德斯的笔迹","终章","ch17_opening"]],ec:[["ch17_opening","你记得梅尔基亚德斯说：\"从哪儿开始，就从哪儿结束。\"你终于明白…",""]] },
+{ n:18, t:"第十八章 · 最后一个布恩迪亚诞生", p:"奥雷里亚诺", nd:[
+  ["ch18_opening","n","婴儿的啼哭",0,{},"ch18_r1_choice"],
+  ["ch18_r1_choice","c","R1·分娩",1,{},null],
+  ["ch18_r1_a","c","专注接生保持冷静",1,{f:-1,b:2,g:"冷静的接生者"},"ch18_r1a"],
+  ["ch18_r1_b","c","向任何力量祈祷",1,{f:2,b:-1,g:"祈祷者"},"ch18_r1b"],
+  ["ch18_r1_c","c","跑出去找人帮忙",1,{f:1,b:0,g:"求助者"},"ch18_r1c"],
+  ["ch18_r1_settlement","s","R1结算",1,{},"ch18_r2_choice"],
+  ["ch18_r2_choice","c","R2·取名",2,{},null],
+  ["ch18_r2_a","c","奥雷里亚诺像你",2,{g:"传统维护者"},"ch18_r2a"],
+  ["ch18_r2_b","c","何塞·阿尔卡蒂奥",2,{g:"致敬者"},"ch18_r2b"],
+  ["ch18_r2_c","c","一个全新的名字",2,{g:"革新者"},"ch18_r2c"],
+  ["ch18_r2_settlement","s","R2结算",2,{},"ch18_r3_choice"],
+  ["ch18_r3_choice","c","R3·阿玛兰妲之死",3,{},null],
+  ["ch18_r3_a","c","守在她身边不走开",3,{g:"不离不弃者",m:"最后的诀别"},"ch18_r3a"],
+  ["ch18_r3_b","c","去找药希望渺茫",3,{g:"最后的努力者"},"ch18_r3b"],
+  ["ch18_r3_c","c","把婴孩放她怀里",3,{g:"慈悲者",m:"怀抱中的离去"},"ch18_r3c"],
+  ["ch18_r3_settlement","s","R3结算",3,{},"ch18_r4_choice"],
+  ["ch18_r4_choice","c","R4·悲伤之后",4,{},null],
+  ["ch18_r4_a","c","接受独自抚养他",4,{g:"父亲"},"ch18_r4a"],
+  ["ch18_r4_b","c","哭泣释放悲伤",4,{g:"允许悲痛者"},"ch18_r4b"],
+  ["ch18_r4_c","c","继续翻译麻痹自己",4,{g:"逃避者"},"ch18_r4c"],
+  ["ch18_r4_settlement","s","R4结算",4,{},"chapter18_end"],
+  ["chapter18_end","s","第十八章章末结算",5,{end:1},""]
+],ec:[["ch18_opening","你记得乌尔苏拉说过的话——\"别死。\"现在你看着最后一个布恩迪亚躺在摇篮里…",""]] },
+{ n:19, t:"第十九章 · 毁灭蚂蚁飓风", p:"奥雷里亚诺(终极视角)", nd:[
+  ["ch19_opening","n","风起了",0,{},"ch19_r1_choice"],
+  ["ch19_r1_choice","c","R1·蚂蚁",1,{},null,"machinegun_position","","🔒线索:Ch10机枪位置→飓风回想"],
+  ["ch19_r1_a","c","赶走蚂蚁保护孩子",1,{f:1,b:1,g:"反抗预言者"},"ch19_r1a"],
+  ["ch19_r1_b","c","抱起孩子逃跑",1,{f:2,b:-1,g:"逃亡者"},"ch19_r1b"],
+  ["ch19_r1_c","c","站着看预言实现",1,{f:-1,b:2,g:"见证者",m:"蚂蚁带走的孩子"},"ch19_r1c"],
+  ["ch19_r1_settlement","s","R1结算",1,{},"ch19_r2_choice"],
+  ["ch19_r2_choice","c","R2·飓风来临",2,{},null],
+  ["ch19_r2_a","c","回房间读完羊皮卷",2,{g:"最后的读者"},"ch19_r2a"],
+  ["ch19_r2_b","c","跑出去看最后一眼",2,{g:"最后的眺望者",m:"马孔多的最后一瞥"},"ch19_r2b"],
+  ["ch19_r2_c","c","站在栗树下等待",2,{g:"循环的闭合者"},"ch19_r2c"],
+  ["ch19_r2_settlement","s","R2结算",2,{},"ch19_r3_choice"],
+  ["ch19_r3_choice","c","R3·最后一页",3,{},null,"","","⭐结局:r3_a→完成者,r3_c→续写者"],
+  ["ch19_r3_a","c","读完最后一行接受",3,{g:"完成者"},"ch19_r3a"],
+  ["ch19_r3_b","c","闭眼不读最后一行",3,{g:"永恒的悬念",m:"未完的最后一行"},"ch19_r3b"],
+  ["ch19_r3_c","c","在末尾写下自己名字",3,{g:"续写者",m:"自己写下的名字"},"ch19_r3c"],
+  ["ch19_r3_settlement","s","R3结算",3,{},"chapter19_end"],
+  ["chapter19_end","s","第十九章章末结算",4,{end:1},""]
+],ec:[["ch19_opening","风起了——不是从窗外，是从羊皮卷的第一页吹来的。你知道这是什么风…",""]] },
+{ n:20, t:"第二十章 · 百年孤独终局", p:"不再附身", nd:[
+  ["ch20_opening","n","记忆的重量",0,{},"ch20_r1_choice"],
+  ["ch20_r1_choice","c","R1·记忆重量",1,{},null],
+  ["ch20_r1_a","c","拥抱全部记忆",1,{f:1,b:1,g:"全盘接受者"},"ch20_r1a"],
+  ["ch20_r1_b","c","选择留下温暖部分",1,{f:-1,b:0,g:"选择记忆者"},"ch20_r1b"],
+  ["ch20_r1_c","c","放手全部忘记",1,{f:0,b:1,g:"释放者"},"ch20_r1c"],
+  ["ch20_r1_settlement","s","R1结算",1,{},"ch20_r2_choice"],
+  ["ch20_r2_choice","c","R2·你的选择",2,{},null,"","","⭐结局:r2_c→创作者(合著者)"],
+  ["ch20_r2_a","c","合上书继续生活",2,{g:"回归者"},"ch20_r2a"],
+  ["ch20_r2_b","c","再读一遍另一入口",2,{g:"循环者"},"ch20_r2b"],
+  ["ch20_r2_c","c","写下自己的开始",2,{g:"创作者",m:"空白的第一页"},"ch20_r2c"],
+  ["ch20_r2_settlement","s","R2结算",2,{},"chapter20_end"],
+  ["chapter20_end","s","第二十章章末结算",3,{end:1},""]
+],cl:[["circle_on_tree","刻在树上的圆","终章","ch20_opening"]] },
+{ n:21, t:"终章 · 七种结局", p:"你自己", nd:[
+  ["epilogue_rebel","n","反抗者烙印·空白那一页",0,{g:"结局:反抗者"},"epi_rebel_settlement"],
+  ["epilogue_witness","n","见证者·合上羊皮卷",0,{g:"结局:见证者"},"epi_witness_settlement"],
+  ["epilogue_bystander","n","旁观者·站在门外",0,{g:"结局:旁观者"},"epi_bystander_settlement"],
+  ["epi_opening","n","终章·梅尔基亚德斯的后记",0,{},"epi_eye"],
+  ["epi_eye","n","凝视",0,{},"epi_judgment"],
+  ["epi_judgment","n","审判",0,{},"epi_settlement"],
+  ["epi_rebel_settlement","s","反抗者·致谢名单",1,{end:1},""],
+  ["epi_witness_settlement","s","见证者·致谢名单",1,{end:1},""],
+  ["epi_bystander_settlement","s","旁观者·致谢名单",1,{end:1},""],
+  ["epi_settlement","s","终章·致谢名单",1,{end:1},""]
+] }
+];
+
+// 跨章线索链 [clueId, fromCh, toCh, label]
+var CL = [
+  ["sanskrit_first_line",0,21,"梵文第一行→终章"],["magnet_hum",1,5,"磁铁嗡鸣→Ch5"],["melquiades_mirror",1,17,"梅尔镜子→Ch17"],
+  ["forgotten_label",2,11,"遗忘标签→Ch11"],["taste_of_mud",3,8,"泥土味道→Ch8"],["unsent_score",4,13,"未寄出乐谱→Ch13"],
+  ["candied_shell",5,15,"凝固糖壳→Ch15"],["bullet_holes_wall",5,10,"墙上弹孔→Ch10"],["goldfish_cycle",7,17,"金鱼循环→Ch17"],
+  ["machinegun_position",10,19,"机枪位置→Ch19"],["last_stitch",12,21,"最后一针→终章"],["butterfly_wing",13,15,"蝴蝶翅膀→Ch15"],
+  ["bastard_name",15,17,"私生子名字→Ch17"],["melquiades_handwriting",17,21,"梅尔笔迹→终章"],["circle_on_tree",20,21,"树上圆→终章"]
+];
+
+// ========== RENDER ENGINE ==========
+var cv=document.getElementById("c"),cx=cv.getContext("2d"),wr=document.getElementById("wrap");
+var W,H,ox=50,oy=50,sc=1,dr=false,dx,dy,sox,soy,showCl=false,chFil=-1,srh="",hov=null,sel=null,layN=[],layE=[];
+var CO={c:{f:"rgba(232,200,112,.16)",s:"#e8c870",g:"rgba(232,200,112,.45)",r:6},
+  n:{f:"rgba(106,154,192,.13)",s:"#6a9ac0",g:"rgba(106,154,192,.35)",r:4.5},
+  s:{f:"rgba(122,184,122,.13)",s:"#7ab87a",g:"rgba(122,184,122,.35)",r:5.5},
+  l:{f:"rgba(192,128,208,.16)",s:"#c080d0",g:"rgba(192,128,208,.45)",r:5}};
+
+function rs2(){W=wr.clientWidth;H=wr.clientHeight;cv.width=W*devicePixelRatio;cv.height=H*devicePixelRatio;cv.style.width=W+"px";cv.style.height=H+"px";cx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0)}
+function cl2(){
+  layN=[];layE=[];var chs=D.filter(function(c){return chFil===-1||c.n===chFil});
+  var x=40,y=40,cw=350,rh=26,cg=70;
+  chs.forEach(function(ch){
+    layN.push({id:"ch"+ch.n,x:x,y:y,r:8,ty:"s",lb:ch.t,ch:ch.n,isT:true,ps:ch.p});
+    y+=45;var sx=x,sy=y,sn={};
+    ch.nd.forEach(function(nd,i){
+      var id=nd[0],ty=nd[1],lb=nd[2],rd=nd[3],ef=nd[4],nx=nd[5];if(sn[id])return;sn[id]=true;
+      var nx2=sx+rd*cw,ny2=sy+(i%14)*rh+Math.floor(i/14)*rh;
+      var nt=(ty==="c"&&id.indexOf("_r")>=0&&id.indexOf("choice")<0)?"c":ty;
+      var hasLock=!!(nd[6]||nd[7]);
+      layN.push({id:id,x:nx2,y:ny2,r:CO[nt]?CO[nt].r:4.5,ty:nt,lb:lb,rd:rd,ef:ef,ch:ch.n,
+        rc:nd[6]||"",rm:nd[7]||"",ds:nd[8]||"",hasLock:hasLock});
+      if(ty==="c"&&nx){nx.split(",").forEach(function(ns){layE.push({f:id,t:ns.trim(),ch:ch.n,tp:"br"})})}
+      if(ty==="c"&&id.indexOf("_choice")>=0){
+        var pf=id.replace("_choice","");
+        ch.nd.forEach(function(nd2){if(nd2[1]==="c"&&nd2[0].indexOf(pf+"_")===0&&nd2[0]!==id)layE.push({f:id,t:nd2[0],ch:ch.n,tp:"op"})})
+      }
+    });
+    y=sy+ch.nd.length*rh+25;
+    if(ch.cl&&ch.cl.length){var csy=y;ch.cl.forEach(function(cl,i){var cx2=sx+18,cy2=csy+i*22;layN.push({id:"clue_"+cl[0],x:cx2,y:cy2,r:5,ty:"l",lb:"🔍 "+cl[1],ch:ch.n,isCl:true,cid:cl[0],unl:cl[2],sid:cl[3]});if(cl[3])layE.push({f:"clue_"+cl[0],t:cl[3],ch:ch.n,tp:"ca"})});y=csy+ch.cl.length*22+18}
+    y+=cg;
+  });
+}
+function w2s2(wx,wy){return[(wx+ox)*sc,(wy+oy)*sc]}
+function s2w2(sx,sy){return[sx/sc-ox,sy/sc-oy]}
+function fn2(sx,sy){var w=s2w2(sx,sy),t=14/sc;for(var i=layN.length-1;i>=0;i--){var n=layN[i];if(Math.hypot(w[0]-n.x,w[1]-n.y)<t)return n}return null}
+function dg2(x,y,r,c,a){var g=cx.createRadialGradient(x,y,r*.3,x,y,r*2.5);g.addColorStop(0,c.replace(/[\d.]+\)$/,"1)"));g.addColorStop(0.5,c.replace(/[\d.]+\)$/,String(a*.4)+")"));g.addColorStop(1,"transparent");cx.fillStyle=g;cx.beginPath();cx.arc(x,y,r*2.5,0,Math.PI*2);cx.fill()}
+function rd2(){
+  cx.clearRect(0,0,W,H);cx.save();cx.translate(ox*sc,oy*sc);cx.scale(sc,sc);
+  cx.strokeStyle="rgba(184,137,62,.035)";cx.lineWidth=.4;var gs=40;
+  for(var x=-ox-ox%gs;x<W/sc-ox+gs;x+=gs){cx.beginPath();cx.moveTo(x,-oy-oy%gs);cx.lineTo(x,H/sc-oy+gs);cx.stroke()}
+  for(var y=-oy-oy%gs;y<H/sc-oy+gs;y+=gs){cx.beginPath();cx.moveTo(-ox-ox%gs,y);cx.lineTo(W/sc-ox+gs,y);cx.stroke()}
+  if(showCl){CL.forEach(function(l){var f=layN.filter(function(n){return n.id==="clue_"+l[0]})[0];var t=layN.filter(function(n){return n.ch===l[2]&&n.isT})[0];if(!f||!t)return;cx.strokeStyle="rgba(192,128,208,.3)";cx.lineWidth=1;cx.setLineDash([4,6]);cx.beginPath();cx.moveTo(f.x,f.y);cx.lineTo(t.x,t.y);cx.stroke();cx.setLineDash([]);cx.fillStyle="rgba(192,128,208,.65)";cx.font="8px 'Noto Serif SC',serif";cx.fillText(l[3],(f.x+t.x)/2,(f.y+t.y)/2-7)})}
+  layE.forEach(function(e){var f=layN.filter(function(n){return n.id===e.f})[0];var t=layN.filter(function(n){return n.id===e.t})[0];if(!f||!t)return;if(chFil!==-1&&e.ch!==chFil)return;var hl=srh&&(e.f.indexOf(srh)>=0||e.t.indexOf(srh)>=0);cx.strokeStyle=hl?"rgba(232,200,112,.55)":"rgba(184,137,62,.18)";cx.lineWidth=hl?1.4:.7;if(e.tp==="ca"){cx.strokeStyle="rgba(192,128,208,.25)";cx.setLineDash([2,4])}cx.beginPath();cx.moveTo(f.x,f.y);cx.lineTo(t.x,t.y);cx.stroke();cx.setLineDash([])});
+  var sm={};if(srh){layN.forEach(function(n){if(n.lb.indexOf(srh)>=0||n.id.indexOf(srh)>=0||(n.ef.g||"").indexOf(srh)>=0||(n.cid||"").indexOf(srh)>=0||(n.rc||"").indexOf(srh)>=0)sm[n.id]=true})}
+  layN.forEach(function(n){if(chFil!==-1&&n.ch!==chFil&&!n.isT)return;var ih=sm[n.id];var ho=hov&&hov.id===n.id;var sl2=sel&&sel.id===n.id;var alpha=(srh&&!ih)?0.12:(ih?1:0.82);var col=CO[n.ty]||CO.n;
+    if(ho||sl2||ih)dg2(n.x,n.y,n.r,col.g,sl2?0.85:(ho?0.7:0.55));else if(n.isT)dg2(n.x,n.y,n.r,col.g,0.45);
+    if(n.isCl&&showCl)dg2(n.x,n.y,n.r,"rgba(192,128,208,.5)",0.45);
+    cx.fillStyle=col.f;cx.strokeStyle=n.hasLock?"#e06040":(n.ds&&n.ds.indexOf("⭐")===0?"#f0c040":col.s);cx.globalAlpha=alpha;cx.lineWidth=sl2?2.5:ho?2:(n.isT?1.5:1);
+    if(n.hasLock){cx.save();cx.setLineDash([2,2]);cx.beginPath();cx.arc(n.x,n.y,n.r,0,Math.PI*2);cx.stroke();cx.setLineDash([]);cx.restore()}else{cx.beginPath();cx.arc(n.x,n.y,ho?n.r*1.35:sl2?n.r*1.25:n.r,0,Math.PI*2);cx.fill();cx.stroke()}
+    if(ho||sl2){cx.fillStyle="#fff";cx.beginPath();cx.arc(n.x,n.y,2,0,Math.PI*2);cx.fill()}
+    if(n.isT){cx.fillStyle="#e8c870";cx.font="bold 12px Cinzel,'Noto Serif SC',serif";cx.fillText(n.lb,n.x+12,n.y+4)}
+    else if(sc>0.35||ho||ih){cx.fillStyle=ih?"#e8c870":"#c0b090";cx.font=(n.isCl?"italic ":"")+"9px 'Noto Serif SC',serif";cx.fillText((n.hasLock?"🔒 ":"")+(n.ds&&n.ds.indexOf("⭐")===0?"⭐ ":"")+n.lb,n.x+10,n.y+3.5)}
+    cx.globalAlpha=1});
+  cx.restore();cx.fillStyle="rgba(184,137,62,.35)";cx.font="9px 'Noto Serif SC',serif";cx.fillText(Math.round(sc*100)+"%",W-42,H-16);
+  document.getElementById("nc").textContent=layN.length;
+}
+
+function srch(v){srh=v.trim();rd2()}
+function rst(){ox=50;oy=50;sc=1;chFil=-1;srh="";document.getElementById("s").value="";document.getElementById("chsel").value="-1";document.getElementById("bcl").classList.remove("on");showCl=false;rd2()}
+function tClue(){showCl=!showCl;document.getElementById("bcl").classList.toggle("on",showCl);rd2()}
+function chg(v){chFil=v;cl2();ox=50;oy=50;rd2()}
+function clP(){sel=null;document.getElementById("pn").classList.remove("on");rd2()}
+function shD(n){
+  sel=n;var pc=document.getElementById("pc"),ef=n.ef||{},tc="tn";if(n.ty==="c")tc="tc";else if(n.ty==="s")tc="ts";else if(n.ty==="l")tc="tl";
+  var tyNames={c:"🎲 选择",n:"📖 叙事",s:"📋 结算",l:"🔍 线索道具"};
+  var h="<h3>"+n.lb+"</h3><span class=\"tp "+tc+"\">"+(tyNames[n.ty]||"")+" · Ch"+n.ch+".R"+(n.rd||0)+"</span>";
+  h+="<div class=\"r\"><span class=\"rl\">场景ID</span><span class=\"rv\" style=\"font-size:.58rem\">"+n.id+"</span></div>";
+  if(n.isT){h+="<div class=\"r\"><span class=\"rl\">附身角色</span><span class=\"rv\">"+(n.ps||"—")+"</span></div>"}
+  if(n.ty==="c"){
+    if(ef.f!==undefined)h+="<div class=\"r\"><span class=\"rl\">⭐ 宿命值</span><span class=\"rv fp\">"+(ef.f>0?"+":"")+ef.f+"</span></div>";
+    if(ef.b!==undefined)h+="<div class=\"r\"><span class=\"rl\">🤝 羁绊值</span><span class=\"rv bp\">"+(ef.b>0?"+":"")+ef.b+"</span></div>";
+    if(ef.g)h+="<div class=\"r\"><span class=\"rl\">🏷️ 标签</span><span class=\"rv\">"+ef.g+"</span></div>";
+    if(ef.m)h+="<div class=\"r\"><span class=\"rl\">💎 记忆碎片</span><span class=\"rv\">"+ef.m+"</span></div>";
+    if(ef.ff)h+="<div class=\"r\"><span class=\"rl\">🚩 跨章标记</span><span class=\"rv\">"+ef.ff.split(",").join("、")+"</span></div>";
+    if(ef.rl)h+="<div class=\"r\"><span class=\"rl\">💛 关系影响</span><span class=\"rv\">"+ef.rl.split(",").join("、")+"</span></div>";
+  }
+  if(n.isCl){h+="<div class=\"r\"><span class=\"rl\">📍 来源场景</span><span class=\"rv\">"+n.sid+"</span></div>";h+="<div class=\"r\"><span class=\"rl\">🔓 解锁目标</span><span class=\"rv lk\">"+n.unl+"</span></div>";h+="<div class=\"ds\">在叙事中点击触发文字获得。可在后续章节解锁隐藏选项。</div>"}
+  if(n.rc)h+="<div class=\"hl\">🔒 需要线索：<strong>"+n.rc+"</strong><br>在该章之前需发现对应隐藏线索才能看到此选项</div>";
+  if(n.rm)h+="<div class=\"hl\">💎 需要记忆碎片：<strong>"+n.rm+"</strong></div>";
+  if(n.ds)h+="<div class=\"el\">"+n.ds+"</div>";
+  if(n.hasLock&&!n.rc&&!n.rm)h+="<div class=\"hl\">🔒 此选项为隐藏选项，需满足条件才能看到</div>";
+  if(ef.end)h+="<div class=\"el\">章末结算 —— 记录烙印 → 传递动量 → 进入下一章</div>";
+  if(ef.rl&&ef.rl.indexOf("乌尔苏拉")>=0)h+="<div class=\"rl2\">💚 好感度联动：乌尔苏拉关系值影响Ch12临终场景（≥85至交/≥70亲近）</div>";
+  pc.innerHTML=h;document.getElementById("pn").classList.add("on");rd2();
+}
+cv.addEventListener("mousedown",function(e){dr=true;dx=e.clientX;dy=e.clientY;sox=ox;soy=oy});
+window.addEventListener("mousemove",function(e){if(dr){ox=sox+(e.clientX-dx)/sc;oy=soy+(e.clientY-dy)/sc;rd2();return}var r=cv.getBoundingClientRect();var n=fn2(e.clientX-r.left,e.clientY-r.top);if(n!==hov){hov=n;cv.style.cursor=n?"pointer":"grab";rd2()}});
+window.addEventListener("mouseup",function(e){if(dr&&Math.abs(e.clientX-dx)<3&&Math.abs(e.clientY-dy)<3){var r=cv.getBoundingClientRect();var n=fn2(e.clientX-r.left,e.clientY-r.top);if(n)shD(n);else clP()}dr=false});
+cv.addEventListener("wheel",function(e){e.preventDefault();var r=cv.getBoundingClientRect();var mx=e.clientX-r.left,my=e.clientY-r.top;var w=s2w2(mx,my),z=e.deltaY<0?1.15:1/1.15,ns=Math.max(.12,Math.min(3,sc*z));ox=mx/ns-w[0];oy=my/ns-w[1];sc=ns;rd2()},{passive:false});
+window.addEventListener("keydown",function(e){if(e.key==="Escape")clP();if(e.key==="f"&&e.ctrlKey){e.preventDefault();document.getElementById("s").focus()}});
+// 初始化章节下拉
+(function(){var s=document.getElementById("chsel");D.forEach(function(ch){var o=document.createElement("option");o.value=ch.n;o.textContent="Ch"+ch.n+" "+ch.t.split("·")[0];s.appendChild(o)})})();
+function init(){try{rs2();cl2();rd2();document.getElementById("nc").textContent=layN.length}catch(e){document.body.innerHTML="<div style=\"position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#060403;color:#e06040;font-family:monospace;padding:40px;white-space:pre-wrap;z-index:999;font-size:14px\"><div><h2 style=\"color:#e8c870;margin-bottom:16px\">❌ JavaScript Error</h2><code>"+e.message+"</code><br><br><pre style=\"font-size:11px;color:#908070\">"+e.stack+"</pre></div></div>"}}
+window.addEventListener("resize",function(){rs2();rd2()});
+window.addEventListener("DOMContentLoaded",init);
+</script>
+</body>
+</html>

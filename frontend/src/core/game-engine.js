@@ -27,13 +27,52 @@ const GameEngine = {
 
     // 应用效果
     if (choice.effects.tags) {
+      const newTags = [];
       choice.effects.tags.forEach(t => {
-        if (!GameState.tags.includes(t)) GameState.tags.push(t);
+        if (!GameState.tags.includes(t)) { GameState.tags.push(t); newTags.push(t); }
       });
+      // v2.1: 持久化标签到跨存档存储
+      if (newTags.length > 0 && typeof persistTags === 'function') {
+        persistTags(newTags);
+      }
     }
 
     if (choice.effects.memory && !GameState.memories.includes(choice.effects.memory)) {
       GameState.memories.push(choice.effects.memory);
+      // v2.1: 持久化记忆碎片
+      if (typeof persistMemory === 'function') persistMemory(choice.effects.memory);
+    }
+
+    // v2.0: 处理宿命值变化
+    if (typeof choice.effects.fate === 'number') {
+      GameState.fateCounter = Math.max(0, Math.min(
+        (typeof MAX_FATE !== 'undefined') ? MAX_FATE : 6,
+        GameState.fateCounter + choice.effects.fate
+      ));
+      GameState._lastFateChange = choice.effects.fate;
+    } else {
+      GameState._lastFateChange = 0;
+    }
+
+    // v2.0: 处理羁绊值变化
+    if (typeof choice.effects.bond === 'number') {
+      GameState.bondCounter = Math.max(0, Math.min(
+        (typeof MAX_BOND !== 'undefined') ? MAX_BOND : 6,
+        GameState.bondCounter + choice.effects.bond
+      ));
+      GameState._lastBondChange = choice.effects.bond;
+    } else {
+      GameState._lastBondChange = 0;
+    }
+
+    // v2.0: 处理线索道具获得
+    if (choice.effects.clue) {
+      const clueId = choice.effects.clue;
+      if (GameState.addClueFragment(clueId)) {
+        GameState._lastClueFound = clueId;
+        // v2.1: 持久化到跨存档存储
+        if (typeof persistClue === 'function') persistClue(clueId);
+      }
     }
 
     // 可玩性增强：处理关系值变化
@@ -110,6 +149,41 @@ const GameEngine = {
     return chapterData ? chapterData.scenes[chapterData.id + '_end'] : null;
   },
 
+  /* ---- v2.0: 动量与烙印方法 ---- */
+
+  /** 记录本章烙印 */
+  recordChapterImprint(chapterNum) {
+    const MAX_F = (typeof MAX_FATE !== 'undefined') ? MAX_FATE : 6;
+    const MAX_B = (typeof MAX_BOND !== 'undefined') ? MAX_BOND : 6;
+    const fLevel = getImprintLevel(GameState.fateCounter, MAX_F);
+    const bLevel = getBondImprintLevel(GameState.bondCounter, MAX_B);
+    GameState.recordImprint(chapterNum, fLevel, bLevel);
+  },
+
+  /** 应用动量规则：根据上章烙印计算下章起始值 */
+  applyMomentum(prevChapterNum) {
+    const MAX_F = (typeof MAX_FATE !== 'undefined') ? MAX_FATE : 6;
+    const MAX_B = (typeof MAX_BOND !== 'undefined') ? MAX_BOND : 6;
+
+    const fLevel = GameState.fateImprint[prevChapterNum];
+    const bLevel = GameState.bondImprint[prevChapterNum];
+
+    // 宿命动量
+    if (fLevel === 'witness') GameState.fateCounter = Math.round(MAX_F * 2/3);
+    else if (fLevel === 'follower') GameState.fateCounter = Math.round(MAX_F * 1/3);
+    else GameState.fateCounter = 0; // rebel 或无记录
+
+    // 羁绊动量
+    if (bLevel === 'soul_of_family') GameState.bondCounter = Math.round(MAX_B * 2/3);
+    else if (bLevel === 'bonded') GameState.bondCounter = Math.round(MAX_B * 1/3);
+    else GameState.bondCounter = 0; // estranged 或无记录
+  },
+
+  /** 获取当前象限 */
+  getCurrentQuadrant() {
+    return GameState.getQuadrant ? GameState.getQuadrant() : getQuadrantLabel(GameState.fateCounter, GameState.bondCounter);
+  },
+
   /** 切换到指定章节（用于章节选择器跳转）
    *  @param {boolean} preserveHistory - true=自然推进时保留跨章历史，false/undefined=跳转时重置
    */
@@ -158,6 +232,10 @@ const GameEngine = {
 
       // 前进到紧邻的下一章（仅当当前章节已完成）
       if (chapterNum === GameState.chapter + 1 && GameState.isChapterCompleted(GameState.chapter)) {
+        // v2.0: 应用动量规则（从第2章开始，序章跳转不走此逻辑）
+        if (GameState.chapter >= 1) {
+          this.applyMomentum(GameState.chapter);
+        }
         GameState.chapter = chapterNum;
         // 可玩性增强：终章结局路由
         let initialScene = chapterData.initialScene;
@@ -205,6 +283,10 @@ const GameEngine = {
 
   /** 进入下一章 */
   goToNextChapter() {
+    // v2.0: 记录本章烙印（序章不记录）
+    if (GameState.chapter >= 1) {
+      this.recordChapterImprint(GameState.chapter);
+    }
     GameState.markChapterCompleted(GameState.chapter);
     // 追踪时代访问（序章选择记录）
     if (GameState.chapter === 0) {
@@ -223,10 +305,16 @@ const GameEngine = {
     const lastChoice = GameState.choiceLog.length > 0 ? GameState.choiceLog[GameState.choiceLog.length - 1] : null;
     let nextChapter = (lastChoice && lastChoice.targetChapter) ? lastChoice.targetChapter : GameState.chapter + 1;
 
-    // 可玩性增强：终章结局路由
+    // v2.0: 终章结局路由 — 按 imprint 统计判定
     if (nextChapter === 21) {
       const endingType = (typeof determineEnding === 'function') ? determineEnding(GameState) : 'bystander';
       GameState._endingType = endingType;
+      // 追踪已看过的结局（归一化：_all_clues 变体计入基础结局）
+      if (!GameState._endingsSeen) GameState._endingsSeen = [];
+      const baseEndingType = endingType.replace('_all_clues', '');
+      if (!GameState._endingsSeen.includes(baseEndingType)) {
+        GameState._endingsSeen.push(baseEndingType);
+      }
       // 标记游戏通关
       GameState.markGameCompleted();
       // 检查是否所有章节已完成（真结局条件之一）
@@ -337,17 +425,23 @@ const GameEngine = {
     StorageManager.clearAll();
   },
 
-  /** 可玩性增强：根据已收集的记忆碎片过滤可见选项
+  /** v2.0：根据记忆碎片 + 隐藏线索过滤可见选项
    *  @param {object} scene — 选择场景对象
    *  @returns {array} 过滤后的选项列表（仅保留条件满足的）
    */
   filterChoicesByMemories(scene) {
     if (!scene || scene.type !== 'choice' || !scene.choices) return [];
     return scene.choices.filter(choice => {
-      // 没有 requiredMemory 条件 → 总是可见
-      if (!choice.requiredMemory) return true;
-      // 有 requiredMemory 条件 → 检查是否持有
-      return GameState.memories.includes(choice.requiredMemory);
+      // requiredMemory 条件 → 必须持有该记忆碎片
+      if (choice.requiredMemory && !GameState.memories.includes(choice.requiredMemory)) return false;
+      // requiredClue 条件 → 必须持有该线索道具
+      if (choice.requiredClue && !GameState.hasClue(choice.requiredClue)) return false;
+      // requiredFlag 条件 → 必须达到指定标记累积
+      if (choice.requiredFlag) {
+        const { flag, min } = choice.requiredFlag;
+        if (GameState.getFlag(flag) < min) return false;
+      }
+      return true;
     });
   },
 
@@ -361,11 +455,6 @@ const GameEngine = {
   trackHotspotDiscovered() {
     if (!GameState._hotspotsFound) GameState._hotspotsFound = 0;
     GameState._hotspotsFound++;
-  },
-
-  /** 可玩性增强：追踪"另一种可能"已读 */
-  trackAltNarrativeSeen() {
-    GameState._altNarrativeSeen = true;
   },
 
   /** 可玩性增强：为探索场景检查热点发现进度 */
