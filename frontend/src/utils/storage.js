@@ -102,12 +102,15 @@ const StorageManager = {
     localStorage.removeItem(this.SLOT_PREFIX + slotNum);
   },
 
-  /** 清除所有存档（自动存档 + 6个槽位） */
+  /** 清除所有存档（自动存档 + 6个槽位 + 周目 + 大存档） */
   clearAll() {
     localStorage.removeItem(this.AUTO_KEY);
     for (let i = 1; i <= this.MAX_SLOTS; i++) {
       localStorage.removeItem(this.SLOT_PREFIX + i);
     }
+    // 同时清除周目记录和大存档卡片缓存
+    try { localStorage.removeItem('cien_anos_playthrough'); } catch(e) {}
+    try { localStorage.removeItem('cien_anos_big_save'); } catch(e) {}
   }
 };
 

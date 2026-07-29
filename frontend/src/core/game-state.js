@@ -65,10 +65,10 @@ const GameState = {
     // 清理终章泄露字段（Bug #4）
     this._endingType = null;
     this._allChaptersDone = false;
-    // hasCompletedGame 和 playthroughCount 不重置——它们是持久化元数据
-    // 从 localStorage 恢复周目数（跨页面刷新保留）
-    const savedPT = localStorage.getItem('cien_anos_playthrough');
-    if (savedPT) this.playthroughCount = Math.max(this.playthroughCount || 0, parseInt(savedPT) || 0);
+    // 周目记录也一并重置（"重置游戏"和"清除全部痕迹"都应清空周目）
+    this.hasCompletedGame = false;
+    this.playthroughCount = 0;
+    try { localStorage.removeItem('cien_anos_playthrough'); } catch(e) {}
   },
 
   /** 记录遇到的人物 */

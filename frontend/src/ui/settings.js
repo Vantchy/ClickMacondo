@@ -86,6 +86,8 @@ const SettingsPanel = {
         localStorage.removeItem('cien_anos_tags_persistent');
         localStorage.removeItem('cien_anos_clues_persistent');
         localStorage.removeItem('cien_anos_memories_persistent');
+        localStorage.removeItem('cien_anos_playthrough');
+        localStorage.removeItem('cien_anos_big_save');
         localStorage.removeItem('settings_fontSize');
         localStorage.removeItem('settings_volume');
         // 也清除成就（使用已有的clearAchievements函数）
