@@ -83,7 +83,7 @@ const Renderer = {
       // 引用1
       if (lp.quotes) {
         lp.quotes.forEach(q => {
-          html += `<span class="narrative-quote">${q}</span>`;
+          html += `<span class="narrative-quote">${this._processClueText(q, scene)}</span>`;
         });
       }
 
@@ -97,7 +97,7 @@ const Renderer = {
       // 引用2
       if (lp.quotes2) {
         lp.quotes2.forEach(q => {
-          html += `<span class="narrative-quote">${q}</span>`;
+          html += `<span class="narrative-quote">${this._processClueText(q, scene)}</span>`;
         });
       }
 
@@ -181,6 +181,16 @@ const Renderer = {
               <span class="choice-desc">${choice.description}</span>
             </div>`;
         });
+
+        // v2.2: 隐藏选项灰位提示 — 当过滤后选项数少于原始选项数时显示
+        if (!isLocked && visibleChoices.length < scene.choices.length) {
+          html += `
+            <div class="choice-btn choice-locked-hint">
+              <span class="choice-label">？？？</span>
+              <span class="choice-desc">—— 需要特定的线索、记忆或羁绊才能解锁此选项 ——</span>
+            </div>`;
+        }
+
         html += `</div>`;
       } else if (scene.type === 'settlement' && scene.settlement) {
         // 结算模式
@@ -213,6 +223,9 @@ const Renderer = {
 
         // v2.0: 展示情感结算（保留羊皮卷的回响，不展示数字）
         html += this._renderEmotionalCost();
+
+        // v2.3: 渲染象限叙事 — 让玩家看到"因为我是谁，所以我看到这个"
+        html += this._renderQuadrantNarrative(st);
 
 
         // 下一步按钮
@@ -459,6 +472,20 @@ const Renderer = {
     html += '<div class="emotional-cost-text">' + scene.settlement.emotionalCost + '</div>';
     html += '</div>';
     return html;
+  },
+
+  /* v2.3: 渲染象限叙事 — 让宿命/羁绊值在每轮结算时产生可见的叙事反馈 */
+  _renderQuadrantNarrative(st) {
+    if (!st.quadrantNarratives) return '';
+    const quadrant = GameEngine.getCurrentQuadrant ? GameEngine.getCurrentQuadrant() : null;
+    if (!quadrant) return '';
+    const narrative = st.quadrantNarratives[quadrant.id];
+    if (!narrative) return '';
+
+    return `<div class="quadrant-narrative">
+      <div class="quadrant-narrative-label">${quadrant.name}</div>
+      <div class="quadrant-narrative-text">${narrative}</div>
+    </div>`;
   },
 
   /** 高亮指定选项（两步确认的第一步） */

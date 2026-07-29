@@ -54,7 +54,10 @@ registerChapter({
     ch13_r5_choice: { id:'ch13_r5_choice', type:'choice', chapter:13, round:5, title:'第五轮选择 · 修道院', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['费尔南达决定把梅梅送走——送到远方的修道院。"让你在那里学会规矩。"她说。这不是建议——是命令。梅梅的行李已经打包好了——两件裙子，一本圣经，一张马乌里肖的照片（藏在内衬里）。','费尔南达站在门口——她的脸像石像一样。梅梅看着她——这对母女之间已经没有任何东西可以说的了。所有的话都被那声枪响说完了。'], transition:'你选择——' }, choices:[
       { id:'ch13_r5_a', label:'顺从——但带着他的记忆', description:'去修道院——但在心里藏好马乌里肖的照片和你们的每一个夜晚。费尔南达可以决定你住哪——不能决定你是谁。', nextScene:'ch13_r5a', effects:{ tags:['带着爱的囚徒'], memory:'藏起照片的行李', fate: -2, bond: 1 } },
       { id:'ch13_r5_b', label:'最后一次反抗——拒绝上车', description:'你已经没有什么可以失去的了。站在门口——不上去。让全世界都看见费尔南达的女儿不服从。', nextScene:'ch13_r5b', effects:{ tags:['最后的反抗者'], memory:null, fate: 2, bond: -1 } },
-      { id:'ch13_r5_c', label:'走——但发誓有一天回来', description:'现在走吧——让费尔南达以为她赢了。但你在心里刻下一个誓言：有一天你会回来。不是为了她——是为了自己。', nextScene:'ch13_r5c', effects:{ tags:['带着誓言的流放者'], memory:null, fate: 1, bond: 0 } }
+      { id:'ch13_r5_c', label:'走——但发誓有一天回来', description:'现在走吧——让费尔南达以为她赢了。但你在心里刻下一个誓言：有一天你会回来。不是为了她——是为了自己。', nextScene:'ch13_r5c', effects:{ tags:['带着誓言的流放者'], memory:null, fate: 1, bond: 0 } },
+      { id:'ch13_r5_d', label:'梅梅——你不是被流放，你是带着爱离开', description:'你了解梅梅——她不是会恨的人。在修道院的围墙里，她还会梦见蝴蝶。告诉她：爱不会因为距离变淡。', nextScene:'ch13_r5a', requiredRelationship: { character: '梅梅（雷纳塔·蕾梅黛丝·布恩迪亚）', min: 60 }, effects:{ tags:['为梅梅送行的人'], memory:null, fate: 0, bond: 2 } },
+      { id:'ch13_r5_e', label:'你听过那首未寄出的乐谱——为梅梅弹一个音符', description:'皮埃特罗的钢琴还在角落里积灰。你坐下来——不会弹，但你按下一个键。一个音符——一声为梅梅送行的钟。', nextScene:'ch13_r5a', requiredClue: 'unsent_score', effects:{ tags:['弹响回声的人'], memory:null, fate: 0, bond: 2 } },
+      { id:'ch13_r5_f', label:'你记得钢琴的最后一个音符——它还在空气里', description:'皮埃特罗弹完最后一支曲的那个下午——音符没有消失，它挂在空气中等了这么多年。现在你听见了——那不是告别，是邀请。', nextScene:'ch13_r5a', requiredMemory: '最后的音符', effects:{ tags:['听见回声的人'], memory:null, fate: 0, bond: 1 } }
     ], settlement:'ch13_r5_settlement' },
     ch13_r5a: { id:'ch13_r5a', type:'narrative', chapter:13, round:5, title:'带着爱的囚徒', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你上了车。没有哭。你把照片贴在内衬上——每走一公里，你就摸一下那个口袋。修道院很冷，修女很严，圣经很厚——但你的手总是放在那个口袋里。马乌里肖在那里——蝴蝶也在那里。费尔南达不知道——她永远也不会知道。']}, choices:null, nextScene:'ch13_r5_settlement' },
     ch13_r5b: { id:'ch13_r5b', type:'narrative', chapter:13, round:5, title:'最后的反抗者', leftPage:{ speaker:'梅梅', speakerColor:'#a52020', paragraphs:['你站在门口——不上去。费尔南达的脸抽了一下。你看了她一眼——不是恨，是失望。你转身走回了房子——不是去你的房间，是去后院的棕榈树下。那里曾经有蝴蝶——现在什么都没有了。但至少你是站着来到最后的。']}, choices:null, nextScene:'ch13_r5_settlement' },
@@ -127,7 +130,9 @@ registerChapter({
     ch14_r5_choice: { id:'ch14_r5_choice', type:'choice', chapter:14, round:5, title:'第五轮选择 · 告别梅尔基亚德斯的房间', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你很老了。你坐在梅尔基亚德斯的房间里——这间时间不会流逝的房间。窗外马孔多正在缓慢地腐烂——墙壁上爬满了苔藓，栗树的叶子掉光了，走廊里已经很久没有人走动了。','但你不在了——你还在这里。你是最后的见证者。你把手放在羊皮卷上——它们很冷，像冰块。你感觉到了什么——一种召唤。像是梅尔基亚德斯在说些什么，用一种你不需要学就已经懂了的语言。'], transition:'你选择——' }, choices:[
       { id:'ch14_r5_a', label:'留在房间里——直到最后一刻', description:'这间房间保护了你一辈子。在这里闭上眼睛——让羊皮卷做你的裹尸布。', nextScene:'ch14_r5a', effects:{ tags:['忠诚的守护者'], memory:'房间里的最后一眼', fate: -1, bond: 2 } },
       { id:'ch14_r5_b', label:'走出去——最后一次讲述', description:'在生命的尽头，离开这间房间——到广场上去，最后一次告诉人们真相。', nextScene:'ch14_r5b', effects:{ tags:['最后的呐喊者'], memory:null, fate: 2, bond: -1 } },
-      { id:'ch14_r5_c', label:'把钥匙交给那个男孩', description:'你应该让梅梅的儿子继承这间房间。把钥匙给他——让他自己找到这里。', nextScene:'ch14_r5c', effects:{ tags:['传递者'], memory:'传递的钥匙', fate: 0, bond: 2 } }
+      { id:'ch14_r5_c', label:'把钥匙交给那个男孩', description:'你应该让梅梅的儿子继承这间房间。把钥匙给他——让他自己找到这里。', nextScene:'ch14_r5c', effects:{ tags:['传递者'], memory:'传递的钥匙', fate: 0, bond: 2 } },
+      { id:'ch14_r5_d', label:'你记得火车往海边开了——去追那两百节车厢', description:'火车是往海边开的。两百节车厢——装的是人。你知道他们去了哪里——也许你追不上火车，但你可以追查真相。', nextScene:'ch14_r5b', requiredClue: 'train_direction', effects:{ tags:['追火车的人'], memory:null, fate: 2, bond: -1 } },
+      { id:'ch14_r5_e', label:'你一个人锁上门——有些见证只能独自完成', description:'不需要观众，不需要理解。你一个人坐在梅尔基亚德斯的房间里——只有你和真相。有时候最深的见证需要最少的陪伴。', nextScene:'ch14_r5a', requiredBond: { max: 2 }, effects:{ tags:['独自见证的人'], memory:null, fate: 1, bond: -1 } }
     ], settlement:'ch14_r5_settlement' },
     ch14_r5a: { id:'ch14_r5a', type:'narrative', chapter:14, round:5, title:'忠诚的守护者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你坐在那张旧椅子上。窗外的光慢慢暗下来——不是日落，是更缓慢的、更深的暗。你把羊皮卷抱在怀里——它们吸收了你的体温。你想：你已经做了你能做的一切。真相还在——只是换了一个容器。它不再在你的声音里——它在这些羊皮卷里。']}, choices:null, nextScene:'ch14_r5_settlement' },
     ch14_r5b: { id:'ch14_r5b', type:'narrative', chapter:14, round:5, title:'最后的呐喊者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你推开那扇几十年没打开过的门，走出房间。你的脚步不快——但每步都稳。你穿过走廊——没有人，没有声音。你推开大门——马孔多的街道在暮色里是空的。你站在广场中央——对着空无一人的广场说出了那三千人的故事。没有人听到——但你说完了。然后你坐在广场的长凳上——闭上了眼睛。']}, choices:null, nextScene:'ch14_r5_settlement' },
@@ -178,7 +183,8 @@ registerChapter({
     ch15_r3_choice: { id:'ch15_r3_choice', type:'choice', chapter:15, round:3, title:'第三轮选择 · 费尔南达的衰老', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['费尔南达老了。她的声音不再那样咄咄逼人——她开始忘记东西。她有时叫你"陌生人"，有时叫你"梅梅"。她的眼睛不再看人——她只是盯着窗外——窗帘永远拉着。','你看着她——这个把你锁了一辈子的女人。你现在比她还高了——你可以轻易推开她走出那扇门。但你没有——不是因为怕她，是因为某种更复杂的东西：她喂养了你，尽管是以她不懂的方式。'], transition:'你选择——' }, choices:[
       { id:'ch15_r3_a', label:'原谅她——照顾她的晚年', description:'她做了她以为正确的事。现在她老了——她需要有人帮她端水、吃药、换床单。', nextScene:'ch15_r3a', effects:{ tags:['宽恕者'], memory:null, fate: -1, bond: 2 } },
       { id:'ch15_r3_b', label:'离开她——找回自己的生活', description:'你不欠她的。你被她锁了太多年——现在该轮到你了。走出这所房子——去世界看看。', nextScene:'ch15_r3b', effects:{ tags:['解放者'], memory:null, fate: 1, bond: -1} },
-      { id:'ch15_r3_c', label:'留下来——但不再顺从', description:'你照顾她——以你自己的方式。不是仆人，是监护者。你来决定规则——不再是她。', nextScene:'ch15_r3c', effects:{ tags:['成熟的监护者'], memory:null, fate: 1, bond: 0 } }
+      { id:'ch15_r3_c', label:'留下来——但不再顺从', description:'你照顾她——以你自己的方式。不是仆人，是监护者。你来决定规则——不再是她。', nextScene:'ch15_r3c', effects:{ tags:['成熟的监护者'], memory:null, fate: 1, bond: 0 } },
+      { id:'ch15_r3_d', label:'原谅她——你终于理解了她那些规矩背后是什么', description:'费尔南达的规矩曾经让你窒息。但现在你看见了：她不是在控制——她是在害怕。一个外来者在这个疯狂家族里唯一能抓住的就是规矩。原谅不是忘记——是理解。', nextScene:'ch15_r3a', requiredBond: { min: 4 }, effects:{ tags:['跨越规矩的人'], memory:null, fate: -1, bond: 2 } }
     ], settlement:'ch15_r3_settlement' },
     ch15_r3a: { id:'ch15_r3a', type:'narrative', chapter:15, round:3, title:'宽恕者', leftPage:{ speaker:'奥雷里亚诺', speakerColor:'#1a3a4a', paragraphs:['你帮她端水，喂她吃药。她不说话——但她也不再叫错你的名字。有一天她看着你——说了一声"谢谢"。声音很轻——但你听到了。这两个字在她的字典里等于一整页的忏悔。']}, choices:null, nextScene:'ch15_r3_settlement' },
     ch15_r3b: { id:'ch15_r3b', type:'narrative', chapter:15, round:3, title:'解放者', leftPage:{ speaker:'奥雷里亚诺', speakerColor:'#1a3a4a', paragraphs:['你推开大门。阳光刺眼——但你走出来了。你在马孔多的街道上走——这个一直被锁着的人终于自由了。但自由是什么——你不知道。你走到河边——看着水流动。它没有告诉你答案——但它告诉你：你可以继续走了。']}, choices:null, nextScene:'ch15_r3_settlement' },
@@ -188,7 +194,9 @@ registerChapter({
     ch15_r4_choice: { id:'ch15_r4_choice', type:'choice', chapter:15, round:4, title:'第四轮选择 · 你是谁', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你破译了羊皮卷的第一行字。你的手在抖——不是因为难，是因为你读懂了。那行字写的是：","家族的第一个人被捆在一棵树上，最后一个人正被蚂蚁吃掉。","你停下笔——你需要想一想。这行字说的是谁？被绑在树上的是栗树下的老人。被蚂蚁吃掉的是——你不敢往下想。','但你还需要知道：你是谁。你在这卷羊皮纸里——是什么角色？是旁观者？是继承者？是最后的布恩迪亚？'], transition:'你选择——' }, choices:[
       { id:'ch15_r4_a', label:'继续翻译——快速寻找答案', description:'不能停下——继续读。用最快的速度破译羊皮卷——答案就在其中。', nextScene:'ch15_r4a', effects:{ tags:['急切者'], memory:null, fate: 2, bond: -1 } },
       { id:'ch15_r4_b', label:'慢慢来——怕读到结局', description:'你预感结局不会美好。慢慢读——让每一个字都被消化掉，不要一次太快地走到终点。', nextScene:'ch15_r4b', effects:{ tags:['谨慎者'], memory:null, fate: -1, bond: 0 } },
-      { id:'ch15_r4_c', label:'停下来——去院子里走走', description:'你感到窒息。放下笔——走出去，到栗树下呼吸一下空气。你不需要今天就找到答案。', nextScene:'ch15_r4c', effects:{ tags:['暂停者'], memory:null, fate: 0, bond: 1} }
+      { id:'ch15_r4_c', label:'停下来——去院子里走走', description:'你感到窒息。放下笔——走出去，到栗树下呼吸一下空气。你不需要今天就找到答案。', nextScene:'ch15_r4c', effects:{ tags:['暂停者'], memory:null, fate: 0, bond: 1} },
+      { id:'ch15_r4_d', label:'你见过蝴蝶的翅膀——在翻译中放慢速度', description:'黄蝴蝶的翅膀还在地上轻轻颤动。你忽然明白了——梅尔基亚德斯不是在催促你。他是在等你。等你自己准备好——像蝴蝶等待翅膀变干。', nextScene:'ch15_r4b', requiredClue: 'butterfly_wing', effects:{ tags:['蝴蝶的读者'], memory:null, fate: -1, bond: 1 } },
+      { id:'ch15_r4_e', label:'你记得栗树上的绳结——用同样的方法标记羊皮卷', description:'何塞·阿尔卡蒂奥·布恩迪亚在栗树上留下绳结——不是捆绑，是标记。你也用绳结标记羊皮卷的关键页——让后来的人知道在哪里停下来。', nextScene:'ch15_r4b', requiredMemory: '栗树下的绳结', effects:{ tags:['用绳结标记的人'], memory:null, fate: 0, bond: 1 } }
     ], settlement:'ch15_r4_settlement' },
     ch15_r4a: { id:'ch15_r4a', type:'narrative', chapter:15, round:4, title:'急切者', leftPage:{ speaker:'奥雷里亚诺', speakerColor:'#1a3a4a', paragraphs:['你日夜不停地翻译——忘记吃饭，忘记睡觉。羊皮卷在你眼中不再是文字——它变成了一幅幅画面：你看见了磁铁，看见了冰块，看见了蕾梅黛丝升天，看见了栗树下的老人。然后你看见了自己——你是羊皮卷中预言的那个人。你在读这本书的时候——这本书也正在读完你。']}, choices:null, nextScene:'ch15_r4_settlement' },
     ch15_r4b: { id:'ch15_r4b', type:'narrative', chapter:15, round:4, title:'谨慎者', leftPage:{ speaker:'奥雷里亚诺', speakerColor:'#1a3a4a', paragraphs:['你每天只翻译一小段。不是因为懒——是因为每个字都太沉重。你读到了一个女人晾床单时被风吹起——你知道那是美人儿蕾梅黛丝。你读到了三千人被装在火车上运走——你知道那是何塞·阿尔卡蒂奥第二见过的。每个字都在和你对话——你不是在阅读历史，你是在寻找自己。']}, choices:null, nextScene:'ch15_r4_settlement' },
@@ -242,7 +250,8 @@ registerChapter({
     ch16_r4_choice: { id:'ch16_r4_choice', type:'choice', chapter:16, round:4, title:'第四轮选择 · 重建家园', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['阿玛兰妲·乌尔苏拉看着这所房子——腐烂、破败、几乎要倒。但她看见的不是废墟——她看见的是她的童年，是乌尔苏拉的厨房，是走廊里的阳光。','她说："我们要重建它。"不是疑问句——是布恩迪亚式的决定。她拿出了她在欧洲赚的钱——不多，但足够。'], transition:'你选择——' }, choices:[
       { id:'ch16_r4_a', label:'全力帮忙重建', description:'和她一起——修墙、换梁、种花。让这所房子重新活过来。', nextScene:'ch16_r4a', effects:{ tags:['重建者'], memory:null, fate: -1, bond: 2 } },
       { id:'ch16_r4_b', label:'保护羊皮卷——不让重建打扰', description:'房子可以修——但羊皮卷不能被干扰。划定区域——梅尔基亚德斯的房间不能动。', nextScene:'ch16_r4b', effects:{ tags:['保护者'], memory:null, fate: 2, bond: -1 } },
-      { id:'ch16_r4_c', label:'反对——房子不值得修', description:'马孔多已经死了。与其修房子——不如离开这里，去一个新地方重新开始。', nextScene:'ch16_r4c', effects:{ tags:['现实主义者'], memory:null, fate: 1, bond: -1 } }
+      { id:'ch16_r4_c', label:'反对——房子不值得修', description:'马孔多已经死了。与其修房子——不如离开这里，去一个新地方重新开始。', nextScene:'ch16_r4c', effects:{ tags:['现实主义者'], memory:null, fate: 1, bond: -1 } },
+      { id:'ch16_r4_d', label:'你保护过丽贝卡——现在用同样的方式保护这所房子', description:'那年你站在丽贝卡和伤害之间——没有犹豫。现在这所房子也需要有人站在它和遗忘之间。不是用墙壁——是用记忆。', nextScene:'ch16_r4a', requiredFlag: { flag: 'protected_rebeca', min: 1 }, effects:{ tags:['守护房子的人'], memory:null, fate: -1, bond: 2 } }
     ], settlement:'ch16_r4_settlement' },
     ch16_r4a: { id:'ch16_r4a', type:'narrative', chapter:16, round:4, title:'重建者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你们一起修墙——她的手被钉子砸破了，你的肩膀被木梁压青了。但晚上——当你们坐在刚修好的走廊上看着夕阳时，你觉得这所房子在微笑。不是因为新木头——是因为有人在乎它。']}, choices:null, nextScene:'ch16_r4_settlement' },
     ch16_r4b: { id:'ch16_r4b', type:'narrative', chapter:16, round:4, title:'保护者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你同意重建——但你要求梅尔基亚德斯的房间保持原样。阿玛兰妲·乌尔苏拉不理解——但她尊重了。她在那间房间的门外画了一条线——工匠不能跨过这条线。线这边的世界在变——线那边的时间继续静止。']}, choices:null, nextScene:'ch16_r4_settlement' },
@@ -251,7 +260,9 @@ registerChapter({
     ch16_r5_choice: { id:'ch16_r5_choice', type:'choice', chapter:16, round:5, title:'第五轮选择 · 承认', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['一天晚上——她在走廊上等你。她没有说话——只是站着。她的影子被月光拉得很长——一直延伸到你的脚边。','你知道她要说什么——你心里一直都知道。这不是可以被永远推迟的问题。你们擦过了肩膀太多次，在烛光下对视了太久。现在这一刻来了——你需要说出那三个字。或不说。'], transition:'你选择——' }, choices:[
       { id:'ch16_r5_a', label:'说"我爱你"', description:'说出来——不要再逃避。这是禁忌，但她不是你的姐妹——她是你的曾曾祖母的曾曾孙女。隔了太多代人。', nextScene:'ch16_r5a', effects:{ tags:['告白者'], memory:'走廊上的告白', fate: 0, bond: 2 } },
       { id:'ch16_r5_b', label:'用行动——而不是语言', description:'不说——但握住她的手。让她感觉到你的手指在说话——不需要翻译。', nextScene:'ch16_r5b', effects:{ tags:['沉默的恋人'], memory:null, fate: 0, bond: 1 } },
-      { id:'ch16_r5_c', label:'说不——尽管爱', description:'你知道这不对。哪怕隔了那么多代——你们还是布恩迪亚。拒绝她——不是因为不爱，是因为太爱。', nextScene:'ch16_r5c', effects:{ tags:['自我牺牲者'], memory:'被拒绝的走廊', fate: 2, bond: -2} }
+      { id:'ch16_r5_c', label:'说不——尽管爱', description:'你知道这不对。哪怕隔了那么多代——你们还是布恩迪亚。拒绝她——不是因为不爱，是因为太爱。', nextScene:'ch16_r5c', effects:{ tags:['自我牺牲者'], memory:'被拒绝的走廊', fate: 2, bond: -2} },
+      { id:'ch16_r5_d', label:'你不需要语言——她知道你爱她', description:'你们之间已经不需要"我爱你"了。她看你的眼神——你知道。你也用同样的眼神看她。不是沉默——是一种比语言更古老的理解。', nextScene:'ch16_r5a', requiredRelationship: { character: '阿玛兰妲·乌尔苏拉', min: 70 }, effects:{ tags:['无需语言的人'], memory:null, fate: 0, bond: 2 } },
+      { id:'ch16_r5_e', label:'你撕下过一页预言——在那页空白上写新的开始', description:'羊皮卷有一页被你撕掉了。现在那页空白在你手里——不是缺口，是自由。拿起笔——在上面写下第一个不是预言的字。', nextScene:'ch16_r5a', requiredMemory: '被撕下的一页', effects:{ tags:['在空白上书写的人'], memory:null, fate: 2, bond: 0 } }
     ], settlement:'ch16_r5_settlement' },
     ch16_r5a: { id:'ch16_r5a', type:'narrative', chapter:16, round:5, title:'告白者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你说出来了。三个字。走廊里的回声把它们一直传到栗树下——老人抬起头，也许他听见了。她哭了——不是难过，是释放。她扑进你怀里——你们的影子在月光下合成一个。羊皮卷在房间里无声地翻过一页——梅尔基亚德斯早就写好了这一刻。']}, choices:null, nextScene:'ch16_r5_settlement' },
     ch16_r5b: { id:'ch16_r5b', type:'narrative', chapter:16, round:5, title:'沉默的恋人', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你没有说——但你握住了她的手。她的手指在你的掌心里动了一下——像一条鱼。不是挣扎——是确认。你不需要语言——布恩迪亚家的爱情从来不是用语言来传递的。语言做的事是背叛——手指做的事是承诺。']}, choices:null, nextScene:'ch16_r5_settlement' },
@@ -279,12 +290,14 @@ registerChapter({
   preview: '<p>第十八章 · 最后一个布恩迪亚的诞生</p><p style="margin-top:8px;">你将附身于奥雷里亚诺，</p><p>见证家族的最后一刻。</p>',
   nextLabel: '进入第十八章 · 最后一个布恩迪亚的诞生',
   scenes: {
-    ch17_opening: { id:'ch17_opening', type:'narrative', chapter:17, round:0, title:'卷轴的低语', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['梅尔基亚德斯的房间。午夜。烛火摇动。你已经在这间屋子里坐了无数个夜晚了。你熟悉它的每一道裂缝、每一块发霉的墙皮。但今晚——不一样。','羊皮卷在你眼前不再是文字——它们的翻译速度在自动加快。不是你在读它们——是它们在读你。每一页都对应着马孔多正在发生的事——你读到建村的时候，栗树下的老人动了动；你读到失眠症的时候，走廊里有脚步声响起。','阿玛兰妲·乌尔苏拉坐在你身边——她的手放在你的手上。你们不需要说话——因为羊皮卷正在替你们说。'], clues: [{ triggerText: '羊皮卷', itemId: 'melquiades_handwriting', narrative: '笔迹是你认识的——梅尔基亚德斯的手。一百年前他写下这些字的时候就知道你会读到。不是预言——是邀请。他在每一页的空白处都给你留了位置。', unlocksIn: ['epilogue'] }] }, echoText: '你记得梅尔基亚德斯说："从哪儿开始，就从哪儿结束。"你终于明白——他不是在说羊皮卷。他是在说你。', choices:null, nextScene:'ch17_r1_choice' },
+    ch17_opening: { id:'ch17_opening', type:'narrative', chapter:17, round:0, title:'卷轴的低语', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['梅尔基亚德斯的房间。午夜。烛火摇动。你已经在这间屋子里坐了无数个夜晚了。你熟悉它的每一道裂缝、每一块发霉的墙皮。但今晚——不一样。','羊皮卷在你眼前不再是文字——它们的翻译速度在自动加快。不是你在读它们——是它们在读你。每一页都对应着马孔多正在发生的事——你读到建村的时候，栗树下的老人动了动；你读到失眠症的时候，走廊里有脚步声响起。','阿玛兰妲·乌尔苏拉坐在你身边——她的手放在你的手上。你们不需要说话——因为羊皮卷正在替你们说。'], clues: [{ triggerText: '羊皮卷', itemId: 'melquiades_handwriting', narrative: '笔迹是你认识的——梅尔基亚德斯的手。一百年前他写下这些字的时候就知道你会读到。不是预言——是邀请。他在每一页的空白处都给你留了位置。', unlocksIn: ['epilogue'] }] }, echoCondition: { clue: 'melquiades_mirror' }, echoText: '你记得梅尔基亚德斯说："从哪儿开始，就从哪儿结束。"你终于明白——他不是在说羊皮卷。他是在说你。', choices:null, nextScene:'ch17_r1_choice' },
 
     ch17_r1_choice: { id:'ch17_r1_choice', type:'choice', chapter:17, round:1, title:'第一轮选择 · 确认关系', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你们已经在一起了——那种比任何婚姻都更牢固的、被羊皮卷预言绑定的在一起。但费尔南达说过的话还在走廊里回响："这个家族会被诅咒——如果布恩迪亚和布恩迪亚之间有了孩子。"','阿玛兰妲·乌尔苏拉不怕——她是欧洲回来的，不信古老的诅咒。但你——你每一天都在羊皮卷里读到越来越近的结局。你开始害怕——不是怕诅咒，是怕预言。'], transition:'你选择——' }, choices:[
       { id:'ch17_r1_a', label:'拥抱爱情——不管预言', description:'羊皮卷写的是过去——不是命令。你们可以选择自己的未来。继续爱她——不怕一切。', nextScene:'ch17_r1a', effects:{ tags:['无畏的爱人'], memory:null, fate: 2, bond: 0 } },
       { id:'ch17_r1_b', label:'克制——避免孩子', description:'你们可以在一起——但不要让预言实现。不要让布恩迪亚和布恩迪亚的孩子出生。', nextScene:'ch17_r1b', effects:{ tags:['谨慎的爱人'], memory:null, fate: -2, bond: 1 } },
-      { id:'ch17_r1_c', label:'停止翻译——不去看结局', description:'也许不知道结局就可以不被它影响。放下羊皮卷——活在当下，不去读那最后一页。', nextScene:'ch17_r1c', effects:{ tags:['逃避预言者'], memory:null, fate: 0, bond: 2 } }
+      { id:'ch17_r1_c', label:'停止翻译——不去看结局', description:'也许不知道结局就可以不被它影响。放下羊皮卷——活在当下，不去读那最后一页。', nextScene:'ch17_r1c', effects:{ tags:['逃避预言者'], memory:null, fate: 0, bond: 2 } },
+      { id:'ch17_r1_d', label:'你见过那张纸条——承认你们是同一条血脉', description:'私生子的名字写在那张小纸条上。墨水很新——是最近写的。你不是一个人——你的血液里流着和她一样的名字。', nextScene:'ch17_r1a', requiredClue: 'bastard_name', effects:{ tags:['血脉的认领者'], memory:null, fate: 1, bond: 1 } },
+      { id:'ch17_r1_e', label:'你上次读完了羊皮卷——这一次，带着全知回来', description:'你已经知道羊皮卷的最后一页写的是什么。但这一次你不是来验证预言的——你是来寻找上次漏掉的那些边缘空白。梅尔基亚德斯在每一页都给你留了位置。', nextScene:'ch17_r1a', requiredPlaythrough: 2, effects:{ tags:['全知的回归者'], memory:null, fate: 1, bond: 0 } }
     ], settlement:'ch17_r1_settlement' },
     ch17_r1a: { id:'ch17_r1a', type:'narrative', chapter:17, round:1, title:'无畏的爱人', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你选择了爱——不是因为它安全，是因为它已经发生了。你们在这个正在腐烂的房子里做爱——墙壁在颤抖，不是因为结构，是因为历史本身在震动。马孔多已经很久没有感受到这种力量了——不是毁灭的力量，是创造的力量。']}, choices:null, nextScene:'ch17_r1_settlement' },
     ch17_r1b: { id:'ch17_r1b', type:'narrative', chapter:17, round:1, title:'谨慎的爱人', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你们在一起——但你们小心地避免了最后一件事。晚上你们只是拥抱着入睡——你的手放在她的头发上，她的呼吸在你胸前平稳。你们不是不想要更多——是太清楚"更多"可能意味着什么。']}, choices:null, nextScene:'ch17_r1_settlement' },
@@ -294,7 +307,8 @@ registerChapter({
     ch17_r2_choice: { id:'ch17_r2_choice', type:'choice', chapter:17, round:2, title:'第二轮选择 · 破译加速', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['羊皮卷的翻译速度在加快——快到你觉得不是你在读它，是它在你的脑海里直接印上文字。你看到了何塞·阿尔卡蒂奥·布恩迪亚被绑在栗树下的那一天——不是文字，是画面。你看到了蕾梅黛丝升天的那个下午——你甚至感觉到了一滴上天堂之前的雨水。','然后你看到了一行字——它让你停下了呼吸：","家族的第一个人被捆在一棵树上，最后一个人正被蚂蚁吃掉。","'], transition:'你选择——' }, choices:[
       { id:'ch17_r2_a', label:'继续读——面对全部真相', description:'不能逃避。读完它——哪怕最后一句是你不想看到的。', nextScene:'ch17_r2a', effects:{ tags:['勇敢的读者'], memory:null, fate: 1, bond: 2 } },
       { id:'ch17_r2_b', label:'出去走走——消化一下', description:'你需要空气。放下羊皮卷——和阿玛兰妲·乌尔苏拉一起去栗树下走走。', nextScene:'ch17_r2b', effects:{ tags:['暂停者'], memory:null, fate: 1, bond: -1 } },
-      { id:'ch17_r2_c', label:'撕掉那一页——改变预言', description:'如果你撕掉它——也许预言就不会实现了？也许羊皮卷不是绝对的？', nextScene:'ch17_r2c', isSecretOption: true, effects:{ tags:['反抗者'], memory:'被撕下的一页', fate: 0, bond: 1 } }
+      { id:'ch17_r2_c', label:'撕掉那一页——改变预言', description:'如果你撕掉它——也许预言就不会实现了？也许羊皮卷不是绝对的？', nextScene:'ch17_r2c', isSecretOption: true, effects:{ tags:['反抗者'], memory:'被撕下的一页', fate: 0, bond: 1 } },
+      { id:'ch17_r2_d', label:'你理解金鱼的循环——陪老人做最后一条', description:'你记得父亲作坊里的金鱼——做好了熔掉，熔掉了再做。不是徒劳——是仪式。现在栗树下的老人也在画圆圈——陪他做最后一条金鱼。', nextScene:'ch17_r2b', requiredClue: 'goldfish_cycle', effects:{ tags:['金鱼的继承者'], memory:null, fate: 0, bond: 2 } }
     ], settlement:'ch17_r2_settlement' },
     ch17_r2a: { id:'ch17_r2a', type:'narrative', chapter:17, round:2, title:'勇敢的读者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你继续读。羊皮卷在你眼前展开——你看到了你自己。看到你坐在这间房间里读羊皮卷的画面被写进了羊皮卷里。你忽然明白了——梅尔基亚德斯写的不是过去，不是未来——是现在。是每一个正在发生的现在。你在读的时候——故事同时在被创造。']}, choices:null, nextScene:'ch17_r2_settlement' },
     ch17_r2b: { id:'ch17_r2b', type:'narrative', chapter:17, round:2, title:'暂停者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你牵着阿玛兰妲·乌尔苏拉的手走到栗树下。老人正在画圆圈——他听见了你们的脚步声，但他没有抬头。风把栗树的枯叶吹下来——它们落在你们的头发上。你们没有讨论预言——你们只是站着——像两棵也在慢慢被时间削平的树。']}, choices:null, nextScene:'ch17_r2_settlement' },
@@ -305,7 +319,8 @@ registerChapter({
       { id:'ch17_r3_a', label:'安慰她——不会有事', description:'抱住她，告诉她这只是一个古老的预言。不一定会发生——不一定是指你们。', nextScene:'ch17_r3a', effects:{ tags:['安慰者'], memory:null, fate: 0, bond: 2 } },
       { id:'ch17_r3_b', label:'诚实——告诉她你也不知道', description:'不给她虚假的承诺。预言可能是真的——但你们会一起面对。不管发生什么。', nextScene:'ch17_r3b', effects:{ tags:['诚实的伴侣'], memory:null, fate: 1, bond: 0 } },
       { id:'ch17_r3_c', label:'重新翻译——看看有没有误解', description:'也许是翻译错了。重新检查那一段——用字典，用逻辑，用一切可能的解读方式。', nextScene:'ch17_r3c', effects:{ tags:['学者'], memory:null, fate: 2, bond: -1 } },
-      { id:'ch17_r3_d', label:'用铜镜照一照羊皮卷——看那些倒写的字', description:'梅尔基亚德斯的铜镜还在你口袋里。你把它举到羊皮卷前——镜面里，那些倒写的字变成了正写的。你读出了你从未见过的句子。', nextScene:'ch17_r3a', requiredClue: 'melquiades_mirror', effects:{ tags:['镜中读者'], memory:null, fate: 1, bond: 1 } }
+      { id:'ch17_r3_d', label:'用铜镜照一照羊皮卷——看那些倒写的字', description:'梅尔基亚德斯的铜镜还在你口袋里。你把它举到羊皮卷前——镜面里，那些倒写的字变成了正写的。你读出了你从未见过的句子。', nextScene:'ch17_r3c', requiredClue: 'melquiades_mirror', effects:{ tags:['镜中读者'], memory:null, fate: 1, bond: 1 } },
+      { id:'ch17_r3_e', label:'你了解她的恐惧——因为你也有同样的恐惧', description:'阿玛兰妲·乌尔苏拉害怕的不是预言——是失去你。你也害怕失去她。但你知道：恐惧不是停止的理由——是抱得更紧的理由。告诉她你不会放手。', nextScene:'ch17_r3a', requiredRelationship: { character: '阿玛兰妲·乌尔苏拉', min: 60 }, effects:{ tags:['理解恐惧的人'], memory:null, fate: 0, bond: 2 } }
     ], settlement:'ch17_r3_settlement' },
     ch17_r3a: { id:'ch17_r3a', type:'narrative', chapter:17, round:3, title:'安慰者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你抱住她。她的手在你的背后——你感觉到她的身体在慢慢放松。你不确定自己在说实话——但你在说爱。有时候爱比事实更能让人挺过黑夜。她睡着了——她的呼吸很平稳。你看着她在月光下的脸——你不知道她能拥有多少日子。但今晚——她在呼吸。']}, choices:null, nextScene:'ch17_r3_settlement' },
     ch17_r3b: { id:'ch17_r3b', type:'narrative', chapter:17, round:3, title:'诚实的伴侣', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你看着她的眼睛——告诉她："我也不知道。可能是真的。可能不是。但不管发生什么——我们都在这里。在一起。"她沉默了很久——然后点了点头。她没有哭——但你看见她的嘴角动了一下。不是微笑——是接受。']}, choices:null, nextScene:'ch17_r3_settlement' },
@@ -315,7 +330,8 @@ registerChapter({
     ch17_r4_choice: { id:'ch17_r4_choice', type:'choice', chapter:17, round:4, title:'第四轮选择 · 栗树下的老人', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['何塞·阿尔卡蒂奥·布恩迪亚——家族的第一个人——仍然被绑在栗树下。他已经很多年没有说过人话了——他说的都是梅尔基亚德斯教他的古老语言。但你听得懂——因为你现在正在翻译同样的语言。','他说的是："冰……它在烧……磁铁……没有黄金……大海……灰白的……""然后他抬起头——他的眼睛在百年之后忽然变得清澈。他看见了阿玛兰妲·乌尔苏拉。他笑了笑——然后说："乌尔苏拉，你还在揉面？"她不是乌尔苏拉——但她是。她就站在那里——就像百年前那个女人站在门口，双手叉腰，看着丈夫用一头骡子和一对山羊换两块磁铁。'], transition:'你选择——' }, choices:[
       { id:'ch17_r4_a', label:'陪他说话——用古老的语言', description:'你是唯一能懂他的人了。坐下来——用梅尔基亚德斯的语言和他对话。让他最后有人能听懂。', nextScene:'ch17_r4a', effects:{ tags:['最后的对话者'], memory:'古老语言的对话', fate: 0, bond: 2 } },
       { id:'ch17_r4_b', label:'解开他的绳子——让他自由', description:'他被绑了一百年了——没有人绑着他，是那些绳子忘了可以被解开。解开它们。让他走。', nextScene:'ch17_r4b', effects:{ tags:['解放者'], memory:null, fate: 1, bond: 1 } },
-      { id:'ch17_r4_c', label:'让他安静——不要打扰', description:'他在栗树下找到了自己的世界——不需要你来改变它。让他继续画圆圈——不要去触碰那种平衡。', nextScene:'ch17_r4c', effects:{ tags:['尊重者'], memory:null, fate: 0, bond: -1 } }
+      { id:'ch17_r4_c', label:'让他安静——不要打扰', description:'他在栗树下找到了自己的世界——不需要你来改变它。让他继续画圆圈——不要去触碰那种平衡。', nextScene:'ch17_r4c', effects:{ tags:['尊重者'], memory:null, fate: 0, bond: -1 } },
+      { id:'ch17_r4_d', label:'你见过水渍羊皮纸——在雨水的痕迹里读出另一种翻译', description:'那张被雨水浸透的羊皮纸——字迹模糊了，但你能感觉到纸上残留的温度。你忽然意识到：模糊也是一种翻译。有些东西写得太清楚反而会错。', nextScene:'ch17_r4a', requiredClue: 'water_stained_parchment', effects:{ tags:['雨水的译者'], memory:null, fate: 1, bond: 1 } }
     ], settlement:'ch17_r4_settlement' },
     ch17_r4a: { id:'ch17_r4a', type:'narrative', chapter:17, round:4, title:'最后的对话者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你蹲在他身边——用你学到的古老语言和他说话。他浑浊的眼睛忽然亮了一下——像煤炭在最暗的火里微微发光。你们说着那些词——磁铁、冰块、大海、栗树。他说得很慢——每说一个字就像翻一页羊皮纸。他说的最后一个词是"冰"——然后他笑了。他不再说话了——但他的笑还挂在嘴角。']}, choices:null, nextScene:'ch17_r4_settlement' },
     ch17_r4b: { id:'ch17_r4b', type:'narrative', chapter:17, round:4, title:'解放者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你解开了绳子——它已经腐烂得几乎不需要解。老人看着自己的手腕——上面有被绳子勒了一百年的痕迹。他试着站起来——但他太老了，肌肉已经忘记了如何支撑体重。他站不起来——但他自由了。他爬了几步——远离了栗树。然后他停下来，躺在阳光下——闭上眼睛。']}, choices:null, nextScene:'ch17_r4_settlement' },
@@ -325,7 +341,9 @@ registerChapter({
     ch17_r5_choice: { id:'ch17_r5_choice', type:'choice', chapter:17, round:5, title:'第五轮选择 · 真相浮现', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你读到羊皮卷的倒数第二页。你的手在颤抖——不是因为你读不懂——是因为你读到了你自己的名字。在梅尔基亚德斯的字体里——写着你。写着阿玛兰妲·乌尔苏拉。写着你们正在发生的爱——写着即将出生的孩子——写着蚂蚁。','你明白了。你不需要继续读最后一页——因为你正在活最后一页。羊皮卷写完了全部——包括你此刻在此处犹豫要不要翻下去的这一个动作。'], transition:'你选择——' }, choices:[
       { id:'ch17_r5_a', label:'翻到最后一页——接受命运', description:'读完它。知道自己的结局——然后去面对它。既然已经被写好了——那就活成它最好的版本。', nextScene:'ch17_r5a', effects:{ tags:['接受者'], memory:null, fate: 2, bond: 0 } },
       { id:'ch17_r5_b', label:'不翻——用余生去猜', description:'留下最后一页——不去看结局。你们的余生会是一个谜——也许这比知道答案更仁慈。', nextScene:'ch17_r5b', effects:{ tags:['悬念保持者'], memory:null, fate: 0, bond: 0} },
-      { id:'ch17_r5_c', label:'把羊皮卷烧掉', description:'如果预言不存在——你们就可以自由。把羊皮卷扔进火里——连同它的所有句号。', nextScene:'ch17_r5c', effects:{ tags:['焚书者'], memory:'灰烬中的字', fate: -2, bond: -1 } }
+      { id:'ch17_r5_c', label:'把羊皮卷烧掉', description:'如果预言不存在——你们就可以自由。把羊皮卷扔进火里——连同它的所有句号。', nextScene:'ch17_r5c', effects:{ tags:['焚书者'], memory:'灰烬中的字', fate: -2, bond: -1 } },
+      { id:'ch17_r5_d', label:'你不接受这个结局——用你自己的方式合上它', description:'羊皮卷说你要被飓风抹去。但谁说的？梅尔基亚德斯写了一百年——但他没有写到最后一行。最后一行是你的。', nextScene:'ch17_r5a', requiredFate: { max: 2 }, effects:{ tags:['不服从结局的人'], memory:null, fate: 2, bond: 0 } },
+      { id:'ch17_r5_e', label:'你把铜镜举到羊皮卷前——镜面里，倒写的字变成了正写', description:'梅尔基亚德斯的铜镜映出了羊皮卷上的字——倒写的变成了正写，隐藏的变成了可见。但你看见的不只是预言：在每一行之间，你都看见了空白。老人给你留了位置——不是一个句号，是一段留白。你不是在读预言——你是在完成它。', nextScene:'ch17_r5a', requiredClue: 'melquiades_mirror', requiredFate: { min: 4 }, requiredBond: { min: 4 }, effects:{ tags:['预言的合著者'], memory:null, fate: 1, bond: 1 } }
     ], settlement:'ch17_r5_settlement' },
     ch17_r5a: { id:'ch17_r5a', type:'narrative', chapter:17, round:5, title:'接受者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你翻到了最后一页。你读到了蚂蚁——读到了飓风——读到"注定要一百年孤独的家族不会有第二次机会在大地上出现。"你放下羊皮卷。阿玛兰妲·乌尔苏拉在看你的脸——你的表情告诉她了一切。她没有问——她只是握紧了你的手。你们的手现在很冷——但在一起。']}, choices:null, nextScene:'ch17_r5_settlement' },
     ch17_r5b: { id:'ch17_r5b', type:'narrative', chapter:17, round:5, title:'悬念保持者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你没有翻最后一页。你把它合上了——把那一页压在所有已经读过的书页下面。你们走出房间——在走廊上站着。月光很亮——比你在羊皮卷里读过的任何一页都亮。"我们还有多少时间？"她问。你耸了耸肩——你不想骗她，但你也不想告诉她你知道的一切——包括你不知道的那些。']}, choices:null, nextScene:'ch17_r5_settlement' },
@@ -365,7 +383,8 @@ registerChapter({
     ch18_r2_choice: { id:'ch18_r2_choice', type:'choice', chapter:18, round:2, title:'第二轮选择 · 孩子的名字', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['孩子出生了——是个男孩。他的皮肤是粉红色的，但眼睛已经很亮了。你抱着他——这是你第一次抱着一个和你血脉相连的人。','阿玛兰妲·乌尔苏拉躺在床上——虚弱，但微笑。"叫他什么？"她问。你忽然想起了费尔南达——想起她收到那个"捡来的"婴儿时一定带着多少恐惧。但现在你不怕了。'], transition:'你选择——' }, choices:[
       { id:'ch18_r2_a', label:'奥雷里亚诺——像你一样', description:'这是布恩迪亚家的名字——每一代都有一个奥雷里亚诺。延续传统。', nextScene:'ch18_r2a', effects:{ tags:['传统维护者'], memory:null, fate: 0, bond: 2 } },
       { id:'ch18_r2_b', label:'何塞·阿尔卡蒂奥——像始祖', description:'用家族创始人的名字——让他带着第一个布恩迪亚的名字开始最后一个布恩迪亚的人生。', nextScene:'ch18_r2b', effects:{ tags:['致敬者'], memory:null, fate: 0, bond: 2 } },
-      { id:'ch18_r2_c', label:'一个全新的名字', description:'不用旧名字——给他一个新的。不属于任何历史——只属于他自己。打破循环。', nextScene:'ch18_r2c', effects:{ tags:['革新者'], memory:null, fate: 1, bond: 0} }
+      { id:'ch18_r2_c', label:'一个全新的名字', description:'不用旧名字——给他一个新的。不属于任何历史——只属于他自己。打破循环。', nextScene:'ch18_r2c', effects:{ tags:['革新者'], memory:null, fate: 1, bond: 0} },
+      { id:'ch18_r2_d', label:'名字不重要——重要的是他属于这个家', description:'奥雷里亚诺还是何塞·阿尔卡蒂奥——都不重要。重要的是栗树还在、房子还在、你也还在。名字是循环——但爱不是。给他任何一个名字——然后给他你全部的守护。', nextScene:'ch18_r2a', requiredBond: { min: 4 }, effects:{ tags:['超越名字的人'], memory:null, fate: 0, bond: 2 } }
     ], settlement:'ch18_r2_settlement' },
     ch18_r2a: { id:'ch18_r2a', type:'narrative', chapter:18, round:2, title:'传统维护者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你给他取名叫奥雷里亚诺——像你，像上校，像所有曾祖父之前的曾祖父。阿玛兰妲·乌尔苏拉点了点头。"奥雷里亚诺。"她说，这几个字从她嘴里出来的时候带着笑。你不知道这个奥雷里亚诺会不会也发动三十二场起义——还是他会做一条金鱼。']}, choices:null, nextScene:'ch18_r2_settlement' },
     ch18_r2b: { id:'ch18_r2b', type:'narrative', chapter:18, round:2, title:'致敬者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你给他取名叫何塞·阿尔卡蒂奥——像栗树下的老人。老人听见这个名字的时候——动了一下手指。也许他听懂了。也许他只是碰巧——但你在那一刻觉得，这条已经快要断掉的链子在两端的名字之间被拉紧了一点。']}, choices:null, nextScene:'ch18_r2_settlement' },
@@ -375,7 +394,8 @@ registerChapter({
     ch18_r3_choice: { id:'ch18_r3_choice', type:'choice', chapter:18, round:3, title:'第三轮选择 · 阿玛兰妲·乌尔苏拉之死', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['分娩顺利——但第二天阿玛兰妲·乌尔苏拉开始流血。不是普通的那种——是止不住的那种。她的脸色越来越白——像羊皮纸。','她没有喊——她很安静。她看着天花板——看着那些裂缝——她说："我终于明白了——为什么乌尔苏拉在失明之前一直擦墙壁。"她的嘴唇在动，但声音越来越轻。'], transition:'你选择——' }, choices:[
       { id:'ch18_r3_a', label:'守在她身边——不走开', description:'你没有放手。她的手指越来越冷——但你一直握着。她走的时候不是一个人。', nextScene:'ch18_r3a', effects:{ tags:['不离不弃者'], memory:'最后的诀别', fate: -1, bond: 2 } },
       { id:'ch18_r3_b', label:'去找药——哪怕希望渺茫', description:'你不能眼睁睁看着她走。跑去河对岸——也许废弃的香蕉公司医院里还有止血的药。', nextScene:'ch18_r3b', effects:{ tags:['最后的努力者'], memory:null, fate: 1, bond: 0 } },
-      { id:'ch18_r3_c', label:'把婴孩放在她怀里', description:'让她最后一次抱着孩子离开。让她的最后一刻是作为一个母亲——而不是一个流血的女人。', nextScene:'ch18_r3c', effects:{ tags:['慈悲者'], memory:'怀抱中的离去', fate: 0, bond: 2 } }
+      { id:'ch18_r3_c', label:'把婴孩放在她怀里', description:'让她最后一次抱着孩子离开。让她的最后一刻是作为一个母亲——而不是一个流血的女人。', nextScene:'ch18_r3c', effects:{ tags:['慈悲者'], memory:'怀抱中的离去', fate: 0, bond: 2 } },
+      { id:'ch18_r3_d', label:'你看见了循环——她的离开不是终结', description:'阿玛兰妲·乌尔苏拉走了——但羊皮卷说循环会继续。你看见了：她的孩子就是下一行。死亡不是句号——是换行。你抱起孩子——继续读。', nextScene:'ch18_r3a', requiredFate: { min: 4 }, effects:{ tags:['看见换行的人'], memory:null, fate: 1, bond: 0 } }
     ], settlement:'ch18_r3_settlement' },
     ch18_r3a: { id:'ch18_r3a', type:'narrative', chapter:18, round:3, title:'不离不弃者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你握着她的手——她的手指在你掌心里变冷。她的眼睛还睁着——但不是在看天花板了，是在看你。她笑了一下——很轻——然后她的手指松开了。你不知道她最后看见了什么——也许是你，也许是栗树下的老人，也许是她小时候在后院里追着的那只蝴蝶。']}, choices:null, nextScene:'ch18_r3_settlement' },
     ch18_r3b: { id:'ch18_r3b', type:'narrative', chapter:18, round:3, title:'最后的努力者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你跑出去——马孔多的街道在你脚下像一条陌生的河流。你找到了废弃的医院——药柜是空的。你跑回来的时候——她已经走了。她床边是空的——但她的手还放在床沿，像是在等你回来把药递给她。你没有药——你只有你的眼泪。你把它们放进她的手心里——代替那些不存在的药。']}, choices:null, nextScene:'ch18_r3_settlement' },
@@ -385,7 +405,9 @@ registerChapter({
     ch18_r4_choice: { id:'ch18_r4_choice', type:'choice', chapter:18, round:4, title:'第四轮选择 · 独自面对', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['现在只剩下你和孩子了。栗树下的老人不算数——他已经不再属于这个世界了。房子里很安静——安静到你能听见蚂蚁在墙壁里行军的声音。','你抱着孩子——他正在哭。你不知道该如何做一个父亲——你是被费尔南达锁大的，你从来没有看过一个真正的父亲应该是什么样。但你看着这个婴儿——看着他粉红色的脸——你想起了你在羊皮卷里读到的东西。'], transition:'你选择——' }, choices:[
       { id:'ch18_r4_a', label:'接受——独自抚养他', description:'你可能是最后一个布恩迪亚了——但你不是一个人。把孩子养大——哪怕世界在倒塌。', nextScene:'ch18_r4a', effects:{ tags:['父亲'], memory:null, fate: -1, bond: 2 } },
       { id:'ch18_r4_b', label:'哭泣——释放悲伤', description:'你不装坚强。你坐在她刚刚离开的床边——抱着孩子——哭了出来。', nextScene:'ch18_r4b', effects:{ tags:['允许悲痛者'], memory:null, fate: 0, bond: 0 } },
-      { id:'ch18_r4_c', label:'继续翻译——用工作麻痹自己', description:'你不能停下来。羊皮卷还剩下最后一页——你需要读完它。哪怕只是为了让自己不要想到她。', nextScene:'ch18_r4c', effects:{ tags:['逃避者'], memory:null, fate: 2, bond: -1 } }
+      { id:'ch18_r4_c', label:'继续翻译——用工作麻痹自己', description:'你不能停下来。羊皮卷还剩下最后一页——你需要读完它。哪怕只是为了让自己不要想到她。', nextScene:'ch18_r4c', effects:{ tags:['逃避者'], memory:null, fate: 2, bond: -1 } },
+      { id:'ch18_r4_d', label:'你签过处决令——现在你握着一个新生命', description:'你的手签过处决令——现在这双手抱起了一个婴儿。不是赎罪——是提醒：同一双手，可以用来终结，也可以用来开始。', nextScene:'ch18_r4a', requiredFlag: { flag: 'signed_death', min: 1 }, effects:{ tags:['曾被权力标记的人'], memory:null, fate: -1, bond: 2 } },
+      { id:'ch18_r4_e', label:'你从灰烬中看见了字——把它们重新写下来', description:'你烧过羊皮卷——但灰烬里的字并没有消失。它们在火光中变得更亮了——像梅尔基亚德斯在对你眨眼睛。重新拿起笔——从灰烬中抄写那些没有被烧掉的句子。', nextScene:'ch18_r4a', requiredMemory: '灰烬中的字', effects:{ tags:['从灰烬中抄写的人'], memory:null, fate: 1, bond: 0 } }
     ], settlement:'ch18_r4_settlement' },
     ch18_r4a: { id:'ch18_r4a', type:'narrative', chapter:18, round:4, title:'父亲', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你站起来——抱着孩子。你不知道怎么换尿布，不知道喂什么，不知道他为什么一直哭。但你知道一件事：你不会把他锁起来。你不会骗他说他是"捡来的"。你不会做费尔南达做过的事。他会在阳光下长大——哪怕这是马孔多最后的阳光。']}, choices:null, nextScene:'ch18_r4_settlement' },
     ch18_r4b: { id:'ch18_r4b', type:'narrative', chapter:18, round:4, title:'允许悲痛者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你哭了。不是布恩迪亚式的沉默的眼泪——是嚎啕。孩子在你的怀里被你哭声惊吓到了——但他停了下来，用手摸你的脸。他的手很小——比蚂蚁还小。他的手放在你湿了的脸上——你不知道他在想什么，但他不再哭了。也许他理解——也许他只是在把你当成一块会颤抖的木头。']}, choices:null, nextScene:'ch18_r4_settlement' },
@@ -409,12 +431,34 @@ registerChapter({
   preview: '<p>第二十章 · 百年孤独的终局</p><p style="margin-top:8px;">你不再附身于任何人——</p><p>你成为了意识的重量本身。</p>',
   nextLabel: '进入第二十章 · 百年孤独的终局',
   scenes: {
-    ch19_opening: { id:'ch19_opening', type:'narrative', chapter:19, round:0, title:'蚂蚁的行军', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你听到的声音不是风声——是比风声更细、更密的，无数只微小的脚爪同时摩擦地板的声音。','你低头——走廊的地砖上有一条红色的线在移动。不是血——是蚂蚁。成千上万的蚂蚁排成队列，从墙缝里涌出来，穿过走廊，爬向摇篮。你知道它们要去哪里——你读过这行字。','孩子在摇篮里睡觉。他还不知道——他的名字在羊皮卷的最后一页上。'], clues: [{ triggerText: '蚂蚁', itemId: 'ant_trail', narrative: '你蹲下来——蚂蚁排成一列，正在搬运一块比它们每个都大的白色碎屑。你不知道那是什么——你不想知道。蚂蚁不会停——它们按照羊皮卷上写好的路线行进。你看着它们——看了很久。然后你站起来——走向摇篮。', unlocksIn: ['epilogue'] }] }, echoText: '风起了——不是从窗外，是从羊皮卷的第一页吹来的。你知道这是什么风——梅尔基亚德斯在第一行就写下了这场飓风。他一直在等这一页被翻开。', choices:null, nextScene:'ch19_r1_choice' },
+    ch19_opening: { id:'ch19_opening', type:'narrative', chapter:19, round:0, title:'蚂蚁的行军', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你听到的声音不是风声——是比风声更细、更密的，无数只微小的脚爪同时摩擦地板的声音。','你低头——走廊的地砖上有一条红色的线在移动。不是血——是蚂蚁。成千上万的蚂蚁排成队列，从墙缝里涌出来，穿过走廊，爬向摇篮。你知道它们要去哪里——你读过这行字。','孩子在摇篮里睡觉。他还不知道——他的名字在羊皮卷的最后一页上。'], clues: [{ triggerText: '蚂蚁', itemId: 'ant_trail', narrative: '你蹲下来——蚂蚁排成一列，正在搬运一块比它们每个都大的白色碎屑。你不知道那是什么——你不想知道。蚂蚁不会停——它们按照羊皮卷上写好的路线行进。你看着它们——看了很久。然后你站起来——走向摇篮。', unlocksIn: ['epilogue'] }] }, echoText: '风起了——不是从窗外，是从羊皮卷的第一页吹来的。你知道这是什么风——梅尔基亚德斯在第一行就写下了这场飓风。他一直在等这一页被翻开。', choices:null, nextScene:'ch19_explore' },
+
+    ch19_explore: {
+      id: 'ch19_explore', type: 'exploration', chapter: 19, round: 0,
+      title: '探索 · 飓风中的房子',
+      leftPage: {
+        speaker: '旁白', speakerColor: '#4a2a18',
+        paragraphs: [
+          '布恩迪亚家宅在风中呻吟。墙灰像雪一样从天花板上剥落，门在铰链上来回撞击——没有节奏，像垂死的心跳。',
+          '蚂蚁的队伍已经穿过了走廊。但在它们带走孩子之前——这所房子还有最后几件东西想让你看见。最后一间时间不会流逝的房间、最后一个空摇篮、最后一扇窗外——马孔多还没有完全消失。',
+          '触碰这所房子里最后的记忆——在你合上羊皮卷之前。'
+        ]
+      },
+      hotspots: [
+        { id: 'hs_ants', label: '蚂蚁的行军路线', position: { x: '60%', y: '70%' }, narrative: '你顺着蚂蚁的路线往回走——它们从墙角的裂缝里出来，穿过走廊、穿过门槛、穿过那个很多年没打开过的柜子。它们的队列里有什么东西——白色的、软的。你不敢仔细看。但你蹲下来——不是阻止它们，是目送它们。这是羊皮卷写好的最后一段路——你想亲眼看着它走完。', discoveredText: '你跟着蚂蚁走完了最后一段路。' },
+        { id: 'hs_melquiades_room', label: '梅尔基亚德斯的房间', position: { x: '25%', y: '25%' }, narrative: '这间房间的时间不流逝——是你最后的庇护所。羊皮卷还摊在桌上，翻到最后一页。墨水瓶里的墨水没有干——好像老人刚刚出去，马上就会回来。你摸了摸椅背——是温的。不是真的温——是你希望它是温的。这间房间从建村的第一年就在这里等你了。现在它等到了。', discoveredText: '你走进了那间时间不流逝的房间。' },
+        { id: 'hs_cradle', label: '破碎的摇篮', position: { x: '50%', y: '45%' }, narrative: '摇篮空了。襁褓掉在地上——绣着布恩迪亚家徽的那块。它从来没有被用过。不——它被用了一百年。从第一个孩子到最后一个——每一个布恩迪亚都在这个摇篮里睡过。但这一次——这一次蚂蚁来得比母亲的手更快。你弯下腰——把襁褓叠好。你做不到更多——但你可以把最后一件布恩迪亚的衣服叠整齐。', discoveredText: '你叠好了最后一块襁褓。' },
+        { id: 'hs_window', label: '窗外——初代马孔多', position: { x: '85%', y: '15%' }, narrative: '窗外是飓风。但如果你仔细看——在风眼里，你能看见二十多间芦竹房子，沿河岸排开。那是初代马孔多。一个年轻的男人扛着两块磁铁走向河边。一个年轻的女人双手叉腰站在门口。河对岸的吉卜赛帐篷还在——没有变旧，没有腐烂。风眼里没有时间——初代马孔多永远在开始。飓风不是结束——是让一切回到开始。', discoveredText: '你在风眼里看见了初代马孔多。' }
+      ],
+      requiredDiscoveries: 3,
+      nextScene: 'ch19_r1_choice'
+    },
 
     ch19_r1_choice: { id:'ch19_r1_choice', type:'choice', chapter:19, round:1, title:'第一轮选择 · 蚂蚁与孩子', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['蚂蚁爬上了摇篮。它们不是要吃孩子——它们是来带走他。因为羊皮卷写好了：最后一个布恩迪亚会被蚂蚁带走。','你看见了——红线在白色的床单上延伸。孩子还在睡。他是无辜的——他只是生在了错误的家，错误的时间，错误的羊皮卷页上。'], transition:'你选择——' }, choices:[
       { id:'ch19_r1_a', label:'赶走蚂蚁——保护孩子', description:'预言说他会死——但你不接受。用手拍，用水冲，用火烧——不管用什么方法，赶走它们。', nextScene:'ch19_r1a', effects:{ tags:['反抗预言者'], memory:null, fate: 1, bond: 1 } },
       { id:'ch19_r1_b', label:'抱起孩子——逃跑', description:'离开这所房子。离开马孔多。如果预言只适用于这里——那就带着他离开这里。', nextScene:'ch19_r1b', effects:{ tags:['逃亡者'], memory:null, fate: 2, bond: -1 } },
-      { id:'ch19_r1_c', label:'站着——看着预言实现', description:'你伸出手——但你的手停住了。也许有些预言不应该被阻止。也许阻止它会让更糟的事情发生。', nextScene:'ch19_r1c', effects:{ tags:['见证者'], memory:'蚂蚁带走的孩子', fate: -1, bond: 2 } }
+      { id:'ch19_r1_c', label:'站着——看着预言实现', description:'你伸出手——但你的手停住了。也许有些预言不应该被阻止。也许阻止它会让更糟的事情发生。', nextScene:'ch19_r1c', effects:{ tags:['见证者'], memory:'蚂蚁带走的孩子', fate: -1, bond: 2 } },
+      { id:'ch19_r1_d', label:'你见过香蕉公司的印章——知道谁该为这一切负责', description:'铁质印章上的字已经锈了——但"联合果品公司"还隐约可辨。你知道蚂蚁只是执行者——真正开始这一切的，是那枚印章在合同上落下的那一刻。', nextScene:'ch19_r1a', requiredClue: 'banana_company_seal', effects:{ tags:['印章的控诉者'], memory:null, fate: 2, bond: -1 } }
     ], settlement:'ch19_r1_settlement' },
     ch19_r1a: { id:'ch19_r1a', type:'narrative', chapter:19, round:1, title:'反抗预言者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你扑向摇篮——用手掌拍打蚂蚁。但蚂蚁没有减少——它们从你手指间的缝隙穿过，像水穿过渔网。你的手变红了——不是血，是蚂蚁。你大喊——声音在空房子里回荡。但蚂蚁不停——它们从来不会停。预言不是靠数量来执行的——是靠不可阻挡。']}, choices:null, nextScene:'ch19_r1_settlement' },
     ch19_r1b: { id:'ch19_r1b', type:'narrative', chapter:19, round:1, title:'逃亡者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你抱起孩子跑出房子——穿过走廊，穿过院子，穿过栗树下。老人抬起头——他没有说话，但他看着你抱着孩子的样子，好像他年轻时也曾这样抱着某人。你跑向马孔多的尽头——但你发现蚂蚁已经在街道上等着了。不管你去哪里——它们已经到了。']}, choices:null, nextScene:'ch19_r1_settlement' },
@@ -424,7 +468,8 @@ registerChapter({
     ch19_r2_choice: { id:'ch19_r2_choice', type:'choice', chapter:19, round:2, title:'第二轮选择 · 飓风来临', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['风来了——不是微风，是飓风。它从东北方向来——从香蕉公司曾经喷吐蒸汽的那个方向。天空变成了一片浑浊的黄色——像梅尔基亚德斯的羊皮纸。','窗子被吹飞了——不是一扇一扇，是所有窗子同时飞出去。墙上的石灰像雪花一样飘落。栗树在风中剧烈摇晃——老人没有动，他还在画圆圈。他画的那个最大的圆圈——也许是为这阵风准备的。','马孔多正在被抹去——不是被敌人，不是被时间——是被风。被一种早在建村之前就已经写好的风。'], transition:'你选择——' }, choices:[
       { id:'ch19_r2_a', label:'回到梅尔基亚德斯的房间——读完羊皮卷', description:'在对的地方，读对的东西。在那间时间不会流逝的房间里——把你的故事读完。', nextScene:'ch19_r2a', effects:{ tags:['最后的读者'], memory:null, fate: 2, bond: 0 } },
       { id:'ch19_r2_b', label:'跑出房子——看马孔多最后一眼', description:'如果一切都要消失——至少你的眼睛可以见证。跑出去，站在街道上——看看这个小镇最后的样子。', nextScene:'ch19_r2b', effects:{ tags:['最后的眺望者'], memory:'马孔多的最后一瞥', fate: 0, bond: 1 } },
-      { id:'ch19_r2_c', label:'站在栗树下——和始祖一起等待', description:'走到栗树下——坐在老人旁边。他是第一个，你是最后一个。一起等待风把你们两人都带走。', nextScene:'ch19_r2c', effects:{ tags:['循环的闭合者'], memory:null, fate: -1, bond: 2 } }
+      { id:'ch19_r2_c', label:'站在栗树下——和始祖一起等待', description:'走到栗树下——坐在老人旁边。他是第一个，你是最后一个。一起等待风把你们两人都带走。', nextScene:'ch19_r2c', effects:{ tags:['循环的闭合者'], memory:null, fate: -1, bond: 2 } },
+      { id:'ch19_r2_d', label:'你感受到了风的重量——那不是风，是百年', description:'晾床单的绳子还在晃。风带走了她——也带走了所有人。但你知道：风不是结束。风只是把故事从一个地方搬到了另一个地方。', nextScene:'ch19_r2b', requiredClue: 'weight_of_wind', effects:{ tags:['感受风的人'], memory:null, fate: 0, bond: 1 } }
     ], settlement:'ch19_r2_settlement' },
     ch19_r2a: { id:'ch19_r2a', type:'narrative', chapter:19, round:2, title:'最后的读者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你走回梅尔基亚德斯的房间——风在外面咆哮，但这间房间里是安静的。你翻开羊皮卷最后一页——你读到的不是字，是画面。你看见了你自己——坐在这间房间里，在这一刻，读着这页纸。你明白了：这卷纸上写的最后一个故事——就是"你在读这卷纸"这件事。故事的主角不是布恩迪亚——故事的主角是阅读本身。']}, choices:null, nextScene:'ch19_r2_settlement' },
     ch19_r2b: { id:'ch19_r2b', type:'narrative', chapter:19, round:2, title:'最后的眺望者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你推开大门——风几乎把你吹倒。街上什么都没有了——屋子一间一间地在风中像纸牌一样折叠。你可以看见马孔多的尽头——那座教堂，那个广场，那些曾经摆过磁铁和放大镜的帐篷位置。它们都在风中解体——不是被吹走，是被抹去。像黑板上的字——擦了就没有了。']}, choices:null, nextScene:'ch19_r2_settlement' },
@@ -434,7 +479,9 @@ registerChapter({
     ch19_r3_choice: { id:'ch19_r3_choice', type:'choice', chapter:19, round:3, title:'第三轮选择 · 最后的时刻', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['羊皮卷上最后的文字在你眼前成形。你不需要读了——你已经知道。","注定要一百年孤独的家族不会有第二次机会在大地上出现。","风在房子外面咆哮——墙壁正在被剥掉。你没有多少时间了。','你在这间时间不会流逝的房间里——在读着这最后一页。当你读完最后一行字的那一刻——这间房间的时间会和外面的时间对齐。然后风会进来——然后一切都会结束。'], transition:'你选择——' }, choices:[
       { id:'ch19_r3_a', label:'读完最后一行——接受结束', description:'你有勇气开始——你也有勇气结束。读完它。让风来做它该做的事。', nextScene:'ch19_r3a', effects:{ tags:['完成者'], memory:null, fate: 1, bond: 0 } },
       { id:'ch19_r3_b', label:'闭上眼睛——不读最后一行', description:'也许不读完——故事就不会结束。也许最后一个字永远不被读到的故事可以永远活下去。', nextScene:'ch19_r3b', effects:{ tags:['永恒的悬念'], memory:'未完的最后一行', fate: 0, bond: -1} },
-      { id:'ch19_r3_c', label:'在羊皮卷末尾写下自己的名字', description:'你不是只被预言——你也可以预言。拿起梅尔基亚德斯的鹅毛笔——在羊皮卷末尾加上一个词。', nextScene:'ch19_r3c', effects:{ tags:['续写者'], memory:'自己写下的名字', fate: 2, bond: 0 } }
+      { id:'ch19_r3_c', label:'在羊皮卷末尾写下自己的名字', description:'你不是只被预言——你也可以预言。拿起梅尔基亚德斯的鹅毛笔——在羊皮卷末尾加上一个词。', nextScene:'ch19_r3c', effects:{ tags:['续写者'], memory:'自己写下的名字', fate: 2, bond: 0 } },
+      { id:'ch19_r3_d', label:'你独自站在飓风中——不需要任何人的手', description:'飓风来了。你一个人站在马孔多的废墟中央——不是被抛弃，是选择独自面对。有些终结不需要陪伴——它们需要完整的清醒。', nextScene:'ch19_r3a', requiredBond: { max: 2 }, effects:{ tags:['独自面对飓风的人'], memory:null, fate: 1, bond: -2 } },
+      { id:'ch19_r3_e', label:'你记得狂欢节的血——在飓风中喊出那些名字', description:'狂欢节那天你没有忘记——你发誓不忘记。现在飓风要抹去一切——但你在风眼中站起来，一个一个喊出他们的名字。三千人——他们听见了。', nextScene:'ch19_r3a', requiredFlag: { flag: 'remembered_carnival', min: 1 }, effects:{ tags:['在飓风中喊名字的人'], memory:null, fate: 2, bond: 0 } }
     ], settlement:'ch19_r3_settlement' },
     ch19_r3a: { id:'ch19_r3a', type:'narrative', chapter:19, round:3, title:'完成者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你读完了最后一行。句子在你脑海里回荡——像一声钟响。风找到你的时候——你已经准备好了。房间里的时间第一次开始流动——灰尘开始落下，墙皮开始剥落。你把羊皮卷抱在怀里——它在你胸前散成碎片。不是风撕的——是它完成了自己的使命。']}, choices:null, nextScene:'ch19_r3_settlement' },
     ch19_r3b: { id:'ch19_r3b', type:'narrative', chapter:19, round:3, title:'永恒的悬念', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你停在了最后一个句号之前。手指放在最后一行字上——没有读。你感觉到风在等待——它在等你的眼睛扫完这最后一行。你笑了笑——然后把羊皮卷合上了。你不知道它写的是什么——但你知道：你让它永远不会发生。只要不被读完，故事就不会结束。你在暴风眼中找到了自己的永恒。']}, choices:null, nextScene:'ch19_r3_settlement' },
@@ -475,7 +522,9 @@ registerChapter({
     ch20_r2_choice: { id:'ch20_r2_choice', type:'choice', chapter:20, round:2, title:'第二轮选择 · 永恒的回归', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['一片安静的白色。不是羊皮纸的白——是某种更深沉的、包含了所有颜色的白。你感觉有一个人在你身后——不是梅尔基亚德斯。是你自己。','你回头——你看见了：那个在屏幕上握着鼠标或手指悬在键盘上的人。那人就是你——从故事开始之前就在阅读的你。你们面对面看着——读者和被写入书中的灵魂。你已经分不清谁是创造者，谁是被创造的了。也许从来就分不清。'], transition:'你选择——' }, choices:[
       { id:'ch20_r2_a', label:'合上书——带着那些故事继续生活', description:'故事已经讲完了——但你还活着。合上它，站起来，走进你自己的生活里。带着所有布恩迪亚在你身上留下的痕迹。', nextScene:'ch20_r2a', effects:{ tags:['回归者'], memory:null, fate: 0, bond: 1 } },
       { id:'ch20_r2_b', label:'再读一遍——从另一个入口', description:'回到序章——从另一个时代重新开始。看看如果你选择了另一条路，这个家族会不会有不同的结局。', nextScene:'ch20_r2b', effects:{ tags:['循环者'], memory:null, fate: 1, bond: 0 } },
-      { id:'ch20_r2_c', label:'写下你自己的开始', description:'不要合上书——打开一页空白的纸，写下你自己的故事。不是布恩迪亚的——是你自己的。', nextScene:'ch20_r2c', effects:{ tags:['创作者'], memory:'空白的第一页', fate: 2, bond: 0} }
+      { id:'ch20_r2_c', label:'写下你自己的开始', description:'不要合上书——打开一页空白的纸，写下你自己的故事。不是布恩迪亚的——是你自己的。', nextScene:'ch20_r2c', effects:{ tags:['创作者'], memory:'空白的第一页', fate: 2, bond: 0} },
+      { id:'ch20_r2_d', label:'乌尔苏拉的汤还在灶上——合上书，去喝一碗', description:'你穿越了整个百年——从冰块到飓风，从第一页到最后一页。但乌尔苏拉的厨房从未熄灭过炉火。放下羊皮卷——那碗汤已经热了一百年了。', nextScene:'ch20_r2a', requiredRelationship: { character: '乌尔苏拉·伊瓜兰', min: 90 }, effects:{ tags:['回到灶边的人'], memory:null, fate: 0, bond: 2 } },
+      { id:'ch20_r2_e', label:'你不是第一次合上这本书——但这一次，你知道合上之后是什么', description:'上一次合上书时你感到的是一种终结。这一次你知道：合上不是结束——是留白。空白的第一页一直在等你——它从来都不是空白的。它一直在等你写第一行。', nextScene:'ch20_r2c', requiredPlaythrough: 2, effects:{ tags:['知道合上之后是什么的人'], memory:null, fate: 1, bond: 0 } }
     ], settlement:'ch20_r2_settlement' },
     ch20_r2a: { id:'ch20_r2a', type:'narrative', chapter:20, round:2, title:'回归者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你合上了羊皮卷。也许只是一本书，也许是一生。窗外的世界还在——你的椅子还在，你的茶杯还在。你站起来的时候——觉得自己的肩膀上有一种奇怪的重量。不是负担——是遗产。一百年的孤独在你体内，但它不再孤独了。因为它被读过了——被理解过了——被你带走了。']}, choices:null, nextScene:'ch20_r2_settlement' },
     ch20_r2b: { id:'ch20_r2b', type:'narrative', chapter:20, round:2, title:'循环者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你翻回第一页。梅尔基亚德斯还在那里——他笑了，像在说："我告诉过你会回来的。"你伸出手——触摸了另一页羊皮纸。这一次你选了一个不同的时代——这次你是奥雷里亚诺，站在失眠症开始蔓延的那个夜晚。你的命运从这里分叉——但最终会不会又走向同一个终点？你不知道——但你再来了。也许故事的意义就在再来一次之中。']}, choices:null, nextScene:'ch20_r2_settlement' },

@@ -543,6 +543,49 @@ function closeClueCollection() {
   document.getElementById('cluecollection-overlay').classList.remove('open');
 }
 
+/* ---- v2.3: 结局回廊 ---- */
+function openEndingsGallery() {
+  hideMainMenu();
+  const overlay = document.getElementById('endings-gallery-overlay');
+  if (!overlay) return;
+  const grid = document.getElementById('endings-gallery-grid');
+  if (!grid) return;
+
+  const seenSet = new Set(GameState._endingsSeen || []);
+  const baseEndings = [
+    { id: 'coauthor',  title: '合著者',         desc: '高宿命 + 高羁绊 —— 理解命运的必然，在每一页边缘写注释。',             hint: '见证者烙印主导 + 家族的魂羁绊主导' },
+    { id: 'prophet',   title: '孤独智者',       desc: '高宿命 + 低羁绊 —— 看了全部，理解了全部，从未属于其中任何一页。',     hint: '见证者烙印主导 + 疏离者羁绊主导' },
+    { id: 'lover',     title: '为爱赴死',       desc: '低宿命 + 高羁绊 —— 没改变结局，但让某些人活得更久、死得更暖。',       hint: '抗争者烙印主导 + 家族的魂羁绊主导' },
+    { id: 'hurricane', title: '飓风中的人',     desc: '低宿命 + 低羁绊 —— 和命运互相撕扯，谁都没赢。',                        hint: '抗争者烙印主导 + 疏离者羁绊主导' },
+    { id: 'rebel',     title: '反抗者烙印',     desc: '羊皮卷有一页空白的——你撕掉了。',                                       hint: '抗争者烙印占比 ≥ 60%' },
+    { id: 'balanced',  title: '均衡烙印',       desc: '轮廓在羊皮卷上是模糊的——你不是任何一个固定的形状。',                 hint: '无任何烙印档位过半' },
+    { id: 'bystander', title: '宿命旁观者',     desc: '只是一个在时间里走过的人——见证过，仅此而已。',                        hint: '混合烙印，见证者低于33%' },
+    { id: 'witness',   title: '见证者',         desc: '你见证了全部——羊皮卷在你眼前一页页翻过。',                            hint: '见证者烙印占比 ≥ 33%（默认）' }
+  ];
+
+  let html = '';
+  baseEndings.forEach(e => {
+    const unlocked = seenSet.has(e.id);
+    const cardClass = unlocked ? 'ending-card-unlocked' : 'ending-card-locked';
+    const statusIcon = unlocked ? '◉' : '○';
+    const statusText = unlocked ? '已抵达' : '尚未踏足';
+    html += `<div class="ending-gallery-card ${cardClass}">
+      <div class="ending-gallery-status">${statusIcon} ${statusText}</div>
+      <div class="ending-gallery-title">${e.title}</div>
+      <div class="ending-gallery-desc">${e.desc}</div>
+      ${unlocked ? '' : `<div class="ending-gallery-hint">✦ ${e.hint}</div>`}
+    </div>`;
+  });
+
+  grid.innerHTML = html;
+  overlay.classList.add('open');
+}
+
+function closeEndingsGallery() {
+  const overlay = document.getElementById('endings-gallery-overlay');
+  if (overlay) overlay.classList.remove('open');
+}
+
 /* ---- 终章评价 ---- */
 function getEndingEvaluation() {
   const chaptersDone = Object.keys(GameState.completedChapters).length;

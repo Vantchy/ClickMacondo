@@ -1912,6 +1912,77 @@ input[type="range"] {
   letter-spacing: 0.03em;
 }
 
+/* v2.3: 结局回廊卡片 */
+.ending-gallery-card {
+  padding: 18px 22px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+.ending-gallery-card.ending-card-unlocked {
+  background: rgba(30,22,12,0.8);
+  border: 1px solid rgba(184,137,62,0.4);
+}
+.ending-gallery-card.ending-card-locked {
+  background: rgba(15,12,8,0.6);
+  border: 1px solid rgba(100,80,50,0.15);
+  opacity: 0.65;
+}
+.ending-gallery-status {
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  margin-bottom: 6px;
+}
+.ending-card-unlocked .ending-gallery-status { color: var(--gold-light); }
+.ending-card-locked .ending-gallery-status { color: #706050; }
+.ending-gallery-title {
+  font-family: var(--font-title);
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+.ending-card-unlocked .ending-gallery-title { color: #e8d0a0; }
+.ending-card-locked .ending-gallery-title { color: #807060; }
+.ending-gallery-desc {
+  font-size: 0.78rem;
+  line-height: 1.6;
+  font-style: italic;
+}
+.ending-card-unlocked .ending-gallery-desc { color: #b0a080; }
+.ending-card-locked .ending-gallery-desc { color: #706050; }
+.ending-gallery-hint {
+  margin-top: 8px;
+  font-size: 0.68rem;
+  color: #605040;
+  font-style: italic;
+  letter-spacing: 0.04em;
+}
+
+/* v2.3: 象限叙事 — 结算页按当前象限展示个性化文本 */
+.quadrant-narrative {
+  margin-top: 18px;
+  padding: 18px 22px;
+  background: rgba(20,16,10,0.75);
+  border-left: 3px solid var(--gold);
+  border-radius: 0 6px 6px 0;
+  animation: emotionalFadeIn 0.8s ease;
+}
+.quadrant-narrative-label {
+  font-family: var(--font-title);
+  font-size: 0.72rem;
+  color: var(--gold);
+  letter-spacing: 0.12em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+.quadrant-narrative-text {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: #c0b090;
+  line-height: 1.8;
+  font-style: italic;
+  letter-spacing: 0.03em;
+}
+
 /* ================================================================
    十八、关系值变化 (relationship-effects)
    ================================================================ */
@@ -1977,6 +2048,31 @@ input[type="range"] {
   border-style: dashed;
   background: linear-gradient(135deg, rgba(250,243,232,0.94), rgba(184,137,62,0.08));
 }
+/* 隐藏选项灰位提示 */
+.choice-btn.choice-locked-hint {
+  opacity: 0.55;
+  cursor: default;
+  pointer-events: none;
+  border-style: dashed;
+  border-color: rgba(160,120,70,0.35);
+  background: rgba(240,230,215,0.5);
+  filter: grayscale(0.15);
+}
+.choice-btn.choice-locked-hint:hover {
+  background: rgba(240,230,215,0.5);
+  transform: none;
+  box-shadow: none;
+}
+.choice-btn.choice-locked-hint .choice-label {
+  color: #8a7a60;
+  font-style: italic;
+  letter-spacing: 0.12em;
+}
+.choice-btn.choice-locked-hint .choice-desc {
+  color: #9a8a70;
+  font-style: italic;
+}
+
 .choice-btn.secret-option::before {
   content: '◆ 线索解锁';
   position: absolute;

@@ -46,7 +46,6 @@ registerChapter({
         ],
         transition: '梅尔基亚德斯从箱底摸出一面小铜镜，在你眼前晃了晃——镜面上隐约倒映着某个弯曲的字符。点击右侧选项，做出你的第一个选择——',
         clues: [
-          { triggerText: '铁锅、铁盆、铁钳从地上纷纷立起', itemId: 'magnet_hum', narrative: '磁铁在你手中发出低沉的嗡鸣——不是声音，是一种你从未感受过的振动。像大地在和你说话，用一种比语言更古老的频率。你忽然明白了梅尔基亚德斯说的"万物皆有灵"——不是比喻，不是疯话。是事实。', unlocksIn: ['chapter5'] },
           { triggerText: '一面小铜镜', itemId: 'melquiades_mirror', narrative: '铜镜的镜面模糊——但你看见了。你的眼睛里有一行倒写的字。你不认识这种文字，但你知道它写的是什么——是你还没走过的路。', unlocksIn: ['chapter17'] }
         ]
       },
@@ -81,7 +80,10 @@ registerChapter({
         postQuote2: [
           '但你不信。你不信任何人。'
         ],
-        transition: '你选择——'
+        transition: '你选择——',
+        clues: [
+          { triggerText: '铁锅、铁盆、铁钳从地上纷纷立起', itemId: 'magnet_hum', narrative: '磁铁在你手中发出低沉的嗡鸣——不是声音，是一种你从未感受过的振动。像大地在和你说话，用一种比语言更古老的频率。你忽然明白了梅尔基亚德斯说的"万物皆有灵"——不是比喻，不是疯话。是事实。', unlocksIn: ['chapter5'] }
+        ]
       },
       choices: [
         {
@@ -113,6 +115,13 @@ registerChapter({
           emotionalCost: '梅尔基亚德斯收回了那面铜镜——也收回了你本想看到的那块冰',
           emotionalGain: '金币在桌上叮当作响。乌尔苏拉数了三遍——她笑了，那是几个月来的第一次',
           alternativeNarrative: '若你把磁铁还给梅尔基亚德斯——他不会从箱底取出铜镜。你不会在镜子里看见自己狂热的脸。但你会知道：在吉卜赛老人的眼中，你不是一个商人。'
+        },
+        {
+          id: 'r1_d', label: '你记得磁铁的嗡鸣——这一次，听听它说什么',
+          description: '上一次你拖着磁铁走进了丛林。这一次你停下脚步——不是寻找黄金，是倾听。磁铁在嗡鸣——不是金属在说话，是马孔多的大地在叫你慢下来。',
+          nextScene: 'round1_b_narrative',
+          requiredPlaythrough: 2,
+          effects: { tags: ['轮回的倾听者'], memory: null, fate: -1, bond: 2 }
         }
       ],
       settlement: 'round1_settlement'

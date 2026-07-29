@@ -157,6 +157,11 @@
         <span class="mm-btn-label">隐藏线索册</span>
         <span class="mm-btn-hint">— 梅尔基亚德斯的秘密 —</span>
       </button>
+      <button class="mm-btn" onclick="openEndingsGallery()">
+        <span class="mm-btn-icon">◎</span>
+        <span class="mm-btn-label">结局回廊</span>
+        <span class="mm-btn-hint">— 你走过的和尚未踏足的路 —</span>
+      </button>
       <button class="mm-btn" onclick="window.location.href='../story-viewer/story-explorer.html'">
         <span class="mm-btn-icon">❦</span>
         <span class="mm-btn-label">故事画卷</span>
@@ -219,6 +224,20 @@
     <div id="tagcollection-grid" style="display:flex;flex-direction:column;gap:6px;"></div>
     <div class="modal-actions" style="margin-top:16px;">
       <button class="modal-btn modal-btn-primary" onclick="closeTagCollection()">返回</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================
+     结局回廊（跨存档持久化）
+     ================================================================ -->
+<div class="modal-overlay" id="endings-gallery-overlay">
+  <div class="modal-panel" style="width:min(640px,94vw);max-height:82vh;overflow-y:auto;">
+    <div class="modal-title">◎ 结局回廊</div>
+    <div style="font-size:0.65rem;color:var(--gold-dim);text-align:center;margin-bottom:16px;font-style:italic;">羊皮卷的每一页都已翻过——有些页你读过，有些页还在等你</div>
+    <div id="endings-gallery-grid" style="display:flex;flex-direction:column;gap:8px;"></div>
+    <div class="modal-actions" style="margin-top:16px;">
+      <button class="modal-btn modal-btn-primary" onclick="closeEndingsGallery()">返回</button>
     </div>
   </div>
 </div>

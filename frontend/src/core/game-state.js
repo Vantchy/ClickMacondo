@@ -21,7 +21,7 @@ const GameState = {
   relationships: {},        // { characterName: value } — 关系值 (0-100)
   relationshipLog: [],      // [{ character, delta, reason }] — 关系值变动日志
   hasCompletedGame: false,  // 是否已通关
-  playthroughCount: 0,      // 通关次数（用于多周目）
+  playthroughCount: (function() { try { return parseInt(localStorage.getItem('cien_anos_playthrough')) || 0; } catch(e) { return 0; } })(),  // 通关次数（多周目，页面刷新不丢）
   /* v2.0 双轴 × 三层宿命 */
   fateCounter: 0,           // 当前章宿命值（每章重置）
   bondCounter: 0,           // 当前章羁绊值（每章重置）
@@ -42,7 +42,7 @@ const GameState = {
     this.choiceLog = [];
     this.completedChapters = {};
     this.encounteredCharacters = [];
-    this._eraVisited = [];
+    // _eraVisited 不重置——跨周目累积，成就"三种视角"需要访问3个时代入口
     this.characterFlags = {};
     this.relationships = {};
     this.relationshipLog = [];
@@ -56,11 +56,19 @@ const GameState = {
     this._lastFateChange = 0;
     this._lastBondChange = 0;
     this._lastClueFound = null;
-    this._secretOptionChosen = false;
+    this._secretOptionsChosen = 0;   // v2.3: 计数器——单次游玩中选择的门控选项数
+    this._hasGoneBack = false;       // v2.3: 是否使用过回退键
+    this._backNavCount = 0;          // v2.3: 回退导航次数
     this._allHotspotsFound = false;
     this._marginaliaRead = 0;
     this._hotspotsFound = 0;
+    // 清理终章泄露字段（Bug #4）
+    this._endingType = null;
+    this._allChaptersDone = false;
     // hasCompletedGame 和 playthroughCount 不重置——它们是持久化元数据
+    // 从 localStorage 恢复周目数（跨页面刷新保留）
+    const savedPT = localStorage.getItem('cien_anos_playthrough');
+    if (savedPT) this.playthroughCount = Math.max(this.playthroughCount || 0, parseInt(savedPT) || 0);
   },
 
   /** 记录遇到的人物 */
@@ -137,6 +145,8 @@ const GameState = {
   markGameCompleted() {
     this.hasCompletedGame = true;
     this.playthroughCount = (this.playthroughCount || 0) + 1;
+    // 持久化周目数到 localStorage（独立于存档，跨页面刷新保留）
+    try { localStorage.setItem('cien_anos_playthrough', this.playthroughCount); } catch(e) {}
   },
 
   /* ---- v2.0 双轴 × 三层宿命方法 ---- */
@@ -204,6 +214,13 @@ const GameState = {
       hasCompletedGame: this.hasCompletedGame || false,
       playthroughCount: this.playthroughCount || 0,
       _endingsSeen: [...(this._endingsSeen || [])],
+      // v2.3: 单次游玩追踪（读档后应保留，否则成就进度丢失）
+      _secretOptionsChosen: this._secretOptionsChosen || 0,
+      _backNavCount: this._backNavCount || 0,
+      _hasGoneBack: this._hasGoneBack || false,
+      _marginaliaRead: this._marginaliaRead || 0,
+      _hotspotsFound: this._hotspotsFound || 0,
+      _allHotspotsFound: this._allHotspotsFound || false,
       // v2.0
       fateCounter: this.fateCounter || 0,
       bondCounter: this.bondCounter || 0,
@@ -238,20 +255,23 @@ const GameState = {
     this.hasCompletedGame = data.hasCompletedGame || false;
     this.playthroughCount = data.playthroughCount || 0;
     this._endingsSeen = data._endingsSeen || [];
+    // v2.3: 单次游玩追踪——从存档恢复，保持成就进度
+    this._secretOptionsChosen = data._secretOptionsChosen || 0;
+    this._hasGoneBack = data._hasGoneBack || false;
+    this._backNavCount = data._backNavCount || 0;
+    this._allHotspotsFound = data._allHotspotsFound || false;
+    this._marginaliaRead = data._marginaliaRead || 0;
+    this._hotspotsFound = data._hotspotsFound || 0;
     // v2.0
     this.fateCounter = data.fateCounter || 0;
     this.bondCounter = data.bondCounter || 0;
     this.fateImprint = data.fateImprint || {};
     this.bondImprint = data.bondImprint || {};
     this.clueFragments = data.clueFragments || [];
-    // 重置瞬态字段（这些字段不应从存档恢复，否则显示过期数据）
+    // 重置瞬态显示字段（仅结算页展示用，不跨存档保留）
     this._lastFateChange = 0;
     this._lastBondChange = 0;
     this._lastClueFound = null;
-    this._secretOptionChosen = false;
-    this._allHotspotsFound = false;
-    this._marginaliaRead = 0;
-    this._hotspotsFound = 0;
   }
 };
 

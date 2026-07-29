@@ -60,6 +60,9 @@ function init() {
   document.getElementById('cluecollection-overlay').addEventListener('click', (e) => {
     if (e.target === e.currentTarget) closeClueCollection();
   });
+  document.getElementById('endings-gallery-overlay').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeEndingsGallery();
+  });
 
   // 设置
   document.getElementById('btn-settings').addEventListener('click', () => SettingsPanel.open());
@@ -129,7 +132,8 @@ function init() {
         document.getElementById('bookmarks-overlay').classList.contains('open') ||
         document.getElementById('gameplay-overlay').classList.contains('open') ||
         document.getElementById('tagcollection-overlay').classList.contains('open') ||
-        document.getElementById('cluecollection-overlay').classList.contains('open');
+        document.getElementById('cluecollection-overlay').classList.contains('open') ||
+        document.getElementById('endings-gallery-overlay').classList.contains('open');
 
       if (anyOpen) {
         // 关闭全部面板
@@ -143,6 +147,7 @@ function init() {
         closeGameplayIntro();
         closeTagCollection();
         closeClueCollection();
+        closeEndingsGallery();
         closeAchievements();
         closeArchiveBookmarks();
       } else {
@@ -153,11 +158,15 @@ function init() {
     // 选择页：数字键选中，再按确认；空格确认
     const choiceScene = GameEngine.getCurrentScene();
     const isChoicePage = choiceScene && choiceScene.type === 'choice' && choiceScene.choices && !GameState.sceneChoices[choiceScene.id];
-    if (e.key === '1' || e.key === '2' || e.key === '3' || e.key === '4') {
+    if (e.key === '1' || e.key === '2' || e.key === '3' || e.key === '4' || e.key === '5') {
       if (isChoicePage) {
         e.preventDefault();
         const idx = parseInt(e.key) - 1;
-        if (choiceScene.choices[idx]) selectChoice(choiceScene.choices[idx].id);
+        // 使用过滤后的可见选项（与 renderer 保持一致）
+        const visibleChoices = GameEngine.filterChoicesByMemories
+          ? GameEngine.filterChoicesByMemories(choiceScene)
+          : choiceScene.choices;
+        if (visibleChoices[idx]) selectChoice(visibleChoices[idx].id);
       }
       return;
     }

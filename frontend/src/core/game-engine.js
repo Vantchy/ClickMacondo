@@ -90,9 +90,11 @@ const GameEngine = {
       });
     }
 
-    // 可玩性增强：追踪秘密选项使用
-    if (choice.isSecretOption || choice.requiredClue) {
-      GameState._secretOptionChosen = true;
+    // v2.3: 追踪所有门控选项使用（线索/记忆/标记/关系/宿命/羁绊/周目）
+    if (choice.requiredClue || choice.requiredMemory || choice.requiredFlag ||
+        choice.requiredRelationship || choice.requiredFate || choice.requiredBond ||
+        choice.requiredPlaythrough) {
+      GameState._secretOptionsChosen = (GameState._secretOptionsChosen || 0) + 1;
     }
 
     // 锁定选择：记录当前场景选择了哪个选项（回退后不可更改）
@@ -443,6 +445,27 @@ const GameEngine = {
         const { flag, min } = choice.requiredFlag;
         if (GameState.getFlag(flag) < min) return false;
       }
+      // requiredRelationship 条件 → 必须与指定角色达到好感度阈值
+      if (choice.requiredRelationship) {
+        const { character, min } = choice.requiredRelationship;
+        if ((GameState.relationships[character] || 0) < min) return false;
+      }
+      // requiredFate 条件 → 宿命值范围（min 含，max 含）
+      if (choice.requiredFate) {
+        const f = GameState.fateCounter;
+        if (choice.requiredFate.min != null && f < choice.requiredFate.min) return false;
+        if (choice.requiredFate.max != null && f > choice.requiredFate.max) return false;
+      }
+      // requiredBond 条件 → 羁绊值范围（min 含，max 含）
+      if (choice.requiredBond) {
+        const b = GameState.bondCounter;
+        if (choice.requiredBond.min != null && b < choice.requiredBond.min) return false;
+        if (choice.requiredBond.max != null && b > choice.requiredBond.max) return false;
+      }
+      // requiredPlaythrough 条件 → 周目数（≥ min）
+      if (choice.requiredPlaythrough) {
+        if ((GameState.playthroughCount || 0) < choice.requiredPlaythrough) return false;
+      }
       return true;
     });
   },
@@ -485,6 +508,9 @@ const GameEngine = {
   navigateBack() {
     console.log('navigateBack: index=' + GameState.historyIndex + ', len=' + GameState.history.length + ', cur=' + GameState.currentScene);
     if (GameState.historyIndex <= 0) return false;
+    // v2.3: 追踪回退导航
+    GameState._hasGoneBack = true;
+    GameState._backNavCount = (GameState._backNavCount || 0) + 1;
     GameState.historyIndex--;
     const prevId = GameState.history[GameState.historyIndex];
     GameState.currentScene = prevId;

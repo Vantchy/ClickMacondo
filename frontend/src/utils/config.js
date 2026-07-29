@@ -253,7 +253,7 @@ const ACHIEVEMENTS = [
     cond: s => (s._eraVisited || []).length >= 3 },
   /* 可玩性增强：新成就 */
   { id:'ach_clue_finder', icon:'◈', name:'线索猎人', desc:'使用一条线索碎片解锁了隐藏选项。',
-    cond: s => (s._secretOptionChosen || false) },
+    cond: s => (s._secretOptionsChosen || 0) >= 1 },
   { id:'ach_bond_master', icon:'↭', name:'羁绊之人', desc:'与任意角色的关系值达到至交（≥85）。',
     cond: s => Object.values(s.relationships || {}).some(v => v >= 85) },
   { id:'ach_explorer', icon:'◎', name:'马孔多的探索者', desc:'在羊皮卷的边缘发现隐藏的文字——累计阅读5条边缘批注。',
@@ -307,7 +307,46 @@ const ACHIEVEMENTS = [
       return quadrants.size >= 3;
     }},
   { id:'ach_soul_of_family', icon:'◉', name:'家族的魂', desc:'累计5章以上保持"家族的魂"羁绊烙印。',
-    cond: s => Object.values(s.bondImprint || {}).filter(b => b === 'soul_of_family').length >= 5 }
+    cond: s => Object.values(s.bondImprint || {}).filter(b => b === 'soul_of_family').length >= 5 },
+
+  /* ── v2.3 新增成就：关系深度 ── */
+  { id:'ach_ursula_kitchen', icon:'◉', name:'乌尔苏拉的厨房', desc:'与乌尔苏拉的关系达到至交（≥85）——你听见了这个家族的心跳。',
+    cond: s => (s.relationships && s.relationships['乌尔苏拉·伊瓜兰'] || 0) >= 85 },
+  { id:'ach_five_friends', icon:'↭', name:'不孤的灵魂', desc:'与5位以上角色的关系达到亲近（≥66）——你在马孔多找到了不止一个可以依靠的人。',
+    cond: s => Object.values(s.relationships || {}).filter(v => v >= 66).length >= 5 },
+  { id:'ach_lone_path', icon:'◆', name:'没有温度的手', desc:'通关时，所有角色关系值均不超过40。你穿越了百年，没在任何人身上留下温度。',
+    cond: s => s.hasCompletedGame && Object.keys(s.relationships || {}).length >= 5
+                && Object.values(s.relationships || {}).every(v => v <= 40) },
+
+  /* ── v2.3 新增成就：收集深度 ── */
+  { id:'ach_tag_hoarder', icon:'✦', name:'标签收藏家', desc:'累计获得25个以上标签——你的选择比大多数人都多。',
+    cond: s => s.tags.length >= 25 },
+  { id:'ach_memory_deep', icon:'◆', name:'记忆的深渊', desc:'累计解锁15枚记忆碎片——你拾起了散落在百年中的大部分光亮。',
+    cond: s => s.memories.length >= 15 },
+
+  /* ── v2.3 新增成就：多周目 ── */
+  { id:'ach_five_endings', icon:'❦', name:'宿命的五面', desc:'触发过5种以上不同结局——你看见了宿命之环的五个棱面。',
+    cond: s => (s._endingsSeen || []).length >= 5 },
+
+  /* ── v2.3 新增成就：烙印极端 ── */
+  { id:'ach_witness_path', icon:'◎', name:'见证百年', desc:'累计5章以上获得"见证者"烙印——你不是过客，你是这百年的目击者。',
+    cond: s => Object.values(s.fateImprint || {}).filter(f => f === 'witness').length >= 5 },
+  { id:'ach_rebel_path', icon:'◆', name:'不熄的抗争', desc:'累计5章以上获得"抗争者"烙印——抗争不是一次性的事。',
+    cond: s => Object.values(s.fateImprint || {}).filter(f => f === 'rebel').length >= 5 },
+  { id:'ach_estranged_path', icon:'◇', name:'疏离之魂', desc:'累计5章以上保持"疏离者"羁绊烙印——你习惯了独自走路。',
+    cond: s => Object.values(s.bondImprint || {}).filter(b => b === 'estranged').length >= 5 },
+
+  /* ── v2.3 新增成就：挑战玩法 ── */
+  { id:'ach_gated_hunter', icon:'◈', name:'门后之人', desc:'单次游玩中选择10个以上门控选项——你推开了十扇需要钥匙的门。',
+    cond: s => (s._secretOptionsChosen || 0) >= 10 },
+  { id:'ach_never_back', icon:'▸', name:'从不回头', desc:'通关且从未使用过回退键——你做出了每个选择，然后继续往前走。',
+    cond: s => s.hasCompletedGame && !s._hasGoneBack },
+  { id:'ach_ruminator', icon:'↻', name:'反复思量', desc:'单次游玩中使用回退键30次以上——你反复斟酌，马孔多值得被这样认真对待。',
+    cond: s => (s._backNavCount || 0) >= 30 },
+
+  /* ── v2.3 新增成就：终极挑战 ── */
+  { id:'ach_full_knowledge', icon:'⁂', name:'全知之人', desc:'收集20条以上线索并触发过5种以上结局——你几乎找到了梅尔基亚德斯藏起来的一切。',
+    cond: s => (s.clueFragments || []).length >= 20 && (s._endingsSeen || []).length >= 5 }
 ];
 
 /* ---- 结局定义注册表（v2.0: 7种结局 — 4象限×3烙印模式+全线索） ---- */

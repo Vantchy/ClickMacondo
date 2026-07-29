@@ -33,7 +33,7 @@ registerChapter({
 
     ch6_r3_choice: { id:'ch6_r3_choice', type:'choice', chapter:6, round:3, title:'第三轮选择 · 处决令', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你的一个老朋友——和你一起从马孔多出征的人——被俘了。不是被敌人——是被自己人。他被指控叛变——但你知道他是无辜的。他只是在一封家书里写了一句"也许我们该和谈了"。','军事法庭判他死刑。但你有权否决。你的手下正看着你——他们中有的人认为叛变就是叛变，无论形式。'], transition:'你选择——' }, choices:[
       { id:'ch6_r3_a', label:'否决处决——救他', description:'他是无辜的——你知道。行使你的权力，撤销死刑。哪怕手下人不满。', nextScene:'ch6_r3a', effects:{ tags:['公正的裁决者'], memory:null, fate:-1, bond:2 } },
-      { id:'ch6_r3_b', label:'签署处决令', description:'你不能因为一个人而动摇全军纪律。军法就是军法——即使你知道他不该死。', nextScene:'ch6_r3b', effects:{ tags:['铁血指挥官'], memory:'签署的名字', fate:2, bond:-1 } },
+      { id:'ch6_r3_b', label:'签署处决令', description:'你不能因为一个人而动摇全军纪律。军法就是军法——即使你知道他不该死。', nextScene:'ch6_r3b', effects:{ tags:['铁血指挥官'], memory:'签署的名字', characterFlags: { 'signed_death': 1 }, fate:2, bond:-1 } },
       { id:'ch6_r3_c', label:'放他逃走', description:'你不能正式否决——但你可以在夜里让人放他走。让他带着秘密活着离开。', nextScene:'ch6_r3c', effects:{ tags:['暗中救赎者'], memory:null, fate:1, bond:1 } }
     ], settlement:'ch6_r3_settlement' },
     ch6_r3a: { id:'ch6_r3a', type:'narrative', chapter:6, round:3, title:'公正的裁决者', leftPage:{ speaker:'奥雷里亚诺上校', speakerColor:'#1a3a4a', paragraphs:['你否决了处决。你的手下有人不满——有人离开了。但你看着那个老朋友的眼睛，知道你做对了。他跪下来，想吻你的手——你把他拉起来。"别跪。布恩迪亚从来不让人跪。"']}, choices:null, nextScene:'ch6_r3_settlement' },
@@ -54,7 +54,8 @@ registerChapter({
     ch6_r5_choice: { id:'ch6_r5_choice', type:'choice', chapter:6, round:5, title:'第五轮选择 · 权力的终局', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['战争终于结束了——真的结束了。你回到马孔多，把自己关在作坊里。你不接见任何人，不读信，不回答任何问题。你做一条小金鱼，卖掉——换来金币，然后把金币熔掉，重新做成金鱼。一个完美的循环。','有人来请你做总统——你拒绝了。有人来请你做将军——你拒绝了。有人来给你颁发勋章——你拒绝了。乌尔苏拉站在作坊门口："你在里面做什么？""做金鱼。"她转身走了——但她把一碗汤放在门口。'], transition:'你选择——' }, choices:[
       { id:'ch6_r5_a', label:'永远留在作坊里', description:'关上门。再不出去。让世界忘记你还活着——你也忘记世界还存在。', nextScene:'ch6_r5a', effects:{ tags:['永远的隐士'], memory:'金鱼的永恒循环', fate:0, bond:-2 } },
       { id:'ch6_r5_b', label:'偶尔出来——陪乌尔苏拉吃饭', description:'你不需要参与世界——但你需要陪母亲吃晚饭。这是你能做的最小的事。', nextScene:'ch6_r5b', effects:{ tags:['孝子'], memory:null, fate:-1, bond:2 } },
-      { id:'ch6_r5_c', label:'重新开始——以另一种方式', description:'战争结束了，但世界还在。走出作坊，用你的双手建一些东西——不是武器，不是金鱼。', nextScene:'ch6_r5c', effects:{ tags:['重生者'], memory:'作坊外的阳光', fate:0, bond:1 } }
+      { id:'ch6_r5_c', label:'重新开始——以另一种方式', description:'战争结束了，但世界还在。走出作坊，用你的双手建一些东西——不是武器，不是金鱼。', nextScene:'ch6_r5c', effects:{ tags:['重生者'], memory:'作坊外的阳光', fate:0, bond:1 } },
+      { id:'ch6_r5_d', label:'你知道她在等你——去厨房坐一会儿', description:'乌尔苏拉从不叫你吃饭——她只是多摆一副碗筷。你知道那副碗筷还在桌上——去坐下来，让她看到你回来了。', nextScene:'ch6_r5b', requiredRelationship: { character: '乌尔苏拉·伊瓜兰', min: 75 }, effects:{ tags:['回到饭桌的人'], memory:null, fate: -1, bond: 2 } }
     ], settlement:'ch6_r5_settlement' },
     ch6_r5a: { id:'ch6_r5a', type:'narrative', chapter:6, round:5, title:'永远的隐士', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你关上了作坊的门。从此外界的一切都不再重要。你每天做金鱼，熔掉，再做。你的世界缩成了一间小屋子、一个坩埚和一堆闪光的金属。外面的人在衰老、在死去、在遗忘——而你在熔金。时间在你这里成了一个圆圈——没有起点，没有终点。']}, choices:null, nextScene:'ch6_r5_settlement' },
     ch6_r5b: { id:'ch6_r5b', type:'narrative', chapter:6, round:5, title:'孝子', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你仍然每天做金鱼——但每到黄昏，你会从作坊里出来，坐在饭桌前。乌尔苏拉把一碗汤放在你面前。你们不说话——不需要说话。你们只是在同一个房间里呼吸。她的手指苍老却有力——她活了太久，见过太多，但她仍然每天摆碗筷。你吃得很慢——不是因为不饿，是因为你想让这段时间延长。']}, choices:null, nextScene:'ch6_r5_settlement' },
@@ -85,7 +86,7 @@ registerChapter({
   scenes: {
     ch7_opening: { id:'ch7_opening', type:'narrative', chapter:7, round:0, title:'蛇咬住了自己的尾巴', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你已经有三天没有换下这身军装了。汗、火药、泥水在领口和腋下结成硬壳——你不是穿着衣服，是被包裹在某种东西里面。像飞虫在松脂中，缓慢地变成不是自己的东西。','你坐在帐篷里的行军床边。右手还握着枪——左轮，六发子弹，枪管在油灯下泛着冷光。你没有在瞄准——你只是握着它。','地图上的点你早就背熟了。每一个点你都去过——不止一遍，是三四遍、五六遍。你在一个圆圈里行军——从一场败仗逃到下一场胜仗，从一封叛变信读到下一封。而你在回信里只写两个字："处决他。"桌角放着一条未完成的小金鱼——昨晚做的，今天就会熔掉。'], clues: [
       { triggerText: '小金鱼', itemId: 'goldfish_cycle', narrative: '一条小金鱼——鳞片还在闪光。你知道它会被熔掉，重新开始。一遍又一遍。不是徒劳——是仪式。是你在战争中唯一不需要瞄准的动作。', unlocksIn: ['chapter17'] }
-    ] }, echoText: '你记得蕾梅黛丝——不是她的脸，是她举着糖苹果站在街对面的姿势。你的手指现在在扳机上——但那天你的手指在她的糖壳上。', choices:null, nextScene:'ch7_r1_choice' },
+    ] }, echoCondition: { memory: '糖苹果与墓石' }, echoText: '你记得蕾梅黛丝——不是她的脸，是她举着糖苹果站在街对面的姿势。你的手指现在在扳机上——但那天你的手指在她的糖壳上。', choices:null, nextScene:'ch7_r1_choice' },
 
     ch7_r1_choice: { id:'ch7_r1_choice', type:'choice', chapter:7, round:1, title:'第一轮选择 · 自杀未遂', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你把枪口抵在自己胸口。不是因为害怕敌人——是因为你知道：战争已经变成了一个圆圈。你杀的人越多，你要保护的人就越少。你已经不记得你最初是为了什么而拿起枪的。','你的手指在扳机上。帐篷外——有人在喊你的名字。不是"上校"，是"奥雷里亚诺"。那个声音很老——你认得。是乌尔苏拉。但她在马孔多——你不该在这里听见她。也许你已经疯了。'], transition:'你选择——' }, choices:[
       { id:'ch7_r1_a', label:'放下枪——继续活着', description:'不是因为怕死——是因为你还欠乌尔苏拉一碗汤。至少活着回去喝掉它。', nextScene:'ch7_r1a', effects:{ tags:['幸存者'], memory:null, fate:-1, bond:1 } },
@@ -121,7 +122,8 @@ registerChapter({
       { id:'ch7_r4_a', label:'继续做金鱼——让它成为你的修行', description:'金鱼不是逃避——是修行。在重复中寻找平静。把剩下的日子变成一件一件的小金鱼。', nextScene:'ch7_r4a', effects:{ tags:['工匠'], memory:null, fate:1, bond:0 } },
       { id:'ch7_r4_b', label:'写回忆录', description:'把你的经历写下来。不是为了出版——是为了记住。让后人知道这场战争到底是怎么回事。', nextScene:'ch7_r4b', effects:{ tags:['记录者'], memory:'未完成的回忆录', fate:1, bond:0 } },
       { id:'ch7_r4_c', label:'帮助重建马孔多', description:'不要整天关在作坊里。走出去——帮村里人修房子、挖水渠、教孩子们识字。用你的双手做有用的事。', nextScene:'ch7_r4c', effects:{ tags:['重建者'], memory:null, fate:0, bond:1 } },
-      { id:'ch7_r4_d', label:'带孩子们去看冰块——就像当年父亲带你去看一样', description:'你忽然想起父亲的手覆在你手背上的重量。冰块还在——也许你父亲没有说出口的话，你可以替他说给下一代听。', nextScene:'ch7_r4a', requiredFlag: { flag: 'showed_ice', min: 1 }, effects:{ tags:['冰的传承者'], memory:null, fate: 0, bond: 2 } }
+      { id:'ch7_r4_d', label:'带孩子们去看冰块——就像当年父亲带你去看一样', description:'你忽然想起父亲的手覆在你手背上的重量。冰块还在——也许你父亲没有说出口的话，你可以替他说给下一代听。', nextScene:'ch7_r4a', requiredFlag: { flag: 'showed_ice', min: 1 }, effects:{ tags:['冰的传承者'], memory:null, fate: 0, bond: 2 } },
+      { id:'ch7_r4_e', label:'你在循环中看见了意义——不是徒劳，是仪式', description:'金鱼做好了熔掉——一遍又一遍。你终于明白了：不是重复，是每一次都不同。每一次熔掉都是一次选择——选择重新开始。', nextScene:'ch7_r4a', requiredFate: { min: 4 }, effects:{ tags:['看见循环的人'], memory:null, fate: 1, bond: 0 } }
     ], settlement:'ch7_r4_settlement' },
     ch7_r4a: { id:'ch7_r4a', type:'narrative', chapter:7, round:4, title:'工匠', leftPage:{ speaker:'奥雷里亚诺上校', speakerColor:'#1a3a4a', paragraphs:['你重新点燃坩埚。金子在火焰中慢慢变软——像你一样。你做了一条金鱼——然后把它熔掉。重新开始。一遍，又一遍。你不再数做了多少条——因为数字在这里没有意义。重要的不是金鱼——是你做金鱼的时候，你的心是安静的。']}, choices:null, nextScene:'ch7_r4_settlement' },
     ch7_r4b: { id:'ch7_r4b', type:'narrative', chapter:7, round:4, title:'记录者', leftPage:{ speaker:'奥雷里亚诺上校', speakerColor:'#1a3a4a', paragraphs:['你拿出纸和笔。开始写——从冰块写起，从糖苹果写起，从第一次听见枪声的那个下午写起。你写了很久。乌尔苏拉偶尔推门进来，把一碗汤放在你手边，然后离开。她没有读你写了什么——但她知道你在写自己。']}, choices:null, nextScene:'ch7_r4_settlement' },
@@ -131,7 +133,8 @@ registerChapter({
     ch7_r5_choice: { id:'ch7_r5_choice', type:'choice', chapter:7, round:5, title:'第五轮选择 · 死亡的到来', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你在作坊里做金鱼。手已经老了，手指不太听使唤了——金鱼做得越来越小，越来越简单。你听见心脏在胸腔里跳动——它跳得很慢，像是在数着什么。','你知道这一天会来。你从来不害怕它——你只是不确定：当你闭眼的时候，你会在脑海里看见什么？是冰块？是糖苹果？是行刑队的墙？还是乌尔苏拉站在门口把一双筷子放在空位上的样子？'], transition:'你选择——' }, choices:[
       { id:'ch7_r5_a', label:'在作坊里安静离世', description:'不需要大张旗鼓。坐在你熟悉的坩埚前，做完最后一条金鱼，然后闭上眼睛。', nextScene:'ch7_r5a', effects:{ tags:['安详的终结'], memory:'最后一条金鱼', fate:1, bond:0 } },
       { id:'ch7_r5_b', label:'走到栗树下——和父亲一起等死', description:'你已经很久没有和父亲说话了。走到栗树下，解开他的绳子——让他知道你也来了。', nextScene:'ch7_r5b', effects:{ tags:['回归的儿子'], memory:'栗树下的重逢', fate:-1, bond:2 } },
-      { id:'ch7_r5_c', label:'坐在饭桌前——等乌尔苏拉摆碗筷', description:'死在哪里都可以——但你希望在走之前，再喝一碗她的汤。', nextScene:'ch7_r5c', effects:{ tags:['感恩的告别'], memory:'最后一碗汤', fate:-1, bond:2 } }
+      { id:'ch7_r5_c', label:'坐在饭桌前——等乌尔苏拉摆碗筷', description:'死在哪里都可以——但你希望在走之前，再喝一碗她的汤。', nextScene:'ch7_r5c', effects:{ tags:['感恩的告别'], memory:'最后一碗汤', fate:-1, bond:2 } },
+      { id:'ch7_r5_d', label:'让她知道——不是告别，是感谢', description:'你和她之间不需要"再见"。你只是走到厨房门口——看着她。不是最后一瞥——是你想让她知道，你记得每一碗汤的味道。', nextScene:'ch7_r5c', requiredRelationship: { character: '乌尔苏拉·伊瓜兰', min: 80 }, effects:{ tags:['用目光告别的人'], memory:null, fate: 0, bond: 2 } }
     ], settlement:'ch7_r5_settlement' },
     ch7_r5a: { id:'ch7_r5a', type:'narrative', chapter:7, round:5, title:'安详的终结', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你坐在作坊里，手里握着最后一条金鱼——很小，还没有你的拇指大。你的手慢慢松开。金鱼掉在地上——但它没有摔坏。它躺在地上，在正午的阳光里闪闪发光。乌尔苏拉后来发现你的时候，以为你只是在闭目养神。她把金鱼捡起来，放在你的掌心里，然后帮你合上了手。']}, choices:null, nextScene:'ch7_r5_settlement' },
     ch7_r5b: { id:'ch7_r5b', type:'narrative', chapter:7, round:5, title:'回归的儿子', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你走到栗树下。父亲正在画圆圈——他没有抬头。你坐到他旁边——没有说话。他继续画他的圆圈，你继续数你的心跳。夕阳把你们两人的影子拉得很长——它们重叠在一起，像两条被风吹到一起的绳子。','后来乌尔苏拉把你们两人都带回了屋里——她一手扶着一个布恩迪亚，把他们放到同一张床上。这是她第一次觉得这个家里有两个布恩迪亚是好事而不是负担。']}, choices:null, nextScene:'ch7_r5_settlement' },
@@ -176,7 +179,8 @@ registerChapter({
     ch8_r2_choice: { id:'ch8_r2_choice', type:'choice', chapter:8, round:2, title:'第二轮选择 · 美人儿蕾梅黛丝', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['美人儿蕾梅黛丝——家族第四代的美人——这天下午站在院子里晾她的床单。风很大——床单在她手里鼓起来，像一面白色的帆。她仰起头——阳光穿过床单洒在她身上，把她染成半透明的白色。','但她不穿衣服。不是故意的——是她不在乎。她觉得衣服是这世界上最没有意义的东西——和名字一样没意义。她的美丽是一种危险的美丽——危险到每一个看过她的男人都会在接下来的很长一段时间里无法看别的女人。'], transition:'你选择——' }, choices:[
       { id:'ch8_r2_a', label:'保护她——把她藏在家里', description:'她的美貌是危险的。不让外人看到她——把她留在家里，确保她的安全。', nextScene:'ch8_r2a', effects:{ tags:['过度保护者'], memory:null, fate:1, bond:0 } },
       { id:'ch8_r2_b', label:'让她自由——不要限制她', description:'她的美是她的——不是你的，不是任何人的。让她做她自己想做的事。', nextScene:'ch8_r2b', effects:{ tags:['自由主义者'], memory:null, fate:0, bond:0 } },
-      { id:'ch8_r2_c', label:'教她应对这个世界', description:'她需要知道外面的人会怎么看她。不是要改变她——是要让她有准备。', nextScene:'ch8_r2c', effects:{ tags:['引导者'], memory:'床单与风', fate:0, bond:1 } }
+      { id:'ch8_r2_c', label:'教她应对这个世界', description:'她需要知道外面的人会怎么看她。不是要改变她——是要让她有准备。', nextScene:'ch8_r2c', effects:{ tags:['引导者'], memory:'床单与风', fate:0, bond:1 } },
+      { id:'ch8_r2_d', label:'你记得泥土的味道——理解她的饥饿', description:'丽贝卡当年吃泥的画面浮现在你眼前。那不是饥饿——那是渴望。美人儿蕾梅黛丝也在渴望什么——不是泥，是天空。', nextScene:'ch8_r2b', requiredClue: 'taste_of_mud', effects:{ tags:['泥土的记忆者'], memory:null, fate: 0, bond: 2 } }
     ], settlement:'ch8_r2_settlement' },
     ch8_r2a: { id:'ch8_r2a', type:'narrative', chapter:8, round:2, title:'过度保护者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你把她关在家里面。但她总是能找到出去的路——翻窗，翻墙，从你忘记锁上的任何一扇门溜出去。她的美像藤蔓一样从各个缝隙里钻出去——你永远关不住它。']}, choices:null, nextScene:'ch8_r2_settlement' },
     ch8_r2b: { id:'ch8_r2b', type:'narrative', chapter:8, round:2, title:'自由主义者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你让她自由来去。她在马孔多的街道上旁若无人地走着——不穿衣服，不施脂粉，像一个不属于这个世界的存在。人们被她吸引——然后被她灼伤。你不阻止她——因为她不是你能阻止的。']}, choices:null, nextScene:'ch8_r2_settlement' },
@@ -185,7 +189,7 @@ registerChapter({
 
     ch8_r3_choice: { id:'ch8_r3_choice', type:'choice', chapter:8, round:3, title:'第三轮选择 · 升天', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['一个普通的下午。美人儿蕾梅黛丝在院子里收床单。风突然大了起来——床单鼓胀起来，拉着她的手往上升。她没有松手。她也没有叫——她只是仰起头看着天空，看着那片白色的布在她手中变成了一对翅膀。','她升起来了。不是很快——是缓缓地，像一片被热气流托起的羽毛。她越升越高——超过了晾衣绳，超过了房顶，超过了栗树，超过了马孔多最高的教堂尖顶。她没有回头——不是因为她不想，是因为她的眼睛一直在看上面。'], transition:'你选择——' }, choices:[
       { id:'ch8_r3_a', label:'伸手抓住她', description:'你不能让她就这样走了。跳起来——抓住她的脚踝，把她拉回来。', nextScene:'ch8_r3a', effects:{ tags:['试图挽留者'], memory:null, fate:0, bond:1 } },
-      { id:'ch8_r3_b', label:'目送她升天——不要打扰', description:'这是她的离开方式。不是死亡——是离开。你不能碰——只能看。', nextScene:'ch8_r3b', effects:{ tags:['目送者'], memory:'升天的床单', fate:-1, bond:2 } },
+      { id:'ch8_r3_b', label:'目送她升天——不要打扰', description:'这是她的离开方式。不是死亡——是离开。你不能碰——只能看。', nextScene:'ch8_r3b', effects:{ tags:['目送者'], memory:'升天的床单', characterFlags: { 'let_her_go': 1 }, fate:-1, bond:2 } },
       { id:'ch8_r3_c', label:'闭上眼睛——然后记住', description:'你不看——但你记住了。把这一刻刻在脑海里——让它成为永不褪色的东西。', nextScene:'ch8_r3c', effects:{ tags:['内心的铭记者'], memory:'闭眼看见的光', fate:1, bond:-1 } }
     ], settlement:'ch8_r3_settlement' },
     ch8_r3a: { id:'ch8_r3a', type:'narrative', chapter:8, round:3, title:'试图挽留者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你跳起来——但你的手指只碰到了她的脚踝。她的皮肤很凉——像冰块。然后她继续上升——你的手指滑开了。你落在院子里，仰头看着她越变越小。你的指尖残留着她的温度——那是这个世界上最接近于永恒的东西。']}, choices:null, nextScene:'ch8_r3_settlement' },
@@ -206,7 +210,9 @@ registerChapter({
     ch8_r5_choice: { id:'ch8_r5_choice', type:'choice', chapter:8, round:5, title:'第五轮选择 · 家族的新篇章', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['巨人不在了。美人也不在了。栗树下的老人还在画圆圈。但家里有了新的面孔——奥雷里亚诺第二和他的双胞胎兄弟何塞·阿尔卡蒂奥第二。两个孩子长得一模一样——连乌尔苏拉都分不清。','家族进入了一个新的时代——一个充满狂欢、盛宴和生育的时代。马孔多也在变化——铁路修过来了，外国人来了，香蕉公司来了。一切都好像在加速——像一辆刹车坏了的火车。'], transition:'你选择——' }, choices:[
       { id:'ch8_r5_a', label:'投身家族狂欢', description:'开派对！把房子开放给所有人。用盛宴和舞蹈填满每一个房间——生命太短了。', nextScene:'ch8_r5a', effects:{ tags:['狂欢者'], memory:null, fate:1, bond:1 } },
       { id:'ch8_r5_b', label:'保持清醒——为风暴做准备', description:'狂欢是假的。你感觉到了——一场巨大的风暴正在靠近。为家人做好准备。', nextScene:'ch8_r5b', effects:{ tags:['未雨绸缪者'], memory:null, fate:1, bond:0 } },
-      { id:'ch8_r5_c', label:'记录——写下家族的历史', description:'这个家族有太多故事了。如果不写下来——它们会像美人儿一样升天，再也回不来。', nextScene:'ch8_r5c', effects:{ tags:['家族史官'], memory:'家族编年史', fate:0, bond:1 } }
+      { id:'ch8_r5_c', label:'记录——写下家族的历史', description:'这个家族有太多故事了。如果不写下来——它们会像美人儿一样升天，再也回不来。', nextScene:'ch8_r5c', effects:{ tags:['家族史官'], memory:'家族编年史', fate:0, bond:1 } },
+      { id:'ch8_r5_d', label:'你知道这家族的根在哪里——回厨房去', description:'乌尔苏拉的厨房是这所房子的心脏。不管家族多大、人多少——一切重要的事都在那张桌子上决定。去那里——你不是在找食物，你是在找回方向。', nextScene:'ch8_r5a', requiredRelationship: { character: '乌尔苏拉·伊瓜兰', min: 70 }, effects:{ tags:['回到心脏的人'], memory:null, fate: 0, bond: 2 } },
+      { id:'ch8_r5_e', label:'你没有抓住她——现在你知道为什么了', description:'美人儿蕾梅黛丝升天时你目送了她。你没有伸手——不是冷漠，是尊重。现在你明白了：有些离开不是抛弃——是完成。记录她的故事——让她在文字里继续存在。', nextScene:'ch8_r5c', requiredFlag: { flag: 'let_her_go', min: 1 }, effects:{ tags:['理解升天的人'], memory:null, fate: 0, bond: 1 } }
     ], settlement:'ch8_r5_settlement' },
     ch8_r5a: { id:'ch8_r5a', type:'narrative', chapter:8, round:5, title:'狂欢者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你把房子变成了马孔多最热闹的地方。宴席从早摆到晚——食物多到吃不完的喂了猪。奥雷里亚诺第二的胃口大到惊人——一顿能吃下一头牛。他在餐桌前挥舞着叉子大声说："活着就是为了吃！"你看着他，笑了。你不确定他说得对——但你确实很久没有这样笑过了。']}, choices:null, nextScene:'ch8_r5_settlement' },
     ch8_r5b: { id:'ch8_r5b', type:'narrative', chapter:8, round:5, title:'未雨绸缪者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你没有加入狂欢。你在角落里观察——你看见铁路的尽头有烟尘升起，看见外国人的账本上写满了数字，看见马孔多的天空正慢慢变成你不认识的颜色。你在心里列了一张清单——不是要做什么，是要记住：总有一天会需要这张清单。']}, choices:null, nextScene:'ch8_r5_settlement' },
@@ -281,9 +287,10 @@ registerChapter({
     ch9_r4_settlement: { id:'ch9_r4_settlement', type:'settlement', chapter:9, round:4, title:'第四轮 · 结算', leftPage:{ speaker:null, speakerColor:null, paragraphs:['奥雷里亚诺第二在两个女人之间找到了他的平衡——或不平衡。费尔南达守着那所越来越空的房子。佩特拉在院子里的无花果树上看着他。布恩迪亚家的男人从来不会只爱一个人——他们要么不爱，要么爱太多。']}, settlement:{ summary:'第四轮完成。你面对了奥雷里亚诺第二的婚姻危机。', nextScene:'ch9_r5_choice', nextLabel:'进入最终轮', quadrantNarratives: { guardian: '血在石板地上——你冲进去了。不是因为不怕，是因为有人在里面。', prophet: '你看见了屠杀的全部——从开始到结束。你看得太清楚了——从此闭不上眼。', follower: '你喊了——但没有人听见。至少你喊了。', rebel: '你站在原地——动不了。不是害怕，是愤怒卡在喉咙里出不来。' } } },
 
     ch9_r5_choice: { id:'ch9_r5_choice', type:'choice', chapter:9, round:5, title:'第五轮选择 · 面具之下', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['狂欢节结束了。面具被收进了阁楼——但面具之下的伤口还在。马孔多再也没有举办过狂欢节。广场上的纸花碎片被风吹走——或被蚂蚁拖进巢穴里。','你坐在走廊上，看着夕阳把栗树的影子一寸一寸拉长。你想起那天晚上的枪声——想起你救下的人，你没能救下的人，你面对的那个年轻军官。你问自己：这一切到底是为了什么？但没有人回答。只有风吹过走廊——带着远处香蕉公司蒸汽机的轰鸣。'], transition:'你选择——' }, choices:[
-      { id:'ch9_r5_a', label:'记住——发誓不忘记', description:'在栗树下挖一个坑，埋进一件狂欢节的东西——让它永远提醒你。', nextScene:'ch9_r5a', effects:{ tags:['记忆的守护者'], memory:'埋藏的假面', fate:0, bond:1 } },
+      { id:'ch9_r5_a', label:'记住——发誓不忘记', description:'在栗树下挖一个坑，埋进一件狂欢节的东西——让它永远提醒你。', nextScene:'ch9_r5a', effects:{ tags:['记忆的守护者'], memory:'埋藏的假面', characterFlags: { 'remembered_carnival': 1 }, fate:0, bond:1 } },
       { id:'ch9_r5_b', label:'放手——继续生活', description:'人不能永远活在过去的阴影里。把狂欢节的事放在一边——继续往前走。', nextScene:'ch9_r5b', effects:{ tags:['前行者'], memory:null, fate:1, bond:0 } },
-      { id:'ch9_r5_c', label:'化作行动——对抗不公', description:'你不只会记住——你会行动。加入那些正在对抗香蕉公司的人。让记忆变成力量。', nextScene:'ch9_r5c', effects:{ tags:['行动者'], memory:null, fate:2, bond:-1 } }
+      { id:'ch9_r5_c', label:'化作行动——对抗不公', description:'你不只会记住——你会行动。加入那些正在对抗香蕉公司的人。让记忆变成力量。', nextScene:'ch9_r5c', effects:{ tags:['行动者'], memory:null, fate:2, bond:-1 } },
+      { id:'ch9_r5_d', label:'你开始理解费尔南达——不是认同，是理解', description:'她不是布恩迪亚——她生来就是一个被规矩包裹的人。你开始看见那些规矩下面藏着什么：恐惧。和她谈谈——不是争论，是倾听。', nextScene:'ch9_r5a', requiredRelationship: { character: '费尔南达·德尔·卡皮奥', min: 50 }, effects:{ tags:['跨过门槛的人'], memory:null, fate: 0, bond: 1 } }
     ], settlement:'ch9_r5_settlement' },
     ch9_r5a: { id:'ch9_r5a', type:'narrative', chapter:9, round:5, title:'记忆的守护者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你在栗树下挖了一个坑，把一只狂欢节的假面埋了进去。狮子——它的鬃毛已经被血染成了暗红。很多年后会有人挖出这只假面——他们会以为它是玩具。他们不会知道——它曾经在一个下午见证了马孔多最黑暗的时刻。']}, choices:null, nextScene:'ch9_r5_settlement' },
     ch9_r5b: { id:'ch9_r5b', type:'narrative', chapter:9, round:5, title:'前行者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你把记忆放在了一边——不是因为遗忘，是因为你需要力气走接下来的路。香蕉公司还在扩张，马孔多还在变化。你不能总是回头——前面还有太多事情等着你。但你心里有一个角落永远留给那个广场。']}, choices:null, nextScene:'ch9_r5_settlement' },
@@ -319,12 +326,34 @@ registerChapter({
     ch10_opening: { id:'ch10_opening', type:'narrative', chapter:10, round:0, title:'铁轨伸进沼泽', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['第一样你感受到的不是光——是震动。地面在颤抖，规律地、像军队的行进步伐一样从东边传来。','你起身走到窗口。铁轨像一条金属藤蔓，从沼泽边缘伸进马孔多的腹地。河对岸的草地变成了工棚、碾磨厂和铁丝网——标牌上用英文写着：UNITED FRUIT COMPANY — PRIVATE PROPERTY。','你叫何塞·阿尔卡蒂奥第二。你不是你伯父——但你的血液里有布恩迪亚的愤怒。你看着工人们在铁丝网后面佝偻着干活——一天十四个小时，工资用香蕉公司的代金券支付。你看不下去了。远处火车站台上隐约架着机枪——铁轨上的火车正在装车，方向是海边。'], clues: [
       { triggerText: '机枪', itemId: 'machinegun_position', narrative: '三挺机枪——站台左边一挺、右边一挺、香蕉树后面一挺。你记住了位置。不是因为你想记住——是因为你的眼睛不听使唤地记住了每一个细节。', unlocksIn: ['chapter19'] },
       { triggerText: '火车', itemId: 'train_direction', narrative: '火车往海边开去了。两百节车厢——不是货厢，是装人的。他们被塞进车厢里，车门从外面锁上。你看着铁轨——它伸向远方，伸向一个没有人会承认的方向。', unlocksIn: ['chapter14'] }
-    ] }, echoText: '你记得狂欢节的血——不是颜色，是它在石板地上干涸的速度。比红酒快。比雨慢。这次你不会再犹豫。', choices:null, nextScene:'ch10_r1_choice' },
+    ] }, echoCondition: { clue: 'carnival_mask' }, echoText: '你记得狂欢节的血——不是颜色，是它在石板地上干涸的速度。比红酒快。比雨慢。这次你不会再犹豫。', choices:null, nextScene:'ch10_explore' },
+
+    ch10_explore: {
+      id: 'ch10_explore', type: 'exploration', chapter: 10, round: 0,
+      title: '探索 · 火车站广场',
+      leftPage: {
+        speaker: '旁白', speakerColor: '#4a2a18',
+        paragraphs: [
+          '你站在火车站前的广场上。天还没亮——但空气中已经弥漫着紧张。地面还湿着——昨夜的雨水积在铁轨旁的低洼处，反射着远处工棚的灯光。',
+          '工人们陆续从各个方向走来——他们穿着最干净的衣服，好像去教堂。他们不是来打仗的——他们是来要求一个厕所、一个医生、一份能用硬币支付的工资。',
+          '在风暴来临之前的这一刻——这广场上有许多东西在低声说话。铁轨、弹壳、告示、远处的栗树。它们知道一些你不知道的事。触碰它们——听听它们说什么。'
+        ]
+      },
+      hotspots: [
+        { id: 'hs_platform', label: '站台上的脚印', position: { x: '50%', y: '60%' }, narrative: '站台上密密麻麻的脚印——光脚的、草鞋的、橡胶靴的。几千双脚在这个站台上站过——不是等火车，是等命运。有些不那么深的脚印——那是孩子的。大人带着他们来——因为罢工也是他们的。', discoveredText: '你数了站台上的脚印。' },
+        { id: 'hs_notice', label: '香蕉公司的告示', position: { x: '75%', y: '20%' }, narrative: '一张告示钉在站台柱子上——上面的英文你不太认识。但你知道它的意思："正常运营。"不管今天发生什么——香蕉公司会说一切正常。因为他们一直这样说。墨水还没干——但你感觉它已经干了一百年。', discoveredText: '你读完了香蕉公司的告示。' },
+        { id: 'hs_shell', label: '地上的弹壳', position: { x: '20%', y: '70%' }, narrative: '一枚铜弹壳——卡在石板缝里。已经生锈了，不是今天的。是上一次的。或者是下一次的。你把它捡起来——它比看起来要轻。死亡总是比看起来要轻——直到它落在你身上。', discoveredText: '你捡起了地上的弹壳。' },
+        { id: 'hs_chestnut', label: '远处栗树的轮廓', position: { x: '10%', y: '15%' }, narrative: '从这里你能看见布恩迪亚家的栗树——很远，像一个黑色的逗号。你忽然想：如果现在走回去——沿着铁轨往回走，穿过沼泽——你可以在中午前到家。乌尔苏拉会在厨房里。汤可能还没凉。但你知道你不会走回去——因为你不是那种人。', discoveredText: '你看见了远处的栗树。' }
+      ],
+      requiredDiscoveries: 3,
+      nextScene: 'ch10_r1_choice'
+    },
 
     ch10_r1_choice: { id:'ch10_r1_choice', type:'choice', chapter:10, round:1, title:'第一轮选择 · 罢工前夜', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你在工人宿舍的门廊上。夜很热——香蕉皮在没有排水沟的街道上发酵。工人睡在铁皮搭成的铺位上——身上长着脓疮，没有人看医生。','明天——工人要罢工了。他们要求厕所、医疗、现金工资。香蕉公司的回答——你还没有听到，但你预感不会是一个"是"。'], transition:'你选择——' }, choices:[
       { id:'ch10_r1_a', label:'领导罢工', description:'你是布恩迪亚——你必须站在他们前面。组织工人，带领他们走上街头。', nextScene:'ch10_r1a', effects:{ tags:['罢工领袖'], memory:null, fate:1, bond:1 } },
       { id:'ch10_r1_b', label:'支持——但在幕后', description:'你可以帮忙写标语、筹钱、联系其他地方。但你不必站在最前面——你的位置应该在策略桌上。', nextScene:'ch10_r1b', effects:{ tags:['幕后支持者'], memory:null, fate:0, bond:2 } },
-      { id:'ch10_r1_c', label:'劝阻——暴力即将来临', description:'你预感到这场罢工会以血收场。劝工人们通过谈判争取——而不是走上街头。', nextScene:'ch10_r1c', effects:{ tags:['谨慎的预警者'], memory:null, fate:1, bond:-1 } }
+      { id:'ch10_r1_c', label:'劝阻——暴力即将来临', description:'你预感到这场罢工会以血收场。劝工人们通过谈判争取——而不是走上街头。', nextScene:'ch10_r1c', effects:{ tags:['谨慎的预警者'], memory:null, fate:1, bond:-1 } },
+      { id:'ch10_r1_d', label:'你知道接下来会发生什么——这一次，也许能救一个人', description:'你上次站在这里时不知道机枪在哪里。这一次你知道了——站台左边，站台右边，香蕉树后面。也许提前告诉一个人就够了。也许一个人就能改变三千。', nextScene:'ch10_r1a', requiredPlaythrough: 2, effects:{ tags:['试图改写历史的人'], memory:null, fate: 2, bond: 1 } }
     ], settlement:'ch10_r1_settlement' },
     ch10_r1a: { id:'ch10_r1a', type:'narrative', chapter:10, round:1, title:'罢工领袖', leftPage:{ speaker:'何塞·阿尔卡蒂奥第二', speakerColor:'#1a3a4a', paragraphs:['你站在工人们面前——他们衣衫褴褛、疲惫不堪。你开始说话——不是大喊，是平静地告诉他们：他们应该得到一个厕所，一个医生，一份能买面包的工资。"明天——我们都不去上班。"他们看着你——有些人害怕，但没有人离开。']}, choices:null, nextScene:'ch10_r1_settlement' },
     ch10_r1b: { id:'ch10_r1b', type:'narrative', chapter:10, round:1, title:'幕后支持者', leftPage:{ speaker:'何塞·阿尔卡蒂奥第二', speakerColor:'#1a3a4a', paragraphs:['你没有站在队伍最前面——但你帮他们写了宣言，联系了省城的工会。你在后方工作——确保罢工不只是愤怒的爆发，而是一场有策略的行动。']}, choices:null, nextScene:'ch10_r1_settlement' },
@@ -355,7 +384,8 @@ registerChapter({
     ch10_r4_choice: { id:'ch10_r4_choice', type:'choice', chapter:10, round:4, title:'第四轮选择 · 与遗忘对抗', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['香蕉公司撤走了——工人的尸体已经被鲨鱼吃掉。铁路被拆了，工棚被烧了，铁丝网被拆走了。河对岸重新变成了荒地——仿佛什么都没有发生过。','政府宣传说马孔多从来没有香蕉公司。年轻人相信了——因为他们没有见过。只有老人还记得——但他们正在一个接一个地死去。每一个老人的死，都是真相的一次缩小。'], transition:'你选择——' }, choices:[
       { id:'ch10_r4_a', label:'教年轻人——告诉他们真相', description:'不要让下一代活在他们编造的谎言里。把你知道的一切都教给年轻人。', nextScene:'ch10_r4a', effects:{ tags:['传道者'], memory:null, fate:1, bond:0 } },
       { id:'ch10_r4_b', label:'建一座纪念碑——哪怕私人的', description:'在你的院子里立一块石头——上面刻着"三千"。不需要解释——只需要存在。', nextScene:'ch10_r4b', effects:{ tags:['纪念碑建造者'], memory:'院子里的石头', fate:0, bond:1 } },
-      { id:'ch10_r4_c', label:'闭上嘴——保护自己', description:'你是唯一知道真相的人了。如果你死了——真相就真的死了。活下去——哪怕这意味着沉默。', nextScene:'ch10_r4c', effects:{ tags:['沉默的保护者'], memory:null, fate:0, bond:-1 } }
+      { id:'ch10_r4_c', label:'闭上嘴——保护自己', description:'你是唯一知道真相的人了。如果你死了——真相就真的死了。活下去——哪怕这意味着沉默。', nextScene:'ch10_r4c', effects:{ tags:['沉默的保护者'], memory:null, fate:0, bond:-1 } },
+      { id:'ch10_r4_d', label:'你记得军装上的金线——以布恩迪亚之名作证', description:'你摸到军装口袋上绣着的"布恩迪亚"——金线已经磨得发白。你不是一个人——你的姓氏就是证词。', nextScene:'ch10_r4a', requiredClue: 'gold_thread_pocket', effects:{ tags:['以名为证的人'], memory:null, fate: 1, bond: 1 } }
     ], settlement:'ch10_r4_settlement' },
     ch10_r4a: { id:'ch10_r4a', type:'narrative', chapter:10, round:4, title:'传道者', leftPage:{ speaker:'何塞·阿尔卡蒂奥第二', speakerColor:'#1a3a4a', paragraphs:['你把年轻人叫到栗树下——告诉他们：这里曾经有香蕉公司，有罢工，有机枪。他们有些人不信——有些人半信半疑。但你看见了几双眼睛——它们没有怀疑。这些眼睛里会继续保留真相，像保留火种。']}, choices:null, nextScene:'ch10_r4_settlement' },
     ch10_r4b: { id:'ch10_r4b', type:'narrative', chapter:10, round:4, title:'纪念碑建造者', leftPage:{ speaker:'何塞·阿尔卡蒂奥第二', speakerColor:'#1a3a4a', paragraphs:['你在栗树旁边立了一块石头。上面只刻着一个数字：3000。没有名字，没有日期。路过的人问她是什么。你说："数字。只是一个数字。"但你知道——它不是数字。它是三千个名字——压缩成了一块石头能承受的最小重量。']}, choices:null, nextScene:'ch10_r4_settlement' },
@@ -365,7 +395,9 @@ registerChapter({
     ch10_r5_choice: { id:'ch10_r5_choice', type:'choice', chapter:10, round:5, title:'第五轮选择 · 最后的见证', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你很老了。你坐在梅尔基亚德斯的旧房间里——这间房间的时间不会流逝。你看着书架上那些羊皮卷——它们记录着这个家族的全部历史。你忽然想：也许这些羊皮卷里也有三千人的名字。也许没有。也许梅尔基亚德斯没有写到他们——因为他们不在布恩迪亚家的谱系里。','但你知道。你还活着——至少现在。你是三千人被遗忘的唯一阻止。当你也走了——他们就真的消失了。'], transition:'你选择——' }, choices:[
       { id:'ch10_r5_a', label:'把名字写进羊皮卷', description:'在梅尔基亚德斯的羊皮卷边缘，偷偷写下三千人的数字。让它成为家族记录的一部分。', nextScene:'ch10_r5a', isSecretOption: true, effects:{ tags:['篡改者'], memory:'羊皮卷边缘的数字', fate:2, bond:-1 } },
       { id:'ch10_r5_b', label:'在死亡前——最后讲述一次', description:'把你的故事讲给最后一个人——也许是你家族的某个人，也许是风。', nextScene:'ch10_r5b', effects:{ tags:['最后的讲述者'], memory:null, fate:1, bond:0 } },
-      { id:'ch10_r5_c', label:'安静等待——让历史自己说话', description:'你已经做了够多了。也许历史不需要被见证——也许只需要它自己知道它发生过。', nextScene:'ch10_r5c', effects:{ tags:['安详的告别者'], memory:null, fate:-1, bond:1 } }
+      { id:'ch10_r5_c', label:'安静等待——让历史自己说话', description:'你已经做了够多了。也许历史不需要被见证——也许只需要它自己知道它发生过。', nextScene:'ch10_r5c', effects:{ tags:['安详的告别者'], memory:null, fate:-1, bond:1 } },
+      { id:'ch10_r5_d', label:'你摸过墙上的弹孔——为每一颗子弹留一行', description:'你记得行刑队墙上的弹孔——它们等过你。现在你在羊皮卷上——为每一个没有墓碑的人写下一行。一行就够了。', nextScene:'ch10_r5a', requiredClue: 'bullet_holes_wall', effects:{ tags:['弹孔的记录者'], memory:null, fate: 1, bond: 0 } },
+      { id:'ch10_r5_e', label:'你看见了羊皮卷的全貌——为未来的人写一段注释', description:'梅尔基亚德斯在羊皮卷边缘留了空白——不是疏忽，是邀请。你拿起笔——在空白的边缘写下：三千人没有名字，但他们来过。', nextScene:'ch10_r5a', requiredFate: { min: 4 }, effects:{ tags:['羊皮卷的注释者'], memory:null, fate: 1, bond: 0 } }
     ], settlement:'ch10_r5_settlement' },
     ch10_r5a: { id:'ch10_r5a', type:'narrative', chapter:10, round:5, title:'篡改者', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['你拿起笔——梅尔基亚德斯的鹅毛笔。在羊皮卷的边缘，你用很小的字写下了一行数字：3000。然后写上了一个日期——屠杀发生的日期。将来破解羊皮卷的人会看到这个数字。他们不知道它是什么意思——但他们会追问。追问就是记忆的开始。']}, choices:null, nextScene:'ch10_r5_settlement' },
     ch10_r5b: { id:'ch10_r5b', type:'narrative', chapter:10, round:5, title:'最后的讲述者', leftPage:{ speaker:'何塞·阿尔卡蒂奥第二', speakerColor:'#1a3a4a', paragraphs:['你坐在栗树下——对着风讲述。也许没有人听到——但你不在乎。你把三千人的事说完整了——从机枪架起到尸体被装车运走。你说完了每一个细节——然后闭上了眼睛。风把你说的话带走了——不是吹散，是带走。也许它会把它们带到某个地方——某个有耳朵等着听的地方。']}, choices:null, nextScene:'ch10_r5_settlement' },

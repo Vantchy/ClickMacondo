@@ -105,6 +105,13 @@ registerChapter({
           nextScene: 'era_c_narrative',
           effects: { tags: ['战争降临者'], memory: null, targetChapter: 5, fate: 2, bond: -1 },
           alternativeNarrative: '若你选择从战争年代开始——你将直接从枪口下理解"孤独"的含义。但你将错过冰块、失眠症和自动钢琴——那些让战争之所以成为战争的事物。'
+        },
+        {
+          id: 'era_d', label: '你已经来过——选一条你没走过的路',
+          description: '你不是第一次触碰羊皮纸。上一次你选择了某条路——这一次，另外两卷在召唤你。它们一直在等你回头。',
+          nextScene: 'era_a_narrative',
+          requiredPlaythrough: 3,
+          effects: { tags: ['轮回的旅人'], memory: null, targetChapter: 1, fate: 0, bond: 0 }
         }
       ],
       settlement: 'prologue_end'
@@ -226,7 +233,7 @@ registerChapter({
         transition: '你选择——'
       },
       choices: [
-        { id: 'ch2_r1_a', label: '埋葬普鲁登西奥', description: '在栗树下挖一个坑，给他一个体面的坟墓。但死人的灵魂不会轻易安息……', nextScene: 'ch2_r1a', effects: { tags: ['罪与埋葬'], memory: '栗树下的声音', fate: 1, bond: 1 } },
+        { id: 'ch2_r1_a', label: '埋葬普鲁登西奥', description: '在栗树下挖一个坑，给他一个体面的坟墓。但死人的灵魂不会轻易安息……', nextScene: 'ch2_r1a', effects: { tags: ['罪与埋葬'], memory: '栗树下的声音', characterFlags: { 'buried_him': 1 }, fate: 1, bond: 1 } },
         { id: 'ch2_r1_b', label: '拖出村子埋葬', description: '用旧蓆裹住尸体，拖到河对岸的密林里，埋在吉贝树下，矛尖朝下。', nextScene: 'ch2_r1b', effects: { tags: ['远离血债'], memory: null, fate: -1, bond: 2 } },
         { id: 'ch2_r1_c', label: '告知全村人', description: '把村民们叫来，公开承认你做了什么，接受他们的审判。', nextScene: 'ch2_r1c', effects: { tags: ['公开忏悔者'], memory: '村庄的审判', fate: 0, bond: 2 } }
       ],
@@ -355,7 +362,8 @@ registerChapter({
       choices: [
         { id: 'ch2_r5_a', label: '让他留在栗树下', description: '绑住他——不是为了惩罚，是为了保护。让他在树下度过最后的岁月。', nextScene: 'ch2_r5a', effects: { tags: ['守护者'], memory: '栗树下的绳结', fate: 0, bond: 2 } },
         { id: 'ch2_r5_b', label: '带他去河边', description: '你不信他疯了。解开他的绳子，带他去河边——也许他只是需要看见更大的东西。', nextScene: 'ch2_r5b', effects: { tags: ['解放者'], memory: '河边的午后', fate: 1, bond: 1 } },
-        { id: 'ch2_r5_c', label: '和他一起画圆圈', description: '你蹲在他身边，拿起另一根树枝。你和他一起画——磁铁、放大镜、冰块。', nextScene: 'ch2_r5c', effects: { tags: ['同行至终点'], memory: '画在泥土中的永恒', fate: 0, bond: 2 } }
+        { id: 'ch2_r5_c', label: '和他一起画圆圈', description: '你蹲在他身边，拿起另一根树枝。你和他一起画——磁铁、放大镜、冰块。', nextScene: 'ch2_r5c', effects: { tags: ['同行至终点'], memory: '画在泥土中的永恒', fate: 0, bond: 2 } },
+        { id: 'ch2_r5_d', label: '把全家人都叫到栗树下——这不是一个人的告别', description: '乌尔苏拉、孩子们、丽贝卡——让所有人都来。他不是独自一人走向遗忘的——他有一整个家族陪着他。', nextScene: 'ch2_r5a', requiredBond: { min: 4 }, effects: { tags: ['全家的告别'], memory: null, fate: 0, bond: 2 } }
       ],
       settlement: 'ch2_r5_settlement'
     },
