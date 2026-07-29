@@ -1,36 +1,87 @@
-my-project/
-├── frontend/                 # 👑 前端代码 (用户界面)
-│   ├── public/               # 静态资源 (不经过构建工具，如 favicon.ico)
-│   ├── src/                  # 源代码主目录
-│   │   ├── assets/           # 图片、字体、样式文件 (会被构建工具处理)
-│   │   ├── components/       # 🌱 基础UI组件 (按钮、输入框、弹窗)
-│   │   ├── pages/            # 📄 页面级组件 (首页、关于页、个人中心)
-│   │   ├── hooks/            # 自定义 React/Vue 钩子 (复用逻辑)
-│   │   ├── utils/            # 工具函数 (日期格式化、数据校验)
-│   │   ├── api/              # 接口请求定义 (调用后端API)
-│   │   ├── stores/           # 状态管理 (Pinia/Redux/Zustand)
-│   │   ├── router/           # 路由配置 (页面跳转规则)
-│   │   ├── App.vue/jsx       # 根组件
-│   │   └── main.js/ts        # 入口文件
-│   ├── .env.development      # 开发环境变量
-│   ├── .env.production       # 生产环境变量
-│   ├── index.html            # HTML模板
-│   └── package.json          # 前端依赖配置
+# ClickMacondo 项目文档结构说明
+
+```
+ClickMacondo/
+├── README.md                                  # 📖 项目说明（入口指南、技术栈、快速开始）
+├── .gitignore                                 # 🙈 Git忽略配置
 │
-├── backend/                  # ⚙️ 后端代码 (API服务)
-│   ├── src/                  # 源代码主目录
-│   │   ├── controllers/      # 🎮 控制器/路由层 (接收请求，返回响应)
-│   │   ├── services/         # 💼 业务逻辑层 (核心业务规则)
-│   │   ├── models/           # 🗄️ 数据模型层 (数据库表结构映射)
-│   │   ├── middlewares/      # 🧵 中间件 (鉴权、日志、跨域)
-│   │   ├── routes/           # 🚏 路由定义 (URL映射)
-│   │   ├── utils/            # 辅助工具 (加密、随机数)
-│   │   └── app.js/ts         # 应用入口 (配置中间件，启动服务)
-│   ├── tests/                # 单元测试/集成测试
-│   ├── .env                  # 环境变量 (数据库密码、密钥)
-│   ├── Dockerfile            # Docker部署文件
-│   └── package.json          # 后端依赖配置
+├── frontend/                                  # 👑 前端主游戏（纯静态，无框架）
+│   ├── circle-of-fate.html                    # 🔑 唯一入口页面（SPA单页应用，517行）
+│   │                                            所有 UI 面板通过 CSS class 控制显隐，
+│   │                                            按严格顺序加载 12 个 JS 模块
+│   ├── styles/
+│   │   └── styles.css                         # 🎨 全局样式表（57KB，2762行）
+│   │                                            羊皮纸/古籍视觉风格，CSS变量统管色调
+│   ├── assets/
+│   │   ├── audio/
+│   │   │   └── elias_weber-*.mp3              # 🎵 背景音乐（25MB，单曲循环）
+│   │   └── data/
+│   │       ├── chapters-data.js               # 📝 章节数据（主文件，批次0）
+│   │       ├── chapters-data-1.js             # 📝 章节数据（批次1）
+│   │       ├── chapters-data-2.js             # 📝 章节数据（批次2）
+│   │       ├── chapters-data-3.js             # 📝 章节数据（批次3）
+│   │       ├── chapters-data-4.js             # 📝 章节数据（批次4）
+│   │       └── chapters-data-5.js             # 📝 章节数据（批次5）
+│   │           ↑ 每个文件调用 registerChapter() 填充全局注册表
+│   └── src/
+│       ├── app.js                             # 🚀 应用入口（初始化、事件绑定、键盘导航）
+│       ├── core/                              # ⚙️ 核心逻辑层
+│       │   ├── chapter-registry.js            # 章节注册系统（chapters/memory/familyTree注册表）
+│       │   ├── game-state.js                  # 全局游戏状态（GameState单例）
+│       │   ├── game-engine.js                 # 游戏引擎（选择处理/场景跳转/章节切换）
+│       │   └── renderer.js                    # 主渲染器（左页叙事/右页交互/探索场景）
+│       ├── ui/                                # 🎯 UI交互层
+│       │   ├── ui.js                          # Toast/封面/致谢名单/主菜单/BGM/收集页
+│       │   ├── achievements.js                # 成就系统（30+条件判定/解锁通知）
+│       │   ├── sidebar.js                     # 侧边栏（家族树/档案/简介/关系查询）
+│       │   └── settings.js                    # 设置面板（字体/音量/重置/清除全部数据）
+│       └── utils/                             # 🔧 工具与数据层
+│           ├── config.js                      # 全局常量（章节元数据/167条关系库/成就/结局/线索）
+│           └── storage.js                     # 存档系统（1自动存档 + 6手动槽位）
 │
-├── docker-compose.yml        # 多容器编排 (数据库/Redis/应用一键启动)
-├── README.md                 # 📖 项目说明文档 (必读)
-└── .gitignore                # 🙈 Git忽略文件 (node_modules等)
+├── story-viewer/                              # 📚 百年孤独故事画卷（独立应用）
+│   ├── story-explorer.html                    # 插图故事浏览器（~2000行，单文件SPA）
+│   └── images/                                # 🖼 章节插画（24张）
+│       ├── page-1.jpg
+│       └── scene-1.png ~ scene-23.png
+│
+└── docs/                                      # 📄 项目文档
+    ├── dev-tree-diagram.md                    # 开发依赖关系图（Markdown）
+    ├── dev-tree-viewer.html                   # 依赖关系可视化浏览器（HTML）
+    ├── doc-instruction/                       # 技术文档
+    │   ├── docs structure.txt                 # 📋 本文件：文档结构说明
+    │   ├── ARCHITECTURE_circle-of-fate.md     # 🏛 文件架构全景图（依赖关系/数据流/修改指南）
+    │   └── CODE_EXPLANATION_circle-of-fate.md # 📘 代码完整说明（逐模块解析）
+    └── Story-ideas/                           # 设计文档
+        ├── project-spec.md                    # 📋 可玩性增强方案（七大方向/优先级矩阵）
+        ├── implementation-guide.md            # 🔨 实施指南（精确到文件/字段的修改步骤）
+        └── manual.md                          # 📖 行动指南（设计总纲/22章因果全景图/数据架构）
+
+---
+
+## 文档阅读顺序
+
+### 用户 / 玩家
+1. `README.md` — 了解项目概况、如何运行
+
+### 开发者（快速上手）
+1. `README.md` — 项目结构和快速开始
+2. `doc-instruction/CODE_EXPLANATION_circle-of-fate.md` — 代码逐模块详解
+3. `doc-instruction/ARCHITECTURE_circle-of-fate.md` — 架构全景图与依赖关系
+
+### 策划 / 设计师
+1. `Story-ideas/project-spec.md` — 核心诊断与增强方向
+2. `Story-ideas/manual.md` — 设计总纲与因果体系
+3. `Story-ideas/implementation-guide.md` — 具体实施步骤
+
+### 修改代码时的速查
+- 改剧情 → `assets/data/chapters-data*.js`
+- 改逻辑 → `src/core/game-engine.js`
+- 改渲染 → `src/core/renderer.js`
+- 改UI → `src/ui/ui.js`
+- 改样式 → `styles/styles.css`
+- 改常量 → `src/utils/config.js`
+
+---
+
+*最后更新：2026-07-29*

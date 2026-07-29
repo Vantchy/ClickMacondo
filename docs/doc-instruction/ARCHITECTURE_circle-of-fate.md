@@ -42,12 +42,18 @@ ClickMacondo/
 │           └── storage.js
 ├── story-viewer/                      ← 📖 外部：故事画卷
 │   ├── story-explorer.html
-│   └── images/                        ← 26 张插图
+│   └── images/                        ← 24 张插图
 └── docs/                              ← 📚 项目文档
-    ├── project-spec.md
-    ├── implementation-guide.md
-    ├── manual.md
-    └── docs structure.txt
+    ├── dev-tree-diagram.md
+    ├── dev-tree-viewer.html
+    ├── doc-instruction/
+    │   ├── docs structure.txt
+    │   ├── ARCHITECTURE_circle-of-fate.md
+    │   └── CODE_EXPLANATION_circle-of-fate.md
+    └── Story-ideas/
+        ├── project-spec.md
+        ├── implementation-guide.md
+        └── manual.md
 ```
 
 ---
@@ -318,12 +324,16 @@ ClickMacondo/
 | `frontend/styles/styles.css` | `<link>` 引用 | 全局样式表，定义所有视觉风格 |
 | `frontend/assets/audio/… .mp3` | `<audio>` 引用 | 背景音乐（25MB MP3） |
 | `story-viewer/story-explorer.html` | 主菜单链接跳转 | 独立的插图故事浏览器（97KB HTML） |
-| `story-viewer/images/` | story-explorer 内部引用 | 26 张百年孤独插画 |
+| `story-viewer/images/` | story-explorer 内部引用 | 24 张百年孤独插画 |
 | Google Fonts CDN | 外部 `<link>` | Cormorant Garamond, Cinzel, Noto Serif SC |
-| `docs/project-spec.md` | 项目文档 | 项目规格说明书（27KB） |
-| `docs/implementation-guide.md` | 项目文档 | 实现指南（35KB） |
-| `docs/manual.md` | 项目文档 | 用户手册（30KB） |
-| `docs/docs structure.txt` | 项目文档 | 文档结构说明（2.5KB） |
+| `docs/Story-ideas/project-spec.md` | 项目文档 | 可玩性增强方案（27KB） |
+| `docs/Story-ideas/implementation-guide.md` | 项目文档 | 实施指南（35KB） |
+| `docs/Story-ideas/manual.md` | 项目文档 | 行动指南（30KB） |
+| `docs/doc-instruction/ARCHITECTURE_circle-of-fate.md` | 项目文档 | 文件架构全景图 |
+| `docs/doc-instruction/CODE_EXPLANATION_circle-of-fate.md` | 项目文档 | 代码完整说明 |
+| `docs/doc-instruction/docs structure.txt` | 项目文档 | 文档结构说明 |
+| `docs/dev-tree-diagram.md` | 开发工具 | 依赖关系图（Markdown） |
+| `docs/dev-tree-viewer.html` | 开发工具 | 依赖关系可视化浏览器 |
 | `README.md` | 项目文档 | 项目说明 |
 
 ---
