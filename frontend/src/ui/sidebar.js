@@ -247,16 +247,17 @@ const SidebarManager = {
       html += '<div style="margin-bottom:12px;">';
       html += '<div style="font-size:0.9rem;color:var(--gold-light);margin-bottom:6px;"><strong>' + name1 + '</strong> 与 <strong>' + name2 + '</strong></div>';
       html += '<div style="font-size:0.78rem;color:var(--gold-dim);margin-bottom:8px;">无直接记录的关系，通过以下链路关联：</div>';
-      const pathDescParts = [];
+      let chainText = '<strong>' + name1 + '</strong>';
       for (let i = 0; i < path.length; i++) {
         const edge = path[i];
-        const fromGender = CHARACTER_GENDERS[edge.from] || '未知';
-        const toGender = CHARACTER_GENDERS[edge.to] || '未知';
-        const fromRef = (i === 0) ? name1 : ('其' + (fromGender === '男' ? '丈夫' : fromGender === '女' ? '妻子' : '伴侣'));
-        const toRef = (i === path.length - 1) ? name2 : ('其' + (toGender === '男' ? '丈夫' : toGender === '女' ? '妻子' : '伴侣'));
-        pathDescParts.push(fromRef + '与' + toRef + '为' + edge.label);
+        if (i < path.length - 1) {
+          const letter = String.fromCharCode(97 + i); // a, b, c, ...
+          chainText += ' ↔ ' + letter + '（' + edge.label + '）';
+        } else {
+          chainText += ' ↔ <strong>' + name2 + '</strong>（' + edge.label + '）';
+        }
       }
-      html += '<div style="font-size:0.78rem;color:#c0b090;line-height:1.8;">' + pathDescParts.join('；') + '</div>';
+      html += '<div style="font-size:0.78rem;color:#c0b090;line-height:1.8;">' + chainText + '</div>';
       html += '</div>';
     } else {
       html += '<div style="color:var(--gold-dim);text-align:center;padding:12px;font-style:italic;">未找到两人之间的关联路径。<br>他们可能来自完全不同的时代与谱系。</div>';
