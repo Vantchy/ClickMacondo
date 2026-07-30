@@ -20,6 +20,7 @@ function selectChoice(choiceId) {
     // 首次选中 → 高亮
     _selectedChoiceId = choiceId;
     Renderer._highlightChoice(choiceId);
+    if (typeof SFX !== 'undefined' && SFX.playSelect) SFX.playSelect();
   }
 }
 
@@ -530,6 +531,7 @@ function resetRendererState() {
 /* ---- 全局事件处理函数 ---- */
 function handleChoice(choiceId) {
   clearChoiceSelection();
+  if (typeof SFX !== 'undefined' && SFX.playConfirm) SFX.playConfirm();
   const result = GameEngine.selectChoice(choiceId);
   if (result) {
     // 先渲染分支叙事（左页）+ 继续按钮（右页）
