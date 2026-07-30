@@ -24,7 +24,7 @@ registerChapter({
       type: 'narrative',
       chapter: 1,
       round: 0,
-      title: '序章：你醒来了',
+      title: '第一幕开启·你醒来了',
       leftPage: {
         speaker: '旁白',
         speakerColor: '#4a2a18',
