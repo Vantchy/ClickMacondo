@@ -28,6 +28,7 @@ const GameState = {
   fateImprint: {},          // { chapterNum: 'rebel'|'follower'|'witness' } — 永久烙印
   bondImprint: {},          // { chapterNum: 'estranged'|'bonded'|'soul_of_family' } — 永久烙印
   clueFragments: [],        // [clueId] — 已收集的隐藏线索道具
+  _maxpg: 0,               // 已访问的最大全局页码（严格递增，拖动进度条上限）
 
   reset() {
     this.currentScene = 'void_awakening';
@@ -65,6 +66,8 @@ const GameState = {
     // 清理终章泄露字段（Bug #4）
     this._endingType = null;
     this._allChaptersDone = false;
+    // 进度条 maxpg
+    this._maxpg = 0;
     // 周目记录也一并重置（"重置游戏"和"清除全部痕迹"都应清空周目）
     this.hasCompletedGame = false;
     this.playthroughCount = 0;
@@ -226,7 +229,8 @@ const GameState = {
       bondCounter: this.bondCounter || 0,
       fateImprint: {...(this.fateImprint || {})},
       bondImprint: {...(this.bondImprint || {})},
-      clueFragments: [...(this.clueFragments || [])]
+      clueFragments: [...(this.clueFragments || [])],
+      _maxpg: this._maxpg || 0
     };
   },
 
@@ -268,6 +272,7 @@ const GameState = {
     this.fateImprint = data.fateImprint || {};
     this.bondImprint = data.bondImprint || {};
     this.clueFragments = data.clueFragments || [];
+    this._maxpg = data._maxpg || 0;
     // 重置瞬态显示字段（仅结算页展示用，不跨存档保留）
     this._lastFateChange = 0;
     this._lastBondChange = 0;

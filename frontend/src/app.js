@@ -205,13 +205,37 @@ function init() {
     function seekFromEvent(e) {
       const rect = progressBar.getBoundingClientRect();
       const rawPct = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
-      const total = GameState.history.length - 1;
-      const idx = total > 0 ? Math.round((rawPct / 100) * total) : 0;
-      if (idx === GameState.historyIndex || idx < 0 || idx >= GameState.history.length) return;
+      const tot = getTotalPageCount();
+      let targetPage = tot > 0 ? Math.max(1, Math.round((rawPct / 100) * tot)) : 1;
 
-      GameState.historyIndex = idx;
-      GameState.currentScene = GameState.history[idx];
-      GameEngine._syncChapterForScene(GameState.currentScene);
+      // 正式版：限制不超过 maxpg（只能拖到已访问过的最大页码）
+      if (!window.__IS_DEBUG__) {
+        targetPage = Math.min(targetPage, GameState._maxpg || 1);
+      }
+
+      // 防止跳转到当前页
+      const cur = getCurrentPageIndex();
+      if (targetPage === cur) return;
+
+      // 反查目标场景
+      const target = getSceneAtPageIndex(targetPage);
+      if (!target) return;
+
+      // 截断历史（如果在回看中拖动到新位置），推进到目标场景
+      if (GameState.historyIndex < GameState.history.length - 1) {
+        GameState.history = GameState.history.slice(0, GameState.historyIndex + 1);
+      }
+      GameState.history.push(target.sceneId);
+      GameState.historyIndex = GameState.history.length - 1;
+      GameState.currentScene = target.sceneId;
+      GameState.chapter = target.chapterNum;
+
+      // 同步 round
+      const chapterData = getCurrentChapterData();
+      const scene = chapterData ? chapterData.scenes[target.sceneId] : null;
+      if (scene) GameState.round = scene.round || 0;
+
+      StorageManager.autoSave();
       Renderer.render();
     }
 

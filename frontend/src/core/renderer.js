@@ -364,18 +364,19 @@ const Renderer = {
       bondDisplay.textContent = '↭ 羁绊 ' + GameState.bondCounter;
     }
 
-    // 阅读进度条 + 页码
+    // 阅读进度条 + 页码（基于全书全局场景序号）
     const progressFill = document.getElementById('reading-progress-fill');
     const progressThumb = document.getElementById('reading-progress-thumb');
     const pageIndicator = document.getElementById('page-indicator');
-    const pageCount = GameState.history.length;
-    const currentPage = GameState.historyIndex + 1;
-    const pct = pageCount > 1 ? ((currentPage - 1) / (pageCount - 1)) * 100 : 0;
+    const tot = getTotalPageCount();
+    const cur = getCurrentPageIndex();
+    // 更新 maxpg（严格递增——仅当 cur 超过历史最大值时）
+    if (cur > (GameState._maxpg || 0)) GameState._maxpg = cur;
+    const pct = tot > 0 ? (cur / tot) * 100 : 0;
     if (progressFill) progressFill.style.width = pct + '%';
     if (progressThumb) progressThumb.style.left = pct + '%';
     if (pageIndicator) {
-      const gp = getGlobalProgress();
-      pageIndicator.textContent = '第 ' + currentPage + ' / ' + pageCount + ' 页　·　全书 ' + gp + '%';
+      pageIndicator.textContent = '第 ' + cur + ' / ' + tot + ' 页　·　全书 ' + pct.toFixed(3) + '%';
     }
 
   },
