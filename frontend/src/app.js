@@ -221,14 +221,23 @@ function init() {
       const target = getSceneAtPageIndex(targetPage);
       if (!target) return;
 
-      // 截断历史（如果在回看中拖动到新位置），推进到目标场景
-      if (GameState.historyIndex < GameState.history.length - 1) {
-        GameState.history = GameState.history.slice(0, GameState.historyIndex + 1);
-      }
-      GameState.history.push(target.sceneId);
-      GameState.historyIndex = GameState.history.length - 1;
+      // 更新当前场景与章节
       GameState.currentScene = target.sceneId;
       GameState.chapter = target.chapterNum;
+
+      // 尝试在已有历史中定位目标场景（保持历史链完整，避免跨章跳转后回退链断裂）
+      const existingIdx = GameState.history.lastIndexOf(target.sceneId);
+      if (existingIdx >= 0) {
+        // 场景已在历史中 → 回卷到该位置
+        GameState.historyIndex = existingIdx;
+      } else {
+        // 场景不在历史中 → 截断"未来"分支后追加
+        if (GameState.historyIndex < GameState.history.length - 1) {
+          GameState.history = GameState.history.slice(0, GameState.historyIndex + 1);
+        }
+        GameState.history.push(target.sceneId);
+        GameState.historyIndex = GameState.history.length - 1;
+      }
 
       // 同步 round
       const chapterData = getCurrentChapterData();

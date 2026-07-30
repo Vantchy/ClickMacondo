@@ -127,8 +127,14 @@ const GameEngine = {
     GameState.history.push(sceneId);
     GameState.currentScene = sceneId;
     GameState.historyIndex = GameState.history.length - 1;
-    const chapterData = getCurrentChapterData();
-    const scene = chapterData ? chapterData.scenes[sceneId] : null;
+    // 同步章节：先尝试当前章节，失败则遍历全部章节
+    let chapterData = getCurrentChapterData();
+    let scene = chapterData ? chapterData.scenes[sceneId] : null;
+    if (!scene) {
+      this._syncChapterForScene(sceneId);
+      chapterData = getCurrentChapterData();
+      scene = chapterData ? chapterData.scenes[sceneId] : null;
+    }
     if (scene) {
       GameState.round = scene.round || GameState.round;
     }
@@ -137,7 +143,19 @@ const GameEngine = {
 
   getCurrentScene() {
     const chapterData = getCurrentChapterData();
-    return chapterData ? chapterData.scenes[GameState.currentScene] || null : null;
+    const scene = chapterData ? chapterData.scenes[GameState.currentScene] : null;
+    if (scene) return scene;
+    // 回退：如果按当前章节号找不到场景（跨章导航后 GameState.chapter 未同步），
+    // 遍历全部章节查找场景，并自动修正 chapter
+    if (GameState.currentScene) {
+      const ch = getChapterForScene(GameState.currentScene);
+      if (ch !== null && ch !== GameState.chapter) {
+        GameState.chapter = ch;
+        const fallbackData = getCurrentChapterData();
+        return fallbackData ? fallbackData.scenes[GameState.currentScene] || null : null;
+      }
+    }
+    return null;
   },
 
   goToSettlement() {
@@ -718,8 +736,17 @@ const GameEngine = {
     const prevId = GameState.history[GameState.historyIndex];
     GameState.currentScene = prevId;
     this._syncChapterForScene(prevId);
-    const chData = getCurrentChapterData();
-    const prevScene = chData ? chData.scenes[prevId] : null;
+    let chData = getCurrentChapterData();
+    let prevScene = chData ? chData.scenes[prevId] : null;
+    // 回退：如果通过章节号找不到场景（跨章导航后 chapter 未同步），遍历全部章节查找
+    if (!prevScene) {
+      const ch = getChapterForScene(prevId);
+      if (ch !== null) {
+        GameState.chapter = ch;
+        chData = getCurrentChapterData();
+        prevScene = chData ? chData.scenes[prevId] : null;
+      }
+    }
     console.log('navigateBack: -> ' + prevId + ', chapter=' + GameState.chapter + ', found=' + !!prevScene);
     if (prevScene) GameState.round = prevScene.round || 0;
     return true;
@@ -733,8 +760,17 @@ const GameEngine = {
       const nextId = GameState.history[GameState.historyIndex];
       GameState.currentScene = nextId;
       this._syncChapterForScene(nextId);
-      const chData = getCurrentChapterData();
-      const nextScene = chData ? chData.scenes[nextId] : null;
+      let chData = getCurrentChapterData();
+      let nextScene = chData ? chData.scenes[nextId] : null;
+      // 回退：如果通过章节号找不到场景（跨章导航后 chapter 未同步），遍历全部章节查找
+      if (!nextScene) {
+        const ch = getChapterForScene(nextId);
+        if (ch !== null) {
+          GameState.chapter = ch;
+          chData = getCurrentChapterData();
+          nextScene = chData ? chData.scenes[nextId] : null;
+        }
+      }
       if (nextScene) GameState.round = nextScene.round || 0;
       return true;
     }

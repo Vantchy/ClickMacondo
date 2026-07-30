@@ -44,7 +44,9 @@ function getGlobalProgress() {
 
 /* ---- 场景遍历辅助（提取公共逻辑，避免重复遍历 22 章） ---- */
 
-/** 遍历全部章节的所有场景，回调 fn(sceneId, chNum, globalIndex1based) */
+/** 遍历全部章节的所有场景，回调 fn(sceneId, chNum, globalIndex1based)
+ *  场景排序规则：先按 round 升序，同 round 内按数据文件中的定义顺序（叙事顺序）。
+ *  使用显式 insertionOrder 索引打破平局，确保跨引擎确定性（不依赖 sort 稳定性）。 */
 function _forEachScene(fn) {
   let idx = 0;
   for (const chId of CHAPTER_ORDER) {
@@ -53,11 +55,17 @@ function _forEachScene(fn) {
     const meta = CHAPTER_META[chId];
     const chNum = meta ? meta.num : 0;
 
-    const sceneIds = Object.keys(chData.scenes).sort((a, b) => {
+    // 记录数据文件中的定义顺序（Object.keys 对非整数键按插入顺序返回）
+    const sceneKeys = Object.keys(chData.scenes);
+    const insertionOrder = {};
+    sceneKeys.forEach((sid, i) => { insertionOrder[sid] = i; });
+
+    const sceneIds = sceneKeys.sort((a, b) => {
       const ra = chData.scenes[a].round || 0;
       const rb = chData.scenes[b].round || 0;
       if (ra !== rb) return ra - rb;
-      return a.localeCompare(b);
+      // 同 round 内按数据文件定义顺序；显式 tiebreaker 确保不依赖引擎 sort 稳定性
+      return (insertionOrder[a] || 0) - (insertionOrder[b] || 0);
     });
 
     for (const sid of sceneIds) {
@@ -68,7 +76,7 @@ function _forEachScene(fn) {
   return idx; // 返回场景总数
 }
 
-/** 全书场景总数（缓存，仅首次遍历） */
+// 清除已缓存的场景总数（排序规则变更后需重新计算）
 let _totalPageCount = null;
 function getTotalPageCount() {
   if (_totalPageCount !== null) return _totalPageCount;
@@ -84,6 +92,18 @@ function getCurrentPageIndex() {
       found = idx;
     }
   });
+  // 回退：如果按章节+场景ID找不到（可能是跨章导航后 GameState.chapter 未及时同步），
+  // 则忽略章节号仅按场景ID查找，同时自动修正 GameState.chapter
+  if (!found) {
+    _forEachScene((sid, chNum, idx) => {
+      if (sid === GameState.currentScene) {
+        found = idx;
+        if (GameState.chapter !== chNum) {
+          GameState.chapter = chNum;
+        }
+      }
+    });
+  }
   return found || 1; // 未注册场景兜底为 1
 }
 
