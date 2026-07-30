@@ -9,9 +9,7 @@ registerChapter({
   preview: '<p>第四章 · 自动钢琴、皮埃特罗·克雷斯皮</p><p style="margin-top:8px;">你将附身于丽贝卡（或阿玛兰妲），</p><p>经历爱情如何在姐妹之间变成战争。</p>',
   nextLabel: '进入第四章 · 自动钢琴',
   scenes: {
-    ch3_opening: { id:'ch3_opening', type:'narrative', chapter:3, round:0, title:'第三幕开启 · 敲门的人', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['门开了。你站在走廊的阴影里。她站在门外——赤着脚，抱着一个过于窄小的木箱，脚背上全是湿泥。她的眼睛很大，像两口干涸的井。','她说她叫丽贝卡。父亲侧身让她走进来。她经过时，所有人都闻到了那种气味——像从很远的地方飘来的风干肉的味道。','乌尔苏拉从厨房走出："让她进来。"这一句话改变了这个家。'], clues:[
-          { triggerText:'泥从指缝漏下来', itemId:'taste_of_mud', narrative:'你尝过泥土的味道吗？不是饿——是一种更深的渴望。丽贝卡吃泥不是为了填饱肚子，是为了填满一种你不知道名字的空虚。', unlocksIn:['chapter8'] }
-        ]}, choices:null, nextScene:'ch3_explore' },
+    ch3_opening: { id:'ch3_opening', type:'narrative', chapter:3, round:0, title:'第三幕开启 · 敲门的人', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['门开了。你站在走廊的阴影里。她站在门外——赤着脚，抱着一个过于窄小的木箱，脚背上全是湿泥。她的眼睛很大，像两口干涸的井。','她说她叫丽贝卡。父亲侧身让她走进来。她经过时，所有人都闻到了那种气味——像从很远的地方飘来的风干肉的味道。','乌尔苏拉从厨房走出："让她进来。"这一句话改变了这个家。']}, choices:null, nextScene:'ch3_explore' },
 
     ch3_explore: {
       id: 'ch3_explore', type: 'exploration', chapter: 3, round: 0,
@@ -34,7 +32,9 @@ registerChapter({
       nextScene: 'ch3_r1_choice'
     },
 
-    ch3_r1_choice: { id:'ch3_r1_choice', type:'choice', chapter:3, round:1, title:'第一轮选择 · 收养与陌生', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['第二天早上，你在天井里看见了丽贝卡。她站在井边，手伸进口袋，摸出什么东西塞进嘴里。你走近——她嘴角有泥痕。', '"你在吃什么？"她吓了一跳。泥从指缝漏下来。"没有什么。"'], transition:'你选择——' }, choices:[
+    ch3_r1_choice: { id:'ch3_r1_choice', type:'choice', chapter:3, round:1, title:'第一轮选择 · 收养与陌生', leftPage:{ speaker:'旁白', speakerColor:'#4a2a18', paragraphs:['第二天早上，你在天井里看见了丽贝卡。她站在井边，手伸进口袋，摸出什么东西塞进嘴里。你走近——她嘴角有泥痕。', '"你在吃什么？"她吓了一跳。泥从指缝漏下来。"没有什么。"'], clues:[
+          { triggerText:'泥从指缝漏下来', itemId:'taste_of_mud', narrative:'你尝过泥土的味道吗？不是饿——是一种更深的渴望。丽贝卡吃泥不是为了填饱肚子，是为了填满一种你不知道名字的空虚。', unlocksIn:['chapter8'] }
+        ], transition:'你选择——' }, choices:[
       { id:'ch3_r1_a', label:'保守她的秘密', description:'退后一步，假装什么都没看见。每个人都有权保留自己的秘密。', nextScene:'ch3_r1a', effects:{ tags:['沉默的守护者'], memory:null, fate:0, bond:1 } },
       { id:'ch3_r1_b', label:'告诉乌尔苏拉', description:'乌尔苏拉知道怎么照顾人。让她来处理丽贝卡的吃泥问题。', nextScene:'ch3_r1b', effects:{ tags:['告密者'], memory:null, fate:0, bond:1 } },
       { id:'ch3_r1_c', label:'给她一块面包', description:'从厨房拿一块面包，放在她手里。"泥不是食物。这个才是。"', nextScene:'ch3_r1c', effects:{ tags:['温柔的替代者'], memory:'面包与泥', fate:0, bond:2 } }
