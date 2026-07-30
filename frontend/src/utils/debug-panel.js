@@ -55,6 +55,15 @@ window.__IS_DEBUG__ = true;
       });
     });
 
+    // 关闭按钮
+    const closeBtn = panelEl.querySelector('.debug-panel-close');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        hidePanel();
+      });
+    }
+
     // 点击遮罩关闭
     panelEl.addEventListener('click', function (e) {
       if (e.target === panelEl) hidePanel();
@@ -81,7 +90,7 @@ window.__IS_DEBUG__ = true;
       <div class="debug-panel-overlay">
         <div class="debug-panel-container">
           <div class="debug-panel-header">
-            <span>🔧 调试模式 · 章节跳转</span>
+            <span>🔓 破解模式 · 章节跳转</span>
             <button class="debug-panel-close" title="关闭 (Ctrl+Shift+D)">✕</button>
           </div>
           <div class="debug-panel-hint">
@@ -140,6 +149,9 @@ window.__IS_DEBUG__ = true;
     else showPanel();
   }
 
+  // 暴露到全局，供进度标签点击等外部调用
+  window.debugTogglePanel = togglePanel;
+
   /* ---- 全局快捷键 ---- */
   document.addEventListener('keydown', function (e) {
     // Ctrl+Shift+D 开关面板
@@ -147,9 +159,11 @@ window.__IS_DEBUG__ = true;
       e.preventDefault();
       togglePanel();
     }
-    // Esc 关闭面板
+    // Esc 关闭面板（阻止事件冒泡，防止触发 app.js 中的主菜单弹出）
     if (e.key === 'Escape' && panelVisible) {
+      e.preventDefault();
       hidePanel();
+      e.stopImmediatePropagation();
     }
   });
 
@@ -248,8 +262,31 @@ window.__IS_DEBUG__ = true;
         background: rgba(184,137,62,0.12); padding: 2px 7px;
         border-radius: 4px; font-size: 0.68rem; color: #b8986a;
       }
+
+      /* 破解版：左上角章节名可点击 */
+      #progress-label {
+        cursor: pointer !important;
+        transition: color 0.2s, text-shadow 0.2s;
+      }
+      #progress-label:hover {
+        color: #d4b878 !important;
+        text-shadow: 0 0 8px rgba(184,137,62,0.3);
+      }
     `;
     document.head.appendChild(style);
+  }
+
+  /* ---- 进度标签点击 ---- */
+  function bindProgressLabelClick() {
+    const progressLabel = document.getElementById('progress-label');
+    if (progressLabel) {
+      progressLabel.style.cursor = 'pointer';
+      progressLabel.title = '点击打开章节选择面板 (Ctrl+Shift+D)';
+      progressLabel.addEventListener('click', function (e) {
+        e.stopPropagation();
+        togglePanel();
+      });
+    }
   }
 
   /* ---- 初始化 ---- */
@@ -261,7 +298,8 @@ window.__IS_DEBUG__ = true;
     }
     injectCSS();
     createPanel();
-    console.log('%c🔧 破解面板已就绪 %cCtrl+Shift+D 打开 | 控制台 debugJump(n) 直接跳转',
+    bindProgressLabelClick();
+    console.log('%c🔓 破解面板已就绪 %cCtrl+Shift+D 打开 | 点击左上角章节名 | 控制台 debugJump(n) 直接跳转',
       'color:#c0a878;font-weight:bold;', 'color:#8a9ab0;');
   }
 
