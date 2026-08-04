@@ -2,7 +2,7 @@
 
 ```
 ClickMacondo/
-├── index.html                                  # 🏠 项目入口页（服务器部署用，含漂浮粒子动画）
+├── index.html                                  # 🏠 服务器入口页（部署到 html/ 根目录，与 ClickMacondo/ 并列）
 ├── README.md                                  # 📖 项目说明（入口指南、技术栈、快速开始）
 ├── .gitignore                                 # 🙈 Git忽略配置
 │
