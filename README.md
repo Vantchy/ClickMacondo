@@ -28,37 +28,40 @@ ClickMacondo/
 ├── .gitignore
 │
 ├── frontend/                          # 🎯 主游戏应用
-│   ├── circle-of-fate.html            # 🔑 唯一入口页面（SPA）
+│   ├── circle-of-fate.html            # 🔑 正式版入口页面（SPA，537 行）
+│   ├── circle-of-fate-unlock.html     # 🔓 破解版入口（含调试工具，541 行）
 │   ├── styles/
-│   │   └── styles.css                 # 全局样式（~57KB，羊皮纸/古籍视觉风格）
+│   │   └── styles.css                 # 全局样式（2,914 行，羊皮纸/古籍视觉风格）
 │   ├── assets/
 │   │   ├── audio/
 │   │   │   └── elias_weber-*.mp3     # 背景音乐（25MB）
 │   │   └── data/
-│   │       ├── chapters-data.js       # 章节数据（主文件）
-│   │       ├── chapters-data-1.js     # 章节数据（批次1）
-│   │       ├── chapters-data-2.js     # 章节数据（批次2）
-│   │       ├── chapters-data-3.js     # 章节数据（批次3）
-│   │       ├── chapters-data-4.js     # 章节数据（批次4）
-│   │       └── chapters-data-5.js     # 章节数据（批次5）
+│   │       ├── chapters-data.js       # 章节数据（主文件，404 行）
+│   │       ├── chapters-data-1.js     # 章节数据（批次1，965 行）
+│   │       ├── chapters-data-2.js     # 章节数据（批次2，329 行）
+│   │       ├── chapters-data-3.js     # 章节数据（批次3，416 行）
+│   │       ├── chapters-data-4.js     # 章节数据（批次4，141 行）
+│   │       └── chapters-data-5.js     # 章节数据（批次5，595 行）
 │   └── src/
-│       ├── app.js                     # 🚀 应用入口 / 全局事件绑定
+│       ├── app.js                     # 🚀 应用入口 / 全局事件绑定 / 进度条拖动
 │       ├── core/                      # 核心逻辑层
-│       │   ├── chapter-registry.js    # 章节注册系统（chapters/memory/familyTree 注册表）
+│       │   ├── chapter-registry.js    # 章节注册系统 + 全局页码计算
 │       │   ├── game-state.js          # 全局游戏状态（单例 GameState）
-│       │   ├── game-engine.js         # 游戏引擎（选择处理、场景跳转、章节切换）
+│       │   ├── game-engine.js         # 游戏引擎（选择处理、场景跳转、章节切换、调试跳转）
 │       │   └── renderer.js            # 主渲染器（左页叙事 / 右页交互 / 探索场景）
 │       ├── ui/                        # UI 交互层
-│       │   ├── ui.js                  # Toast、封面动画、致谢名单、主菜单、BGM
-│       │   ├── achievements.js        # 成就系统（30+ 条件判定）
+│       │   ├── ui.js                  # Toast、封面动画、致谢名单、主菜单、BGM、收集页
+│       │   ├── achievements.js        # 成就系统（23 个成就 + 追踪初始化）
 │       │   ├── sidebar.js             # 侧边栏管理（家族树/档案/简介/关系查询）
-│       │   └── settings.js            # 设置面板（字体/音量/重置）
+│       │   └── settings.js            # 设置面板（字体/音量/重置/清除全部数据）
 │       └── utils/                     # 工具与数据层
-│           ├── config.js              # 全局常量（章节元数据、167条关系库、成就/结局/线索定义）
-│           └── storage.js             # 存档系统（1个自动存档 + 6个手动槽位）
+│           ├── config.js              # 全局常量（章节元数据、关系库、成就/结局/线索定义）
+│           ├── storage.js             # 存档系统（1个自动存档 + 6个手动槽位）
+│           ├── sfx.js                 # 🔔 音效系统（Web Audio API 合成：选中/确认/翻页音）
+│           └── debug-panel.js         # 🔓 破解版章节跳转面板（Ctrl+Shift+D，仅解锁版加载）
 │
 ├── story-viewer/                      # 📖 百年孤独故事画卷（独立应用）
-│   ├── story-explorer.html            # 插图故事浏览器（~2000行）
+│   ├── story-explorer.html            # 插图故事浏览器
 │   └── images/                        # 24 张章节插画
 │       ├── page-1.jpg
 │       └── scene-1.png ~ scene-23.png
@@ -66,6 +69,7 @@ ClickMacondo/
 └── docs/                              # 📚 项目文档
     ├── dev-tree-diagram.md            # 开发依赖关系图
     ├── dev-tree-viewer.html           # 依赖关系可视化浏览器
+    ├── improvement-plan.md            # 改进计划
     ├── doc-instruction/               # 技术文档
     │   ├── docs structure.txt         # 项目文档结构说明
     │   ├── ARCHITECTURE_circle-of-fate.md   # 文件架构全景图
@@ -93,11 +97,11 @@ ClickMacondo/
 |------|------|
 | 结构 | 纯 HTML5（单文件入口，SPA） |
 | 样式 | CSS3（羊皮纸/古籍视觉风格，CSS 变量统管全局色调） |
-| 逻辑 | 原生 JavaScript（ES6+，12 个模块，按依赖顺序通过 `<script>` 标签加载） |
+| 逻辑 | 原生 JavaScript（ES6+，14 个核心模块 + 6 个数据文件，按依赖顺序通过 `<script>` 标签加载） |
 | 数据 | 静态 JS 对象（6 个章节数据文件，调用 `registerChapter()` 注册） |
 | 存储 | 浏览器 `localStorage`（自动存档 + 6 槽位手动存档 + 成就持久化） |
 | 字体 | Google Fonts（Cormorant Garamond、Cinzel、Noto Serif SC） |
-| 音频 | HTML5 `<audio>` + Web Audio API（单曲 BGM 循环播放） |
+| 音频 | HTML5 `<audio>`（BGM 循环）+ Web Audio API（UI 音效合成：选中/确认/翻页音） |
 
 **无框架、无构建工具、无包管理器** —— 下载即可运行。
 
@@ -145,8 +149,9 @@ ClickMacondo/
 |------|------|
 | `←` | 回退到上一页 |
 | `→` / `Space` | 前进到下一页 / 确认选择 |
-| `1` `2` `3` `4` | 在选择页高亮对应选项 |
+| `1` `2` `3` `4` `5` | 在选择页高亮对应选项 |
 | `Esc` | 关闭面板 / 呼出主菜单 |
+| `Ctrl+Shift+D` | 🔓 破解版章节跳转面板（仅解锁版） |
 
 ---
 

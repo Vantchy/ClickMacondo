@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>百年孤独 · 宿命之环</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Cinzel:wght@400;700&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #d4b070;
+    --gold-light: #e8d5a3;
+    --gold-dim: #b8986a;
+    --bg: #1a1410;
+    --bg-card: #221b14;
+    --border: rgba(184,137,62,0.25);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--gold);
+    font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center;
+  }
+
+  /* ── 粒子背景 ── */
+  #particles {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  }
+  .particle {
+    position: absolute;
+    width: 2px; height: 2px;
+    background: var(--gold-dim);
+    border-radius: 50%;
+    animation: floatUp linear infinite;
+    opacity: 0;
+  }
+  @keyframes floatUp {
+    0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+    10%  { opacity: 0.6; }
+    90%  { opacity: 0.6; }
+    100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+  }
+
+  /* ── 主容器 ── */
+  .container {
+    position: relative; z-index: 1;
+    max-width: 720px; width: 90vw;
+    padding: 60px 40px;
+    display: flex; flex-direction: column; align-items: center;
+    text-align: center;
+  }
+
+  /* ── 标题 ── */
+  .title {
+    font-family: 'Cinzel', 'Noto Serif SC', serif;
+    font-size: 3.2rem; font-weight: 700;
+    letter-spacing: 0.25em;
+    color: var(--gold-light);
+    text-shadow: 0 0 40px rgba(212,176,112,0.25);
+    margin-bottom: 8px;
+  }
+  .subtitle {
+    font-family: 'Cinzel', 'Noto Serif SC', serif;
+    font-size: 1.3rem; letter-spacing: 0.35em;
+    color: var(--gold-dim);
+    margin-bottom: 24px;
+  }
+
+  /* ── 引言 ── */
+  .quote {
+    font-style: italic; font-size: 1.05rem;
+    color: rgba(184,152,106,0.7);
+    line-height: 1.9; max-width: 500px;
+    margin-bottom: 48px;
+    position: relative;
+  }
+  .quote::before, .quote::after {
+    content: '❧';
+    display: block;
+    font-style: normal; font-size: 1.4rem;
+    color: var(--gold-dim);
+    margin: 16px 0;
+  }
+  .quote::after { content: '❧'; }
+
+  /* ── 分隔线 ── */
+  .divider {
+    width: 120px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 0 auto 40px;
+  }
+
+  /* ── 卡片网格 ── */
+  .cards {
+    display: flex; gap: 20px;
+    flex-wrap: wrap; justify-content: center;
+  }
+  .card {
+    display: flex; flex-direction: column; align-items: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px 28px 28px;
+    width: 260px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(184,137,62,0.06), transparent 70%);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .card:hover {
+    border-color: rgba(184,137,62,0.5);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4), 0 0 20px rgba(184,137,62,0.06);
+  }
+  .card:hover::before { opacity: 1; }
+
+  .card-icon {
+    font-size: 2.4rem; margin-bottom: 12px;
+    position: relative; z-index: 1;
+  }
+  .card-title {
+    font-family: 'Cinzel', 'Noto Serif SC', serif;
+    font-size: 1.2rem; font-weight: 600;
+    color: var(--gold-light); letter-spacing: 0.08em;
+    margin-bottom: 8px; position: relative; z-index: 1;
+  }
+  .card-desc {
+    font-size: 0.82rem; color: rgba(184,152,106,0.6);
+    line-height: 1.6; position: relative; z-index: 1;
+  }
+  .card-badge {
+    display: inline-block;
+    margin-top: 14px;
+    padding: 3px 12px;
+    border: 1px solid rgba(184,137,62,0.25);
+    border-radius: 20px;
+    font-size: 0.7rem; letter-spacing: 0.05em;
+    color: var(--gold-dim);
+    position: relative; z-index: 1;
+    transition: all 0.3s;
+  }
+  .card:hover .card-badge {
+    background: rgba(184,137,62,0.1);
+    border-color: rgba(184,137,62,0.4);
+    color: var(--gold-light);
+  }
+
+  /* ── 底部信息 ── */
+  .footer {
+    margin-top: 56px;
+    font-size: 0.72rem; color: rgba(184,152,106,0.35);
+    letter-spacing: 0.06em;
+    position: relative; z-index: 1;
+  }
+  .footer span { margin: 0 8px; }
+
+  /* ── 响应式 ── */
+  @media (max-width: 600px) {
+    .container { padding: 40px 20px; }
+    .title { font-size: 2rem; }
+    .subtitle { font-size: 0.95rem; }
+    .cards { flex-direction: column; align-items: center; }
+    .card { width: 100%; max-width: 320px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 漂浮粒子 -->
+<div id="particles"></div>
+
+<div class="container">
+  <div class="title">百 年 孤 独</div>
+  <div class="subtitle">宿 命 之 环</div>
+
+  <div class="quote">
+    多年以后，面对行刑队，<br>
+    奥雷里亚诺·布恩迪亚上校<br>
+    将会回想起父亲带他去见识冰块的<br>
+    那个遥远的下午。
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="cards">
+    <a class="card" href="frontend/circle-of-fate.html">
+      <div class="card-icon">❧</div>
+      <div class="card-title">宿 命 之 环</div>
+      <div class="card-desc">
+        交互式文字冒险游戏<br>
+        附身布恩迪亚家族成员<br>
+        在命运的关键节点做出选择
+      </div>
+      <span class="card-badge">进入游戏</span>
+    </a>
+
+    <a class="card" href="story-viewer/story-explorer.html">
+      <div class="card-icon">❦</div>
+      <div class="card-title">故 事 画 卷</div>
+      <div class="card-desc">
+        百年孤独插画故事浏览<br>
+        24 张章节插画<br>
+        重温马孔多的百年史诗
+      </div>
+      <span class="card-badge">浏览画卷</span>
+    </a>
+  </div>
+
+  <div class="footer">
+    Vantchy <span>·</span> Corrofea
+  </div>
+</div>
+
+<script>
+  // 漂浮粒子
+  (function() {
+    const container = document.getElementById('particles');
+    const count = 30;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('div');
+      p.classList.add('particle');
+      p.style.left = Math.random() * 100 + '%';
+      p.style.animationDuration = (8 + Math.random() * 16) + 's';
+      p.style.animationDelay = Math.random() * 12 + 's';
+      p.style.width = p.style.height = (1 + Math.random() * 2.5) + 'px';
+      container.appendChild(p);
+    }
+  })();
+</script>
+
+</body>
+</html>
