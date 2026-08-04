@@ -2,6 +2,7 @@
 
 ```
 ClickMacondo/
+├── index.html                                  # 🏠 项目入口页（服务器部署用，含漂浮粒子动画）
 ├── README.md                                  # 📖 项目说明（入口指南、技术栈、快速开始）
 ├── .gitignore                                 # 🙈 Git忽略配置
 │
@@ -67,6 +68,7 @@ ClickMacondo/
 
 | 类别 | 文件数 | 总行数 |
 |------|--------|--------|
+| 入口页 index.html | 1 | ~220 |
 | HTML 入口（正式版 + 破解版） | 2 | 537 + 541 |
 | CSS 样式 | 1 | 2,914 |
 | 核心 JS 模块（core/） | 4 | 2,129 |
@@ -76,6 +78,7 @@ ClickMacondo/
 | **JS 总计（含数据文件）** | **18** | **~7,792** |
 | **JS 总计（仅逻辑模块）** | **12** | **~4,942** |
 | 插图 | 24 | — |
+| **根目录文件** | **index.html + README.md + .gitignore** | **3** |
 
 ---
 
@@ -95,6 +98,7 @@ ClickMacondo/
 3. `Story-ideas/implementation-guide.md` — 具体实施步骤
 
 ### 修改代码时的速查
+- 改入口页 → `index.html`
 - 改剧情 → `assets/data/chapters-data*.js`
 - 改逻辑 → `src/core/game-engine.js`
 - 改渲染 → `src/core/renderer.js`
@@ -121,4 +125,4 @@ ClickMacondo/
 
 ---
 
-*最后更新：2026-08-04*
+*最后更新：2026-08-05*

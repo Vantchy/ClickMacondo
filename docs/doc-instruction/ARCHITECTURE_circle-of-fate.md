@@ -2,7 +2,7 @@
 
 > **入口文件**: [frontend/circle-of-fate.html](frontend/circle-of-fate.html)（正式版）/ [frontend/circle-of-fate-unlock.html](frontend/circle-of-fate-unlock.html)（破解版）
 > **项目**: 百年孤独 · 宿命之环（互动叙事游戏）
-> **生成日期**: 2026-08-04
+> **生成日期**: 2026-08-05
 
 ---
 
@@ -10,6 +10,7 @@
 
 ```
 ClickMacondo/
+├── index.html                        ← 🏠 服务器入口页（漂浮粒子动画）
 ├── README.md
 ├── frontend/                          ← 🎯 主应用目录
 │   ├── circle-of-fate.html            ← 🔑 正式版入口
@@ -389,6 +390,7 @@ ClickMacondo/
 
 | 文件路径 | 关联方式 | 用途 |
 |---------|---------|------|
+| `index.html` | 服务器入口页 | 项目首页，链接到游戏和故事画卷 ⭐ |
 | `frontend/styles/styles.css` | `<link>` 引用 | 全局样式表（2,914 行），定义所有视觉风格 |
 | `frontend/assets/audio/… .mp3` | `<audio>` 引用 | 背景音乐（25MB MP3） |
 | `story-viewer/story-explorer.html` | 主菜单链接跳转 | 独立的插图故事浏览器 |
@@ -539,6 +541,6 @@ ClickMacondo/
 
 ---
 
-> **文档生成时间**：2026-08-04
+> **文档生成时间**：2026-08-05
 > **分析范围**：`circle-of-fate.html` + `circle-of-fate-unlock.html` + 全部 14 个 JS 模块 + 6 个章节数据文件
 > **总代码量**：约 7,800 行（JS，含数据文件），约 11,500 行（含 HTML + CSS）

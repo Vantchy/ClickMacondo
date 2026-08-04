@@ -24,6 +24,7 @@
 
 ```
 ClickMacondo/
+├── index.html                          # 🏠 项目入口页（服务器部署用）
 ├── README.md
 ├── .gitignore
 │
@@ -86,6 +87,7 @@ ClickMacondo/
 
 项目无需安装，纯静态文件，直接在浏览器中打开即可：
 
+- **入口页**：在浏览器中打开 [`index.html`](index.html)
 - **主游戏**：在浏览器中打开 [`frontend/circle-of-fate.html`](frontend/circle-of-fate.html)
 - **故事画卷**：在浏览器中打开 [`story-viewer/story-explorer.html`](story-viewer/story-explorer.html)
 

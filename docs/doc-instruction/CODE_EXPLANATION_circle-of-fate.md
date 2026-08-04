@@ -760,10 +760,15 @@ frontend/
         ├── sfx.js               ← Web Audio 音效合成 ⭐（129 行）
         ├── storage.js           ← 存档/读档（244 行）
         └── debug-panel.js       ← 破解版章节跳转面板 ⭐（328 行，仅解锁版）
+
+index.html                       ← 🏠 项目入口页（服务器部署用）⭐
+story-viewer/
+├── story-explorer.html          ← 插图故事浏览器
+└── images/                      ← 24 张插画
 ```
 
 ---
 
-> **文档生成时间**：2026-08-04
+> **文档生成时间**：2026-08-05
 > **分析范围**：`circle-of-fate.html` + `circle-of-fate-unlock.html` + 全部 14 个 JS 模块 + 6 个章节数据文件
 > **总代码量**：约 4,900 行（JS 逻辑模块）、约 2,850 行（章节数据）、约 2,900 行（CSS）、约 1,080 行（HTML）
