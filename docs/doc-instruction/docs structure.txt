@@ -6,48 +6,52 @@ ClickMacondo/
 ├── .gitignore                                 # 🙈 Git忽略配置
 │
 ├── frontend/                                  # 👑 前端主游戏（纯静态，无框架）
-│   ├── circle-of-fate.html                    # 🔑 唯一入口页面（SPA单页应用，517行）
+│   ├── circle-of-fate.html                    # 🔑 正式版入口（SPA单页应用，537行）
 │   │                                            所有 UI 面板通过 CSS class 控制显隐，
-│   │                                            按严格顺序加载 12 个 JS 模块
+│   │                                            按严格顺序加载 18 个 JS 文件
+│   ├── circle-of-fate-unlock.html             # 🔓 破解版入口（541行，额外加载调试工具）
 │   ├── styles/
-│   │   └── styles.css                         # 🎨 全局样式表（57KB，2762行）
+│   │   └── styles.css                         # 🎨 全局样式表（2914行）
 │   │                                            羊皮纸/古籍视觉风格，CSS变量统管色调
 │   ├── assets/
 │   │   ├── audio/
 │   │   │   └── elias_weber-*.mp3              # 🎵 背景音乐（25MB，单曲循环）
 │   │   └── data/
-│   │       ├── chapters-data.js               # 📝 章节数据（主文件，批次0）
-│   │       ├── chapters-data-1.js             # 📝 章节数据（批次1）
-│   │       ├── chapters-data-2.js             # 📝 章节数据（批次2）
-│   │       ├── chapters-data-3.js             # 📝 章节数据（批次3）
-│   │       ├── chapters-data-4.js             # 📝 章节数据（批次4）
-│   │       └── chapters-data-5.js             # 📝 章节数据（批次5）
+│   │       ├── chapters-data.js               # 📝 章节数据（主文件，批次0，404行）
+│   │       ├── chapters-data-1.js             # 📝 章节数据（批次1，965行）
+│   │       ├── chapters-data-2.js             # 📝 章节数据（批次2，329行）
+│   │       ├── chapters-data-3.js             # 📝 章节数据（批次3，416行）
+│   │       ├── chapters-data-4.js             # 📝 章节数据（批次4，141行）
+│   │       └── chapters-data-5.js             # 📝 章节数据（批次5，595行）
 │   │           ↑ 每个文件调用 registerChapter() 填充全局注册表
 │   └── src/
-│       ├── app.js                             # 🚀 应用入口（初始化、事件绑定、键盘导航）
+│       ├── app.js                             # 🚀 应用入口（初始化、事件绑定、键盘导航，270行）
 │       ├── core/                              # ⚙️ 核心逻辑层
-│       │   ├── chapter-registry.js            # 章节注册系统（chapters/memory/familyTree注册表）
-│       │   ├── game-state.js                  # 全局游戏状态（GameState单例）
-│       │   ├── game-engine.js                 # 游戏引擎（选择处理/场景跳转/章节切换）
-│       │   └── renderer.js                    # 主渲染器（左页叙事/右页交互/探索场景）
+│       │   ├── chapter-registry.js            # 章节注册系统（163行）
+│       │   ├── game-state.js                  # 全局游戏状态 GameState 单例（378行）
+│       │   ├── game-engine.js                 # 游戏引擎（选择/跳转/翻页/调试，827行）
+│       │   └── renderer.js                    # 主渲染器（左页叙事/右页交互/探索，761行）
 │       ├── ui/                                # 🎯 UI交互层
-│       │   ├── ui.js                          # Toast/封面/致谢名单/主菜单/BGM/收集页
-│       │   ├── achievements.js                # 成就系统（30+条件判定/解锁通知）
-│       │   ├── sidebar.js                     # 侧边栏（家族树/档案/简介/关系查询）
-│       │   └── settings.js                    # 设置面板（字体/音量/重置/清除全部数据）
+│       │   ├── ui.js                          # Toast/封面/致谢/主菜单/BGM/收集页（707行）
+│       │   ├── achievements.js                # 成就系统（88行）
+│       │   ├── sidebar.js                     # 侧边栏：家族树/档案/简介/关系查询（568行）
+│       │   └── settings.js                    # 设置面板：字体/音量/重置/nukeAll（110行）
 │       └── utils/                             # 🔧 工具与数据层
-│           ├── config.js                      # 全局常量（章节元数据/167条关系库/成就/结局/线索）
-│           └── storage.js                     # 存档系统（1自动存档 + 6手动槽位）
+│           ├── config.js                      # 全局常量（章节元数据/关系库/成就/结局/线索，639行）
+│           ├── storage.js                     # 存档系统（1自动存档+6手动槽位，244行）
+│           ├── sfx.js                         # 🔔 音效系统（Web Audio API 合成，129行）
+│           └── debug-panel.js                 # 🔓 破解版章节跳转面板（328行，仅解锁版加载）
 │
 ├── story-viewer/                              # 📚 百年孤独故事画卷（独立应用）
-│   ├── story-explorer.html                    # 插图故事浏览器（~2000行，单文件SPA）
-│   └── images/                                # 🖼 章节插画（24张）
+│   ├── story-explorer.html                    # 插图故事浏览器（单文件SPA）
+│   └── images/                                # 🖼 章节插画（24张：1 JPG + 23 PNG）
 │       ├── page-1.jpg
 │       └── scene-1.png ~ scene-23.png
 │
 └── docs/                                      # 📄 项目文档
     ├── dev-tree-diagram.md                    # 开发依赖关系图（Markdown）
     ├── dev-tree-viewer.html                   # 依赖关系可视化浏览器（HTML）
+    ├── improvement-plan.md                    # 📋 改进计划（287行）
     ├── doc-instruction/                       # 技术文档
     │   ├── docs structure.txt                 # 📋 本文件：文档结构说明
     │   ├── ARCHITECTURE_circle-of-fate.md     # 🏛 文件架构全景图（依赖关系/数据流/修改指南）
@@ -56,6 +60,22 @@ ClickMacondo/
         ├── project-spec.md                    # 📋 可玩性增强方案（七大方向/优先级矩阵）
         ├── implementation-guide.md            # 🔨 实施指南（精确到文件/字段的修改步骤）
         └── manual.md                          # 📖 行动指南（设计总纲/22章因果全景图/数据架构）
+
+---
+
+## 代码规模统计
+
+| 类别 | 文件数 | 总行数 |
+|------|--------|--------|
+| HTML 入口（正式版 + 破解版） | 2 | 537 + 541 |
+| CSS 样式 | 1 | 2,914 |
+| 核心 JS 模块（core/） | 4 | 2,129 |
+| UI JS 模块（ui/） | 4 | 1,473 |
+| 工具 JS 模块（utils/） | 4 | 1,340 |
+| 章节数据（assets/data/） | 6 | 2,850 |
+| **JS 总计（含数据文件）** | **18** | **~7,792** |
+| **JS 总计（仅逻辑模块）** | **12** | **~4,942** |
+| 插图 | 24 | — |
 
 ---
 
@@ -81,7 +101,24 @@ ClickMacondo/
 - 改UI → `src/ui/ui.js`
 - 改样式 → `styles/styles.css`
 - 改常量 → `src/utils/config.js`
+- 改音效 → `src/utils/sfx.js`
+- 改存档 → `src/utils/storage.js`
+- 调试跳转 → `src/utils/debug-panel.js`（仅破解版）
 
 ---
 
-*最后更新：2026-07-29*
+## 正式版 vs 破解版
+
+| 差异 | 正式版 | 破解版 |
+|------|--------|--------|
+| 入口文件 | `circle-of-fate.html` | `circle-of-fate-unlock.html` |
+| 进度条拖动范围 | 仅可拖到已访问位置 | 全书任意位置 |
+| 章节跳转面板 | ❌ | ✅（Ctrl+Shift+D） |
+| 左上角章节名可点击 | ❌ | ✅ |
+| `debugJump(n)` 命令 | ❌ | ✅ |
+| 额外 JS 模块 | — | `debug-panel.js` (328行) |
+| `__IS_DEBUG__` 标志 | `false` / 未定义 | `true` |
+
+---
+
+*最后更新：2026-08-04*
