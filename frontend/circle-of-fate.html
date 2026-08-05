@@ -22,7 +22,7 @@
 <!-- ================================================================
      开头动态封面
      ================================================================ -->
-<div id="cover-overlay" onclick="this.classList.add('hidden');if(typeof showMainMenu==='function')showMainMenu()">
+<div id="cover-overlay" onclick="this.classList.add('hidden');if(typeof showMainMenu==='function')showMainMenu();if(typeof BGM!=='undefined')BGM.tryPlay()">
   <div id="cover-particles"></div>
   <div id="cover-title-wrap">
     <div id="cover-main-title"></div>
@@ -260,7 +260,7 @@
      背景层
      ================================================================ -->
 <!-- 背景音频 -->
-<audio id="bgm-audio" loop preload="auto" style="display:none;">
+<audio id="bgm-audio" loop preload="auto" style="position:absolute;width:0;height:0;opacity:0;pointer-events:none;">
   <source src="assets/audio/elias_weber-mists-in-the-elven-lands-127808.mp3" type="audio/mpeg">
 </audio>
 

@@ -124,14 +124,18 @@ const BGM = {
     }
   },
 
-  /** 开始播放 MP3 背景音乐 */
+  /** 开始播放 MP3 背景音乐（在用户手势回调中同步调用最可靠） */
   tryPlay() {
     if (!this.audio || this._started) return;
+    // 显式加载确保音频源就绪（修复 PC 端 display:none / 缓存导致的静默失败）
+    this.audio.load();
     const p = this.audio.play();
     if (p && p.then) {
       p.then(() => { this._started = true; console.log('背景音乐已启动'); })
-       .catch((e) => { console.warn('背景音乐播放失败（可能需要用户交互后重试）:', e.message); });
-    } else {
+       .catch((e) => {
+         console.warn('背景音乐播放失败，将在下次交互时重试:', e.message);
+         // _started 保持 false，下次交互继续重试
+       });
     }
   },
 
@@ -250,6 +254,7 @@ function continueFromMenu() {
   if (!loaded) { showToast('读档失败'); return; }
   hideMainMenu();
   document.getElementById('cover-overlay').classList.add('hidden');
+  BGM.tryPlay();
   Renderer.render();
   updateBigSave();
   startPlayTimeTracking();
@@ -267,6 +272,7 @@ function startNewGame() {
   GameState.historyIndex = 0;
   hideMainMenu();
   document.getElementById('cover-overlay').classList.add('hidden');
+  BGM.tryPlay();
   Renderer.render();
   GameEngine.encounterChapterMembers();
   updateBigSave();
