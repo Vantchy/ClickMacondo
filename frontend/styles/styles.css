@@ -152,7 +152,45 @@ body {
   grid-template-columns: 1fr var(--spine-width) 1fr;
   overflow: hidden;
   min-height: 0;
+  position: relative; /* 为翻页导航按钮提供定位参考 */
 }
+
+/* ── 翻页导航按钮 ── */
+.book-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+  width: 40px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(20,14,8,0.55);
+  border: 1px solid rgba(184,137,62,0.18);
+  color: var(--gold-dim);
+  font-family: var(--font-ui);
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.book-nav-btn:hover {
+  background: rgba(184,137,62,0.12);
+  border-color: rgba(184,137,62,0.45);
+  color: #e8d0a0;
+  box-shadow: 0 0 16px rgba(184,137,62,0.1);
+}
+.book-nav-btn:active {
+  background: rgba(184,137,62,0.18);
+  transform: translateY(-50%) scale(0.95);
+}
+#nav-prev { left: 4px; border-radius: 0 8px 8px 0; }
+#nav-next { right: 4px; border-radius: 8px 0 0 8px; }
 
 /* 左页 */
 #left-page {
@@ -1156,6 +1194,15 @@ input[type="range"] {
     max-height: none;
     overflow: visible;
   }
+
+  /* 翻页按钮 — 移动端缩小，避免遮挡内容 */
+  .book-nav-btn {
+    width: 32px;
+    height: 52px;
+    font-size: 1.1rem;
+  }
+  #nav-prev { left: 1px; }
+  #nav-next { right: 1px; }
 
   /* 顶部栏 —— 允许换行 */
   #top-bar {

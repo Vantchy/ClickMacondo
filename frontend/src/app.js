@@ -99,6 +99,22 @@ function init() {
   document.getElementById('btn-profile').addEventListener('click', () => SidebarManager.openProfile());
   document.getElementById('btn-relations').addEventListener('click', () => SidebarManager.openRelations());
 
+  // 翻页导航按钮
+  document.getElementById('nav-prev').addEventListener('click', (e) => {
+    e.preventDefault();
+    if (GameEngine.navigateBack()) {
+      if (typeof SFX !== 'undefined' && SFX.playPageTurn) SFX.playPageTurn();
+      Renderer.render();
+    }
+  });
+  document.getElementById('nav-next').addEventListener('click', (e) => {
+    e.preventDefault();
+    if (GameEngine.navigateForward()) {
+      if (typeof SFX !== 'undefined' && SFX.playPageTurn) SFX.playPageTurn();
+      Renderer.render();
+    }
+  });
+
   // 侧边栏关闭
   document.getElementById('close-family').addEventListener('click', () => SidebarManager.closeFamilyTree());
   document.getElementById('close-archives').addEventListener('click', () => SidebarManager.closeArchives());
