@@ -180,10 +180,14 @@ const Renderer = {
           else if (isGatedUnlocked) btnClass += ' choice-gated-unlocked';
 
           const canClick = !isLocked && !isGatedLocked;
-          const onclickAttr = canClick ? `onclick="selectChoice('${choice.id}')"` : '';
+          const isChosenClickable = isChosen;
+          const onclickAttr = isChosenClickable
+            ? `onclick="navigateForwardFromLockedChoice()"`
+            : (canClick ? `onclick="selectChoice('${choice.id}')"` : '');
           const selectedClass = (canClick && _selectedChoiceId === choice.id) ? ' choice-selected' : '';
+          const chosenClass = isChosenClickable ? ' choice-chosen-clickable' : '';
 
-          html += `<div class="${btnClass}${selectedClass}" data-choice-id="${choice.id}" ${onclickAttr}>`;
+          html += `<div class="${btnClass}${selectedClass}${chosenClass}" data-choice-id="${choice.id}" ${onclickAttr} title="${isChosen ? '点击继续前进' : ''}">`;
           html += `<span class="choice-label">${isChosen ? '▶ ' : ''}${choice.label}</span>`;
           html += `<span class="choice-desc">${choice.description}</span>`;
 
@@ -758,4 +762,12 @@ function showMemoryPopup(mem) {
   memoryPopupTimer = setTimeout(() => {
     popup.classList.remove('show');
   }, 4500);
+}
+
+/* ---- 已锁定选择页：点击已选选项前进 ---- */
+function navigateForwardFromLockedChoice() {
+  if (GameEngine.navigateForward()) {
+    if (typeof SFX !== 'undefined' && SFX.playConfirm) SFX.playConfirm();
+    Renderer.render();
+  }
 }

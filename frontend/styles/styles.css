@@ -478,6 +478,15 @@ body {
   transform: none;
   box-shadow: none;
 }
+/* 已锁定选择页：已选选项可点击前进 */
+.choice-btn.choice-chosen-clickable {
+  cursor: pointer;
+}
+.choice-btn.choice-chosen-clickable:hover {
+  background: rgba(232, 200, 112, 0.2);
+  box-shadow: 0 0 14px rgba(184, 137, 62, 0.2);
+  border-color: var(--gold-light);
+}
 .choice-btn.choice-chosen .choice-label {
   color: var(--gold-light);
 }
