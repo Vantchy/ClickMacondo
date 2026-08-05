@@ -60,13 +60,18 @@ function showCover() {
   const cover = document.getElementById('cover-overlay');
   if (!cover) return;
   cover.classList.remove('hidden');
-  spawnCoverParticles();
-  animateCoverTitle();
-  // 点击封面进入主菜单
-  cover.onclick = function() {
+
+  // ★ 先绑定点击事件（确保即使后续动画出错，封面仍可点击进入）
+  cover.onclick = null; // 清除可能残留的旧事件
+  cover.addEventListener('click', function enterGame() {
+    cover.removeEventListener('click', enterGame);
     cover.classList.add('hidden');
     showMainMenu();
-  };
+  });
+
+  // 动画（非关键路径：失败不影响封面点击）
+  try { spawnCoverParticles(); } catch (e) { console.warn('封面粒子动画失败:', e); }
+  try { animateCoverTitle(); } catch (e) { console.warn('封面标题动画失败:', e); }
 }
 
 /* ---- 致谢名单 ---- */
@@ -226,9 +231,10 @@ function refreshBigSaveCard() {
 function showMainMenu() {
   const overlay = document.getElementById('mainmenu-overlay');
   if (!overlay) return;
-  spawnMainMenuParticles();
-  refreshBigSaveCard();
   overlay.classList.add('open');
+  // 非关键路径：动画和粒子
+  try { spawnMainMenuParticles(); } catch (e) { console.warn('菜单粒子动画失败:', e); }
+  try { refreshBigSaveCard(); } catch (e) { console.warn('刷新存档卡片失败:', e); }
   // 重置动画
   const content = document.getElementById('mainmenu-content');
   if (content) {
