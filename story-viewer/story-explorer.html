@@ -864,25 +864,84 @@
       }
       .story-text { font-size: 16px; line-height: 1.9; text-indent: 2em; }
       .character-name { font-size: 1.05rem; }
-      #bottom-bar { padding: 10px 16px 18px; gap: 10px; }
-      .progress-info { font-size: 0.6rem; min-width: 60px; }
-      .btn-graph { font-size: 0.6rem; padding: 4px 16px; }
-      .modal-card { padding: 28px 22px 24px; border-radius: 18px; }
-      .graph-popup-card { padding: 24px 20px 20px; max-width: 320px; border-radius: 18px; }
+      #bottom-bar { padding: 10px 16px 18px; gap: 8px; flex-wrap: wrap; justify-content: center; }
+      .progress-info { font-size: 0.6rem; min-width: 50px; }
+      .progress-track { min-width: 40px; flex: 0.6; }
+      .btn-graph { font-size: 0.6rem; padding: 6px 16px; min-height: 36px; }
+      .modal-card { padding: 28px 22px 24px; border-radius: 18px; max-width: 92vw; }
+      .graph-popup-card { padding: 24px 20px 20px; max-width: 88vw; border-radius: 18px; }
       .scene-tag { font-size: 0.55rem; padding: 2px 14px; }
       .atmo-tag { font-size: 0.55rem; padding: 2px 12px; }
       #top-bar { padding: 8px 12px; }
-      .top-btn { font-size: 0.6rem; padding: 4px 10px; }
+      .top-btn { font-size: 0.6rem; padding: 5px 10px; min-height: 32px; }
       #sound-controls { bottom: 70px; right: 12px; }
       .sound-btn { font-size: 0.5rem; padding: 3px 10px; }
       #stats-badge { display: none; }
+
+      /* 图谱面板 — 移动端 */
+      .graph-header {
+        padding: 10px 12px;
+        gap: 8px;
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .graph-title { font-size: 0.8rem; text-align: center; }
+      .graph-controls {
+        gap: 6px;
+        justify-content: center;
+      }
+      .graph-controls select,
+      .graph-controls button {
+        font-size: 0.6rem;
+        padding: 6px 10px;
+        min-height: 32px;
+      }
+      .graph-close {
+        font-size: 0.65rem;
+        padding: 6px 14px;
+        min-height: 32px;
+      }
+      .graph-legend {
+        gap: 10px;
+        padding: 8px 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .legend-item { font-size: 0.52rem; gap: 4px; }
+      .legend-line { width: 16px; }
+      .graph-hint-text { font-size: 7px !important; }
+
+      /* 点击区域 — 移动端更大 */
+      #click-area > div { min-height: 100%; }
+      #click-left { cursor: pointer; }
+      #click-right { cursor: pointer; }
     }
     @media (max-width: 400px) {
-      #text-container { padding: 18px 14px 16px; bottom: 68px; border-radius: 16px; }
+      #text-container { padding: 18px 14px 16px; bottom: 68px; border-radius: 16px; max-height: 52vh; }
       .story-text { font-size: 15px; line-height: 1.8; text-indent: 1.8em; }
       .scene-tag { font-size: 0.5rem; padding: 2px 12px; }
       .character-name { font-size: 0.95rem; }
-      #bottom-bar { padding: 6px 12px 14px; }
+      #bottom-bar { padding: 6px 10px 14px; gap: 6px; }
+      .progress-info { font-size: 0.5rem; min-width: 40px; }
+      .btn-graph { font-size: 0.55rem; padding: 5px 12px; min-height: 34px; }
+      .top-btn { font-size: 0.55rem; padding: 4px 8px; }
+
+      /* 图谱面板 — 小屏 */
+      .graph-header { padding: 8px 8px; gap: 6px; }
+      .graph-title { font-size: 0.72rem; }
+      .graph-controls select,
+      .graph-controls button {
+        font-size: 0.55rem;
+        padding: 5px 8px;
+        min-height: 30px;
+      }
+      .graph-close { font-size: 0.6rem; padding: 5px 10px; }
+      .graph-legend { gap: 6px; padding: 6px 8px; }
+      .legend-item { font-size: 0.48rem; }
+      .legend-line { width: 12px; }
+      .graph-popup-card { max-width: 94vw; padding: 20px 16px 16px; }
+      .modal-card { max-width: 94vw; padding: 22px 16px 18px; }
+      .graph-hint-text { font-size: 6px !important; }
     }
     @supports (padding: max(0px)) {
       #bottom-bar { padding-bottom: max(18px, env(safe-area-inset-bottom)); }
@@ -1706,10 +1765,12 @@
       _offsetX: 0,
       _offsetY: 0,
       _isDragging: false,
+      _hasMoved: false,
       _startX: 0,
       _startY: 0,
       _startOffX: 0,
       _startOffY: 0,
+      _dragThreshold: 6,
 
       _typeColors: {
         '夫妻': '#c4954a', '亲子': '#6b8c5c',
@@ -1747,10 +1808,11 @@
         ];
 
         const positions = {};
-        const gapX = 28 * scale;
-        const fontSize = 14 * scale;
-        const labelFontSize = 16 * scale;
-        const hotRadius = 20 * scale;
+        const isTouchDevice = 'ontouchstart' in window;
+        const gapX = (isTouchDevice && window.innerWidth < 768 ? 36 : 28) * scale;
+        const fontSize = (isTouchDevice && window.innerWidth < 768 ? 13 : 14) * scale;
+        const labelFontSize = (isTouchDevice && window.innerWidth < 768 ? 14 : 16) * scale;
+        const hotRadius = (isTouchDevice && window.innerWidth < 768 ? 28 : 20) * scale;
 
         layers.forEach(layer => {
           const items = layer.items;
@@ -1815,7 +1877,11 @@
             onclick="event.stopPropagation(); Graph.openPopup('${safeName}')">${display}</text>`;
         });
 
-        svgContent += `<text x="${W/2}" y="${H-10}" fill="#5c4a2a" font-size="${9*scale}" text-anchor="middle" font-family="Georgia,serif" letter-spacing="${1.5*scale}" opacity="0.5">拖拽移动 · 滚轮缩放 · 点击节点查看详情</text>`;
+        const isMobile = 'ontouchstart' in window && window.innerWidth < 768;
+        const hintText = isMobile
+          ? '滑动拖拽 · 双指缩放 · 点击节点查看详情'
+          : '拖拽移动 · 滚轮缩放 · 点击节点查看详情';
+        svgContent += `<text x="${W/2}" y="${H-10}" fill="#5c4a2a" font-size="${9*scale}" text-anchor="middle" font-family="Georgia,serif" letter-spacing="${1.5*scale}" opacity="0.5" class="graph-hint-text">${hintText}</text>`;
         this.svg.innerHTML = svgContent;
       },
 
@@ -1824,6 +1890,8 @@
         this._scale = 1;
         this._offsetX = 0;
         this._offsetY = 0;
+        this._isDragging = false;
+        this._hasMoved = false;
         setTimeout(() => this._render(), 100);
       },
 
@@ -1860,8 +1928,10 @@
         $('#graphPopupClose').addEventListener('click', (e) => { e.stopPropagation(); this.closePopup(); });
         $('#graph-popup-overlay').addEventListener('click', (e) => { if (e.target === e.currentTarget) this.closePopup(); });
 
+        // 鼠标拖拽
         this.svg.addEventListener('mousedown', (e) => {
-          if (e.target.closest('.graph-node')) return;
+          // 点击节点时不拖拽（节点是 circle 或 text 元素）
+          if (e.target.tagName === 'circle' || e.target.tagName === 'text') return;
           this._isDragging = true;
           this._startX = e.clientX;
           this._startY = e.clientY;
@@ -1884,23 +1954,68 @@
           }
         });
 
-        let touchStartX, touchStartY, touchOffX, touchOffY;
+        // 触屏拖拽 + 双指缩放
+        let pinchDist0 = 0, pinchScale0 = 1;
+
+        function getTouchDist(touches) {
+          const dx = touches[0].clientX - touches[1].clientX;
+          const dy = touches[0].clientY - touches[1].clientY;
+          return Math.sqrt(dx * dx + dy * dy);
+        }
+
         this.svg.addEventListener('touchstart', (e) => {
-          if (e.target.closest('.graph-node')) return;
-          const t = e.touches[0];
-          touchStartX = t.clientX;
-          touchStartY = t.clientY;
-          touchOffX = this._offsetX;
-          touchOffY = this._offsetY;
-        }, { passive: true });
-        this.svg.addEventListener('touchmove', (e) => {
-          if (e.touches.length !== 1) return;
-          const t = e.touches[0];
-          this._offsetX = touchOffX + (t.clientX - touchStartX);
-          this._offsetY = touchOffY + (t.clientY - touchStartY);
-          this._render();
+          if (e.touches.length === 1) {
+            // 单指 — 记录起始位置，等移动超过阈值才判定为拖拽
+            this._isDragging = false;
+            this._hasMoved = false;
+            this._startX = e.touches[0].clientX;
+            this._startY = e.touches[0].clientY;
+            this._startOffX = this._offsetX;
+            this._startOffY = this._offsetY;
+          } else if (e.touches.length === 2) {
+            // 双指缩放
+            this._isDragging = false;
+            this._hasMoved = false;
+            pinchDist0 = getTouchDist(e.touches);
+            pinchScale0 = this._scale;
+          }
+          // 不 preventDefault — 让节点 click 事件正常触发
         }, { passive: true });
 
+        this.svg.addEventListener('touchmove', (e) => {
+          if (e.touches.length === 1) {
+            const t = e.touches[0];
+            const dx = t.clientX - this._startX;
+            const dy = t.clientY - this._startY;
+            if (!this._isDragging && (Math.abs(dx) > this._dragThreshold || Math.abs(dy) > this._dragThreshold)) {
+              this._isDragging = true;
+              this._hasMoved = true;
+            }
+            if (this._isDragging) {
+              this._offsetX = this._startOffX + dx;
+              this._offsetY = this._startOffY + dy;
+              this._render();
+              if (e.cancelable) e.preventDefault();
+            }
+          } else if (e.touches.length === 2) {
+            this._isDragging = false;
+            const newDist = getTouchDist(e.touches);
+            if (pinchDist0 > 0) {
+              const ratio = newDist / pinchDist0;
+              this._scale = Math.max(0.4, Math.min(2.5, pinchScale0 * ratio));
+              this._render();
+            }
+            if (e.cancelable) e.preventDefault();
+          }
+        }, { passive: false });
+
+        this.svg.addEventListener('touchend', () => {
+          this._isDragging = false;
+          this._hasMoved = false;
+          pinchDist0 = 0;
+        });
+
+        // 鼠标滚轮缩放
         this.svg.addEventListener('wheel', (e) => {
           e.preventDefault();
           const delta = e.deltaY > 0 ? -0.08 : 0.08;
@@ -1915,10 +2030,18 @@
           }
         });
 
+        // 移动端：点击图谱空白区关闭弹窗
+        this.container.addEventListener('click', (e) => {
+          if (e.target === this.svg && $('#graph-popup-overlay').classList.contains('active')) {
+            this.closePopup();
+          }
+        });
+
         window.addEventListener('resize', () => {
           if (this.panel.classList.contains('active')) this._render();
         });
-      }
+      },
+
     };
 
     // ════════════════════════════════════════════════════════════════

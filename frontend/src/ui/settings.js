@@ -18,19 +18,16 @@ const SettingsPanel = {
 
   setFontSize(size) {
     this.fontSize = size;
-    const sizes = { small: '14px', medium: '17px', large: '20px' };
     const narrativeSizes = { small: '0.9rem', medium: '1.05rem', large: '1.2rem' };
+    const quoteSizes = { small: '0.85rem', medium: '1rem', large: '1.15rem' };
 
     document.querySelectorAll('.font-size-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.size === size);
     });
 
-    document.querySelectorAll('.narrative-paragraph').forEach(el => {
-      el.style.fontSize = narrativeSizes[size];
-    });
-    document.querySelectorAll('.narrative-quote').forEach(el => {
-      el.style.fontSize = { small: '0.85rem', medium: '1rem', large: '1.15rem' }[size];
-    });
+    // 使用 CSS 变量，新渲染的 DOM 元素自动继承，不会被 innerHTML 替换丢失
+    document.documentElement.style.setProperty('--narrative-font-size', narrativeSizes[size]);
+    document.documentElement.style.setProperty('--narrative-quote-font-size', quoteSizes[size]);
 
     localStorage.setItem('settings_fontSize', size);
   },

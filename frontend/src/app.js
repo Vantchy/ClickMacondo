@@ -197,14 +197,20 @@ function init() {
     }
   });
 
-  // 进度条拖动跳转（按全书场景占比定位）
+  // 进度条拖动跳转（按全书场景占比定位）— 支持鼠标 + 触屏
   const progressBar = document.getElementById('reading-progress');
   if (progressBar) {
     let dragging = false;
 
+    function getClientX(e) {
+      // 触屏事件取第一个触摸点，鼠标事件取 clientX
+      return e.touches ? e.touches[0].clientX : e.clientX;
+    }
+
     function seekFromEvent(e) {
+      const clientX = getClientX(e);
       const rect = progressBar.getBoundingClientRect();
-      const rawPct = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+      const rawPct = Math.max(0, Math.min(100, ((clientX - rect.left) / rect.width) * 100));
       const tot = getTotalPageCount();
       let targetPage = tot > 0 ? Math.max(1, Math.round((rawPct / 100) * tot)) : 1;
 
@@ -248,19 +254,32 @@ function init() {
       Renderer.render();
     }
 
-    progressBar.addEventListener('mousedown', function(e) {
+    function onDragStart(e) {
       dragging = true;
       seekFromEvent(e);
-    });
+      // 阻止触屏时的页面滚动
+      if (e.cancelable) e.preventDefault();
+    }
 
-    document.addEventListener('mousemove', function(e) {
+    function onDragMove(e) {
       if (!dragging) return;
       seekFromEvent(e);
-    });
+      if (e.cancelable) e.preventDefault();
+    }
 
-    document.addEventListener('mouseup', function() {
+    function onDragEnd() {
       dragging = false;
-    });
+    }
+
+    // 鼠标事件
+    progressBar.addEventListener('mousedown', onDragStart);
+    document.addEventListener('mousemove', onDragMove);
+    document.addEventListener('mouseup', onDragEnd);
+
+    // 触屏事件
+    progressBar.addEventListener('touchstart', onDragStart, { passive: false });
+    document.addEventListener('touchmove', onDragMove, { passive: false });
+    document.addEventListener('touchend', onDragEnd);
   }
 
   console.log('《百年孤独 · 宿命之环》已就绪');

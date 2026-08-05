@@ -335,7 +335,7 @@ body {
 .speaker-label.narrator { color: var(--speaker-narrator); }
 
 .narrative-paragraph {
-  font-size: 1.05rem;
+  font-size: var(--narrative-font-size, 1.05rem);
   line-height: 1.9;
   color: var(--text-main);
   text-indent: 2em;
@@ -351,7 +351,7 @@ body {
   border-left: 2px solid var(--gold);
   font-style: italic;
   color: #3a2518;
-  font-size: 1rem;
+  font-size: var(--narrative-quote-font-size, 1rem);
   line-height: 1.8;
   background: rgba(196,149,74,0.08);
 }
@@ -1125,6 +1125,8 @@ input[type="range"] {
   :root {
     --topbar-h: 42px;
     --bottombar-h: 48px;
+    --narrative-font-size: 0.9rem;
+    --narrative-quote-font-size: 0.85rem;
   }
 
   /* 允许 body 使用动态视口，避免 iOS Safari 地址栏挤压 */
@@ -1168,6 +1170,12 @@ input[type="range"] {
   .top-btn { font-size: 0.6rem; padding: 4px 10px; letter-spacing: 0.02em; }
   #progress-label { font-size: 0.58rem; white-space: normal; text-align: center; }
 
+  /* 进度条 — 移动端加大触摸区域 */
+  #reading-progress { height: 28px; padding: 0 12px; }
+  #reading-progress-track { height: 6px; }
+  #reading-progress-thumb { width: 18px; height: 18px; }
+  #page-indicator { font-size: 0.55rem; }
+
   /* 底部栏 */
   #bottom-bar {
     gap: 6px;
@@ -1180,8 +1188,8 @@ input[type="range"] {
   /* ---- 左页叙事区 ---- */
   .scene-title { font-size: 0.98rem; margin-bottom: 12px; padding-bottom: 8px; }
   .speaker-label { font-size: 0.88rem; margin-bottom: 4px; }
-  .narrative-paragraph { font-size: 0.9rem; line-height: 1.72; text-indent: 1.5em; margin-bottom: 10px; }
-  .narrative-quote { font-size: 0.85rem; margin-left: 6px; padding: 6px 12px; line-height: 1.65; }
+  .narrative-paragraph { line-height: 1.72; text-indent: 1.5em; margin-bottom: 10px; }
+  .narrative-quote { margin-left: 6px; padding: 6px 12px; line-height: 1.65; }
   .transition-text { font-size: 0.82rem; margin-top: 14px; padding-top: 10px; line-height: 1.6; }
   .memory-hint { font-size: 0.7rem; padding: 8px 12px; margin-top: 14px; }
 
@@ -1323,6 +1331,8 @@ input[type="range"] {
   :root {
     --topbar-h: 36px;
     --bottombar-h: 44px;
+    --narrative-font-size: 0.82rem;
+    --narrative-quote-font-size: 0.78rem;
   }
 
   #left-page { padding: 14px 10px; }
@@ -1332,6 +1342,10 @@ input[type="range"] {
   #top-bar .top-item { gap: 3px; }
   .top-btn { font-size: 0.52rem; padding: 3px 7px; }
   #progress-label { font-size: 0.5rem; }
+
+  #reading-progress { height: 32px; padding: 0 14px; }
+  #reading-progress-track { height: 8px; }
+  #reading-progress-thumb { width: 22px; height: 22px; }
 
   #bottom-bar { gap: 4px; padding: 5px 6px 8px; }
   .bottom-btn { font-size: 0.54rem; padding: 4px 7px; }
@@ -1345,8 +1359,8 @@ input[type="range"] {
   /* 叙事区 */
   .scene-title { font-size: 0.88rem; margin-bottom: 10px; padding-bottom: 6px; }
   .speaker-label { font-size: 0.8rem; }
-  .narrative-paragraph { font-size: 0.82rem; line-height: 1.6; text-indent: 1.2em; margin-bottom: 8px; }
-  .narrative-quote { font-size: 0.78rem; padding: 5px 10px; line-height: 1.55; }
+  .narrative-paragraph { line-height: 1.6; text-indent: 1.2em; margin-bottom: 8px; }
+  .narrative-quote { padding: 5px 10px; line-height: 1.55; }
   .transition-text { font-size: 0.76rem; }
   .memory-hint { font-size: 0.65rem; }
 
