@@ -60,14 +60,7 @@ function showCover() {
   const cover = document.getElementById('cover-overlay');
   if (!cover) return;
   cover.classList.remove('hidden');
-
-  // ★ 先绑定点击事件（确保即使后续动画出错，封面仍可点击进入）
-  cover.onclick = null; // 清除可能残留的旧事件
-  cover.addEventListener('click', function enterGame() {
-    cover.removeEventListener('click', enterGame);
-    cover.classList.add('hidden');
-    showMainMenu();
-  });
+  // 注：封面点击事件已在 HTML 中通过 onclick 绑定，不依赖 JS 加载顺序
 
   // 动画（非关键路径：失败不影响封面点击）
   try { spawnCoverParticles(); } catch (e) { console.warn('封面粒子动画失败:', e); }
