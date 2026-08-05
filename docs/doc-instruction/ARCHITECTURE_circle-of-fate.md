@@ -259,7 +259,8 @@ ClickMacondo/
 │  5. 无存档→显示封面 / 有存档→直接进入        │
 │  6. 绑定全部 DOM 事件                         │
 │  7. 键盘导航（方向键翻页、数字键选择、Esc）    │
-│  8. 进度条拖动跳转 ⭐ 新增                    │
+│  8. 翻页按钮事件绑定（#nav-prev / #nav-next）⭐│
+│  9. 进度条拖动跳转 ⭐                          │
 │  9. 初始化成就追踪 ⭐ 新增                    │
 │                                              │
 │ 依赖：全部上述模块                            │
@@ -313,6 +314,8 @@ ClickMacondo/
 | 历史档案侧边栏 | `#sidebar-archives` | `sidebar.js` | `SidebarManager.openArchives()` |
 | 个人简介侧边栏 | `#sidebar-profile` | `sidebar.js` | `SidebarManager.openProfile()` |
 | 关系查询侧边栏 | `#sidebar-relations` | `sidebar.js` | `SidebarManager.openRelations()` |
+| 翻页按钮 ⭐ | `#nav-prev`, `#nav-next` | `app.js` | 点击调用 `navigateBack/Forward()` + SFX |
+| 已选选项点击前进 ⭐ | `.choice-chosen-clickable` | `renderer.js` | `navigateForwardFromLockedChoice()` |
 | BGM 音频 | `#bgm-audio` | `ui.js` | `BGM.init()`, `BGM.tryPlay()` |
 | 音效 ⭐ | Web Audio API | `sfx.js` | `SFX.playSelect()`, `SFX.playConfirm()`, `SFX.playPageTurn()` |
 | 破解面板 ⭐ | `#debug-chapter-panel` | `debug-panel.js`（仅解锁版） | `debugTogglePanel()`, `debugJump()` |
@@ -426,6 +429,8 @@ ClickMacondo/
 | 修改存档逻辑 | `src/utils/storage.js` | `StorageManager`, `SaveLoadPanel` |
 | 修改设置功能 | `src/ui/settings.js` | `SettingsPanel` |
 | 修改键盘快捷键 | `src/app.js` | `keydown` 事件监听 |
+| 修改翻页按钮 ⭐ | `circle-of-fate.html` + `styles.css` + `src/app.js` | 按钮 HTML + 样式 + click 事件 |
+| 修改已选选项点击前进 ⭐ | `src/core/renderer.js` | `navigateForwardFromLockedChoice()` |
 | 修改故事画卷 | `story-viewer/story-explorer.html` | 独立页面 |
 | 修改点击音效 ⭐ | `src/utils/sfx.js` | `SFX.playSelect/Confirm/PageTurn` |
 | 修改主菜单项 ⭐ | `circle-of-fate.html` + `src/ui/ui.js` | 菜单按钮 HTML + JS 处理函数 |
@@ -495,6 +500,7 @@ ClickMacondo/
 | `showMemoryPopup()` | `renderer.js` | 显示记忆碎片弹窗 |
 | `selectChoice()` | `renderer.js` | 两步确认：第一步高亮 |
 | `confirmChoice()` | `renderer.js` | 两步确认：第二步执行 |
+| `navigateForwardFromLockedChoice()` ⭐ | `renderer.js` | 已锁定选择页：点击已选选项前进 |
 | `init()` | `app.js` | 应用入口函数 |
 | `debugTogglePanel()` | `debug-panel.js` | 打开/关闭破解面板 ⭐ |
 | `debugJump()` | `debug-panel.js` | 控制台跳转命令 ⭐ |

@@ -110,7 +110,9 @@
 │   ├── #book-area           ← 书页区域
 │   │   ├── #left-page       ← 左页：叙事区
 │   │   ├── #spine           ← 书脊装饰
-│   │   └── #right-page      ← 右页：交互区
+│   │   ├── #right-page      ← 右页：交互区
+│   │   ├── #nav-prev        ← 翻页按钮：上一页 ⭐
+│   │   └── #nav-next        ← 翻页按钮：下一页 ⭐
 │   ├── #reading-progress    ← 可拖动的阅读进度条
 │   ├── #page-indicator      ← 页码指示器
 │   └── #bottom-bar          ← 底部栏（6 个功能按钮）
@@ -432,7 +434,23 @@ history = [scene1, scene2, scene3, scene4, scene5]
 | `Esc` | 关闭当前打开的面板，或呼出主菜单 |
 | `Ctrl+Shift+D` ⭐ | 打开/关闭破解版章节跳转面板（仅解锁版） |
 
-### 7.6 探索场景（Exploration）
+### 7.6 翻页导航按钮 ⭐
+
+书页区域左右两侧各有半透明翻页箭头按钮（❮ / ❯）：
+- **桌面端**：位于书页左右边缘，hover 时高亮发光
+- **移动端**：缩小适配（32×52px），方便手指点击
+- 点击 `❮` → `GameEngine.navigateBack()` + `SFX.playPageTurn()`
+- 点击 `❯` → `GameEngine.navigateForward()` + `SFX.playPageTurn()`
+- 封面或主菜单打开时按钮被遮罩覆盖，不会误触
+
+### 7.7 已锁定选择页：点击已选选项前进 ⭐
+
+回退到已做出选择的页面时，所有选项被锁定（无法修改选择），但已选中的选项（金色高亮 + `▶` 标记）变为可点击的"继续"按钮：
+- hover 时显示金色发光边框和 `cursor: pointer`
+- 点击 → `navigateForwardFromLockedChoice()` → `GameEngine.navigateForward()` + `SFX.playConfirm()` → 前进到下一页
+- 这对移动端特别友好：无需找翻页按钮或按键盘，直接点击醒目的金色选项即可
+
+### 7.8 探索场景（Exploration）
 
 - 右页显示一个"探索区域"，包含多个可点击热点（hotspot）
 - 每个热点有一个位置（`position: {x, y}`）和发现后的叙事文本
