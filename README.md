@@ -87,7 +87,7 @@ ClickMacondo/
 
 项目无需安装，纯静态文件，直接在浏览器中打开即可：
 
-- **入口页**：将 [`index.html`](index.html) 放到服务器 `html/` 根目录（与 `ClickMacondo/` 文件夹并列），在浏览器中访问域名即可
+- **入口页**：在浏览器中打开 [`index.html`](index.html)
 - **主游戏**：在浏览器中打开 [`frontend/circle-of-fate.html`](frontend/circle-of-fate.html)
 - **故事画卷**：在浏览器中打开 [`story-viewer/story-explorer.html`](story-viewer/story-explorer.html)
 
