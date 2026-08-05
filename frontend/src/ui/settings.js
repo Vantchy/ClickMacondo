@@ -35,6 +35,7 @@ const SettingsPanel = {
   setVolume(val) {
     this.volume = val;
     BGM.setVolume(val);
+    if (typeof SFX !== 'undefined') SFX.setVolume(val);
     localStorage.setItem('settings_volume', val);
   },
 
@@ -46,6 +47,7 @@ const SettingsPanel = {
     const slider = document.getElementById('volume-slider');
     if (slider) slider.value = this.volume;
     BGM.setVolume(this.volume);
+    if (typeof SFX !== 'undefined') SFX.setVolume(this.volume);
   },
 
   resetGame() {

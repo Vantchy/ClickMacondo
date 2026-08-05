@@ -8,6 +8,8 @@ const SFX = (function () {
   'use strict';
 
   let _ctx = null;
+  let _masterGain = null;       // 主增益节点，随 BGM 音量同步缩放
+  let _volume = 30;             // 当前音量 (0-100)，与 BGM 音量保持同步
 
   function ctx() {
     if (!_ctx) {
@@ -15,6 +17,24 @@ const SFX = (function () {
     }
     if (_ctx.state === 'suspended') _ctx.resume();
     return _ctx;
+  }
+
+  /** 获取或创建主增益节点（连接 ctx → destination） */
+  function master() {
+    if (!_masterGain) {
+      _masterGain = ctx().createGain();
+      _masterGain.connect(ctx().destination);
+      _applyVolume();
+    }
+    return _masterGain;
+  }
+
+  /** 根据 _volume (0-100) 计算主增益 (0.35~1.0) */
+  function _applyVolume() {
+    if (!_masterGain) return;
+    // 映射：volume 0 → gain 0.35, volume 30 → gain 0.55, volume 100 → gain 1.0
+    const gain = 0.35 + (_volume / 100) * 0.65;
+    _masterGain.gain.setValueAtTime(gain, ctx().currentTime);
   }
 
   /**
@@ -63,7 +83,7 @@ const SFX = (function () {
       oscGain.gain.exponentialRampToValueAtTime(0.001, now + dur);
 
       osc.connect(oscGain);
-      oscGain.connect(c.destination);
+      oscGain.connect(master());
       osc.start(now);
       osc.stop(now + dur + 0.01);
 
@@ -85,7 +105,7 @@ const SFX = (function () {
 
         noise.connect(lp);
         lp.connect(noiseGain);
-        noiseGain.connect(c.destination);
+        noiseGain.connect(master());
         noise.start(now);
         noise.stop(now + noiseLen + 0.005);
       }
@@ -125,5 +145,14 @@ const SFX = (function () {
     _playOrganic(140, 0.06, 0.130, 0.11, 1500, 0.7);
   }
 
-  return { playSelect, playConfirm, playPageTurn };
+  /**
+   * 设置主音量 (0-100)，与 BGM 音量保持同步
+   * BGM 调大时 SFX 同步增大，避免被背景音乐盖住
+   */
+  function setVolume(val) {
+    _volume = Math.max(0, Math.min(100, val));
+    _applyVolume();
+  }
+
+  return { playSelect, playConfirm, playPageTurn, setVolume };
 })();
