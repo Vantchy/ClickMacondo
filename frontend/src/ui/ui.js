@@ -116,26 +116,63 @@ function closeCredits() {
 const BGM = {
   audio: null,
   _started: false,
+  _pendingPlay: false,
+  _loadFailed: false,
 
   init() {
     this.audio = document.getElementById('bgm-audio');
-    if (this.audio) {
-      this.audio.volume = SettingsPanel.volume / 100;
+    if (!this.audio) return;
+    this.audio.volume = SettingsPanel.volume / 100;
+
+    // 如果音频在 init 之前就已缓冲完毕（本地缓存 / 快速网络）
+    if (this.audio.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA) {
+      this._audioReady = true;
+    }
+
+    // 监听音频就绪 —— 12MB 文件在慢速网络可能需要数十秒
+    this.audio.addEventListener('canplaythrough', () => {
+      console.log('BGM: 音频缓冲完毕，可以播放');
+      this._audioReady = true;
+      if (this._pendingPlay) {
+        this._pendingPlay = false;
+        this._doPlay();
+      }
+    }, { once: true });
+
+    // 加载失败时记录
+    this.audio.addEventListener('error', () => {
+      this._loadFailed = true;
+      console.warn('BGM: 音频文件加载失败，请检查文件是否存在');
+    });
+  },
+
+  /** 在用户手势中调用 —— 音频就绪则立即播放，否则等缓冲完后自动播放 */
+  tryPlay() {
+    if (!this.audio || this._started || this._loadFailed) return;
+
+    const ready = this._audioReady || this.audio.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA;
+    if (ready) {
+      this._doPlay();
+    } else {
+      if (!this._pendingPlay) {
+        this._pendingPlay = true;
+        console.log('BGM: 音频仍在缓冲中（12MB），就绪后将自动播放');
+      }
     }
   },
 
-  /** 开始播放 MP3 背景音乐（在用户手势回调中同步调用最可靠） */
-  tryPlay() {
+  _doPlay() {
     if (!this.audio || this._started) return;
-    // 显式加载确保音频源就绪（修复 PC 端 display:none / 缓存导致的静默失败）
-    this.audio.load();
     const p = this.audio.play();
     if (p && p.then) {
-      p.then(() => { this._started = true; console.log('背景音乐已启动'); })
-       .catch((e) => {
-         console.warn('背景音乐播放失败，将在下次交互时重试:', e.message);
-         // _started 保持 false，下次交互继续重试
-       });
+      p.then(() => {
+        this._started = true;
+        this._pendingPlay = false;
+        console.log('BGM: 背景音乐已启动');
+      }).catch((e) => {
+        console.warn('BGM: 播放被浏览器拒绝，将在下次交互时重试:', e.message);
+        // _started 保持 false，下次用户交互时重试
+      });
     }
   },
 
