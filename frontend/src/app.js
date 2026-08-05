@@ -128,10 +128,10 @@ function init() {
   document.getElementById('sidebar-profile-overlay').addEventListener('click', () => SidebarManager.closeProfile());
   document.getElementById('sidebar-relations-overlay').addEventListener('click', () => SidebarManager.closeRelations());
 
-  // BGM：首次用户交互时开始播放
+  // BGM：首次用户交互时开始播放（重试直到成功）
   const startBGM = () => { BGM.tryPlay(); };
-  document.body.addEventListener('click', startBGM, { once: true });
-  document.body.addEventListener('keydown', startBGM, { once: true });
+  document.body.addEventListener('click', startBGM);
+  document.body.addEventListener('keydown', startBGM);
 
   // 键盘导航
   document.addEventListener('keydown', (e) => {
