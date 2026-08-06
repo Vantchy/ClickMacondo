@@ -156,9 +156,11 @@ const Renderer = {
 
       if (scene.type === 'choice' && scene.choices) {
         const lockedChoiceId = GameState.sceneChoices[scene.id];
-        const isLocked = !!lockedChoiceId;
+        // 回退到历史中时（非末端）进入只读模式，所有选择锁定，防止改写游玩记录
+        const isReviewing = GameState.historyIndex < GameState.history.length - 1;
+        const isLocked = !!lockedChoiceId || isReviewing;
 
-        html += `<div class="right-section-title">${isLocked ? '你的选择' : '做出你的选择'}</div>`;
+        html += `<div class="right-section-title">${isLocked ? (isReviewing ? '回顾模式 · 选择已锁定' : '你的选择') : '做出你的选择'}</div>`;
         html += `<div class="choices-list">`;
 
         // v2.4: 遍历全部选项 — 门控未通过的展示为锁定态+具体条件

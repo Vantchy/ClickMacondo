@@ -40,7 +40,10 @@ const SettingsPanel = {
   },
 
   loadSettings() {
-    this.fontSize = localStorage.getItem('settings_fontSize') || 'medium';
+    // 只接受 small / medium / large，其余视为未设置
+    const validSizes = ['small', 'medium', 'large'];
+    const stored = localStorage.getItem('settings_fontSize');
+    this.fontSize = validSizes.includes(stored) ? stored : 'medium';
     this.volume = parseInt(localStorage.getItem('settings_volume') || '30');
 
     this.setFontSize(this.fontSize);
@@ -48,6 +51,19 @@ const SettingsPanel = {
     if (slider) slider.value = this.volume;
     BGM.setVolume(this.volume);
     if (typeof SFX !== 'undefined') SFX.setVolume(this.volume);
+
+    // 横竖屏切换时重新应用字体（修复移动端旋转后字体异常变大）
+    const reapply = () => this.setFontSize(this.fontSize);
+    window.addEventListener('orientationchange', () => setTimeout(reapply, 150));
+    let _debounce;
+    window.addEventListener('resize', () => {
+      clearTimeout(_debounce);
+      _debounce = setTimeout(() => {
+        const w = window.innerWidth;
+        if (this._lastWidth && Math.abs(w - this._lastWidth) > 60) reapply();
+        this._lastWidth = w;
+      }, 200);
+    });
   },
 
   resetGame() {

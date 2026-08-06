@@ -49,6 +49,8 @@ body {
   overflow: hidden;
   user-select: none;
   -webkit-user-select: none;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
   color: var(--text-main);
 }
 
@@ -135,6 +137,11 @@ body {
   background: rgba(184,137,62,0.12);
   border-color: rgba(184,137,62,0.45);
   color: #e8d0a0;
+}
+.top-btn.active {
+  background: rgba(184,137,62,0.15);
+  border-color: #c4954a;
+  color: #f0d080;
 }
 
 #progress-label {

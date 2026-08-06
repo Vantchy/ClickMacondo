@@ -133,6 +133,12 @@ function init() {
   document.body.addEventListener('click', startBGM);
   document.body.addEventListener('keydown', startBGM);
 
+  // BGM 手动切换按钮
+  document.getElementById('btn-bgm-toggle').addEventListener('click', (e) => {
+    e.stopPropagation();
+    BGM.toggle();
+  });
+
   // 键盘导航
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
@@ -266,7 +272,8 @@ function init() {
       const scene = chapterData ? chapterData.scenes[target.sceneId] : null;
       if (scene) GameState.round = scene.round || 0;
 
-      StorageManager.autoSave();
+      // 不自动存档：进度条跳转是"回看"操作，不应持久化
+      // 只有玩家实际做出选择或自然推进时才存档
       Renderer.render();
     }
 

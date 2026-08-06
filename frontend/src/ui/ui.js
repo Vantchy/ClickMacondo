@@ -115,26 +115,56 @@ function closeCredits() {
 /* ---- BGM 背景音乐 ---- */
 const BGM = {
   audio: null,
-  _started: false,
+  _everStarted: false,
 
   init() {
     this.audio = document.getElementById('bgm-audio');
     if (this.audio) {
       this.audio.volume = SettingsPanel.volume / 100;
+      // 系统暂停（锁屏等）或恢复播放时同步按钮状态
+      this.audio.addEventListener('pause', () => this._updateBtn());
+      this.audio.addEventListener('play', () => this._updateBtn());
     }
+    this._updateBtn();
   },
 
-  /** 在用户手势中调用 —— 直接播放，浏览器自行处理缓冲 */
+  isPlaying() {
+    return this.audio && !this.audio.paused;
+  },
+
+  /** 首次自动启动（用户交互时调用，只生效一次） */
   tryPlay() {
-    if (!this.audio || this._started) return;
+    if (!this.audio || this._everStarted) return;
     const p = this.audio.play();
     if (p && p.then) {
       p.then(() => {
-        this._started = true;
-        console.log('BGM: 背景音乐已启动');
-      }).catch(() => {
-        // 浏览器拒绝（非用户手势等），保持 _started=false，下次交互重试
-      });
+        this._everStarted = true;
+        this._updateBtn();
+      }).catch(() => {});
+    }
+  },
+
+  /** 顶部按钮：手动切换播放/暂停 */
+  toggle() {
+    if (!this.audio) return;
+    if (this.isPlaying()) {
+      this.audio.pause();
+    } else {
+      this._everStarted = true;
+      this.audio.play()?.catch(() => {});
+    }
+    this._updateBtn();
+  },
+
+  _updateBtn() {
+    const btn = document.getElementById('btn-bgm-toggle');
+    if (!btn) return;
+    if (this.isPlaying()) {
+      btn.textContent = '♪ 音乐';
+      btn.classList.add('active');
+    } else {
+      btn.textContent = '♪ 静音';
+      btn.classList.remove('active');
     }
   },
 
