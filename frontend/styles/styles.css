@@ -1311,6 +1311,13 @@ input[type="range"] {
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
   }
+  /* 隐藏 book-area 默认滚动条，避免右侧阴影 */
+  #book-area::-webkit-scrollbar { width: 0; background: transparent; }
+  /* 移除背景层右侧径向渐变，避免右侧视觉阴影 */
+  #book-bg {
+    background-image: none;
+    background-color: #241c12;
+  }
   #spine { display: none; }
   #left-page {
     padding: 18px 15px;
@@ -1374,24 +1381,27 @@ input[type="range"] {
   }
   .bottom-btn { font-size: 0.6rem; padding: 5px 9px; gap: 3px; letter-spacing: 0.03em; }
 
-  /* 移动端菜单 —— 折叠选项卡 */
+  /* 移动端菜单 —— 折叠选项卡（无边框，纯图标） */
   #btn-mobile-menu {
     display: flex;
     align-items: center;
     justify-content: center;
     width: 34px;
     height: 34px;
+    min-height: unset;
     padding: 0;
     font-size: 1.2rem;
+    border: none;
     border-radius: 50%;
     flex-shrink: 0;
+    background: transparent;
   }
   .top-actions { display: none; }
   #bottom-bar { display: none; }
 
-  /* 暗角 —— 移动端移除右侧阴影，仅保留上下微弱暗角 */
+  /* 暗角 —— 移动端完全移除，避免边缘阴影 */
   #vignette {
-    box-shadow: inset 0 0 40px 15px rgba(0,0,0,0.2);
+    display: none;
   }
 
   /* ---- 左页叙事区 ---- */
@@ -1559,7 +1569,7 @@ input[type="range"] {
   #top-bar { padding: 3px 4px; gap: 3px; }
   #top-bar .top-item { gap: 3px; }
   .top-btn { font-size: 0.52rem; padding: 3px 7px; }
-  #btn-mobile-menu { font-size: 1.1rem; padding: 0; width: 30px; height: 30px; }
+  #btn-mobile-menu { font-size: 1.1rem; padding: 0; width: 30px; height: 30px; min-height: unset; border: none; background: transparent; }
   #progress-label { font-size: 0.5rem; }
 
   #reading-progress { height: 32px; padding: 0 14px; }
@@ -1569,9 +1579,9 @@ input[type="range"] {
   #bottom-bar { display: none; }
   .bottom-btn { font-size: 0.54rem; padding: 4px 7px; }
 
-  /* 暗角进一步减弱 */
+  /* 暗角 —— 移动端完全移除 */
   #vignette {
-    box-shadow: inset 0 0 40px 12px rgba(0,0,0,0.18);
+    display: none;
   }
 
   /* 确保触摸目标足够大 (WCAG 2.5.5 推荐 ≥44px) */
