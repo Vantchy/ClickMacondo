@@ -1468,16 +1468,26 @@ input[type="range"] {
   body {
     height: 100dvh;
     height: -webkit-fill-available;
+    width: 100%;
+    max-width: 100%;
     overflow: hidden;
+  }
+
+  /* 防止内容溢出导致右侧阴影 */
+  #app-container {
+    overflow-x: hidden;
   }
 
   /* 书页区域 —— 单栏连续滚屏 */
   #book-area {
     grid-template-columns: 1fr;
     grid-template-rows: auto;
+    width: 100%;
+    max-width: 100%;
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: none;
   }
 
   /* 隐藏 book-area 默认滚动条，避免右侧阴影 */
@@ -1491,6 +1501,10 @@ input[type="range"] {
     background-image: none;
     background-color: #241c12;
   }
+  /* 移动端隐藏纹理覆盖层，避免边缘伪影 */
+  #book-texture {
+    display: none;
+  }
 
   #spine {
     display: none;
@@ -1499,7 +1513,10 @@ input[type="range"] {
   #left-page {
     padding: 18px 15px;
     max-height: none;
+    max-width: 100%;
+    min-width: 0;
     overflow: visible;
+    overflow-x: hidden;
     border-bottom: 2px solid rgba(196, 149, 74, 0.12);
     background: rgba(255, 250, 240, 0.88);
   }
@@ -1507,7 +1524,10 @@ input[type="range"] {
   #right-page {
     padding: 18px 15px;
     max-height: none;
+    max-width: 100%;
+    min-width: 0;
     overflow: visible;
+    overflow-x: hidden;
     background: rgba(255, 250, 240, 0.88);
   }
 
@@ -2102,11 +2122,17 @@ input[type="range"] {
 
   #left-page {
     padding: 14px 10px;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: hidden;
     background: rgba(255, 250, 240, 0.88);
   }
 
   #right-page {
     padding: 14px 10px;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: hidden;
     background: rgba(255, 250, 240, 0.88);
   }
 
