@@ -137,7 +137,7 @@ body {
   background: rgba(10, 8, 4, 0.55);
   border: 1px solid rgba(184, 137, 62, 0.22);
   padding: 5px 14px;
-  border-radius: 3px;
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s ease;
   letter-spacing: 0.05em;
@@ -387,7 +387,7 @@ body {
   background: rgba(10, 8, 4, 0.55);
   border: 1px solid rgba(184, 137, 62, 0.2);
   padding: 6px 16px;
-  border-radius: 3px;
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s ease;
   letter-spacing: 0.06em;
@@ -683,7 +683,7 @@ body {
   padding: 14px 24px;
   background: rgba(184, 137, 62, 0.10);
   border: 1px solid var(--gold);
-  border-radius: 3px;
+  border-radius: 6px;
   font-family: var(--font-title);
   font-size: 0.95rem;
   color: #9a7030;
@@ -809,7 +809,7 @@ body {
   cursor: pointer;
   width: 32px;
   height: 32px;
-  border-radius: 50%;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -895,7 +895,7 @@ body {
   cursor: pointer;
   width: 32px;
   height: 32px;
-  border-radius: 50%;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1130,7 +1130,7 @@ body {
   background: rgba(10, 8, 4, 0.5);
   border: 1px solid rgba(184, 137, 62, 0.25);
   padding: 4px 12px;
-  border-radius: 2px;
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -1187,7 +1187,7 @@ input[type="range"] {
   font-family: var(--font-ui);
   font-size: 0.8rem;
   padding: 8px 20px;
-  border-radius: 3px;
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s ease;
   letter-spacing: 0.05em;
@@ -1404,7 +1404,7 @@ input[type="range"] {
   font-family: var(--font-ui);
   font-size: 0.66rem;
   padding: 5px 12px;
-  border-radius: 2px;
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.25s ease;
   border: 1px solid rgba(184, 137, 62, 0.22);
@@ -1543,7 +1543,7 @@ input[type="range"] {
     top: 50%;
     bottom: auto;
     transform: translateY(-50%);
-    border-radius: 50%;
+    border-radius: 6px;
     background: rgba(20, 14, 8, 0.45);
     opacity: 0.7;
     z-index: 30;
@@ -1561,18 +1561,29 @@ input[type="range"] {
     right: 12px;
   }
 
-  /* 顶部栏 —— 允许换行 */
+  /* 顶部栏 —— 章节简介靠左，菜单/宿命/羁绊靠右 */
   #top-bar {
     padding: 4px 8px;
     gap: 5px;
     height: auto;
     min-height: var(--topbar-h);
-    flex-wrap: wrap;
-    justify-content: center;
+    flex-wrap: nowrap;
+    justify-content: space-between;
   }
 
   #top-bar .top-item {
     gap: 5px;
+  }
+
+  /* 章节简介（第一组）靠左，文字左对齐 */
+  #top-bar>.top-item:first-child {
+    align-items: flex-start !important;
+    margin-right: auto;
+  }
+
+  /* 宿命/羁绊（第二组）与菜单按钮一起靠右 */
+  #top-bar>.top-item:nth-of-type(2) {
+    margin-left: auto;
   }
 
   .top-btn {
@@ -1584,7 +1595,7 @@ input[type="range"] {
   #progress-label {
     font-size: 0.58rem;
     white-space: normal;
-    text-align: center;
+    text-align: left;
   }
 
   /* 进度条 — 移动端加大触摸区域 */
@@ -1632,7 +1643,7 @@ input[type="range"] {
     padding: 0;
     font-size: 1.2rem;
     border: none;
-    border-radius: 50%;
+    border-radius: 6px;
     flex-shrink: 0;
     background: transparent;
   }
@@ -2819,7 +2830,7 @@ input[type="range"] {
   background: rgba(184, 137, 62, 0.12);
   border: 1px solid rgba(184, 137, 62, 0.35);
   padding: 12px 32px;
-  border-radius: 3px;
+  border-radius: 6px;
   cursor: pointer;
   letter-spacing: 0.1em;
   transition: all 0.3s ease;
@@ -2947,7 +2958,7 @@ input[type="range"] {
   letter-spacing: 0.06em;
   background: rgba(184, 137, 62, 0.05);
   border: 1px solid rgba(184, 137, 62, 0.14);
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.35s ease;
   text-align: left;
@@ -3704,7 +3715,7 @@ input[type="range"] {
   padding: 8px 24px;
   background: rgba(184, 137, 62, 0.15);
   border: 1px solid rgba(184, 137, 62, 0.3);
-  border-radius: 3px;
+  border-radius: 6px;
   font-family: var(--font-ui);
   font-size: 0.75rem;
   color: var(--gold-light);
@@ -3734,7 +3745,7 @@ input[type="range"] {
   padding: 12px 20px;
   background: rgba(184, 137, 62, 0.10);
   border: 1px solid var(--gold);
-  border-radius: 3px;
+  border-radius: 6px;
   font-family: var(--font-title);
   font-size: 0.88rem;
   color: #9a7030;
@@ -3852,7 +3863,7 @@ input[type="range"] {
   padding: 3px 10px;
   background: rgba(10, 8, 4, 0.55);
   border: 1px solid rgba(184, 137, 62, 0.2);
-  border-radius: 2px;
+  border-radius: 6px;
   white-space: nowrap;
   transition: all 0.3s ease;
 }
@@ -3959,7 +3970,7 @@ input[type="range"] {
   padding: 8px 22px;
   background: rgba(184, 137, 62, 0.15);
   border: 1px solid rgba(184, 137, 62, 0.3);
-  border-radius: 3px;
+  border-radius: 6px;
   font-family: var(--font-ui);
   font-size: 0.75rem;
   color: var(--gold-light);
@@ -4356,7 +4367,7 @@ input[type="range"] {
   color: var(--gold-dim);
   background: rgba(184, 137, 62, 0.12);
   border: 1px solid rgba(184, 137, 62, 0.25);
-  border-radius: 50%;
+  border-radius: 6px;
   cursor: pointer;
   margin-left: 4px;
   vertical-align: middle;
@@ -4439,7 +4450,7 @@ input[type="range"] {
   text-align: center;
   background: rgba(184, 137, 62, 0.1);
   border: 1px solid rgba(184, 137, 62, 0.2);
-  border-radius: 50%;
+  border-radius: 6px;
   color: var(--gold-dim);
   cursor: pointer;
   font-size: 0.75rem;
