@@ -1211,14 +1211,23 @@ input[type="range"] {
     overflow: visible;
   }
 
-  /* 翻页按钮 — 移动端缩小，避免遮挡内容 */
+  /* 翻页按钮 — 移动端移到底部，避免遮挡正文 */
   .book-nav-btn {
-    width: 32px;
-    height: 52px;
+    width: 36px;
+    height: 40px;
     font-size: 1.1rem;
+    top: auto;
+    bottom: 16px;
+    transform: none;
+    border-radius: 50%;
+    background: rgba(20,14,8,0.45);
+    opacity: 0.7;
   }
-  #nav-prev { left: 1px; }
-  #nav-next { right: 1px; }
+  .book-nav-btn:active {
+    transform: scale(0.92);
+  }
+  #nav-prev { left: 12px; }
+  #nav-next { right: 12px; }
 
   /* 顶部栏 —— 允许换行 */
   #top-bar {
@@ -1400,6 +1409,16 @@ input[type="range"] {
 
   #left-page { padding: 14px 10px; }
   #right-page { padding: 14px 10px; }
+
+  /* 翻页按钮 — 小屏进一步缩小 */
+  .book-nav-btn {
+    width: 30px;
+    height: 36px;
+    font-size: 1rem;
+    bottom: 12px;
+  }
+  #nav-prev { left: 8px; }
+  #nav-next { right: 8px; }
 
   #top-bar { padding: 3px 4px; gap: 3px; }
   #top-bar .top-item { gap: 3px; }
