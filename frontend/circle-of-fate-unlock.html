@@ -283,10 +283,11 @@
       <span id="fate-display" class="axis-display" title="宿命值">✧ 宿命 0</span>
       <span id="bond-display" class="axis-display" title="羁绊值">↭ 羁绊 0</span>
     </div>
-    <div class="top-item">
+    <div class="top-item top-actions">
       <button class="top-btn" id="btn-menu" title="主菜单">❧ 菜单</button>
       <button class="top-btn" id="btn-settings" title="设置">⊛ 设置</button>
     </div>
+    <button class="top-btn" id="btn-mobile-menu" title="更多" aria-label="菜单">☰</button>
   </div>
 
   <!-- 书页区域 -->
@@ -323,6 +324,41 @@
     <button class="bottom-btn" id="btn-archives">¶ 历史档案</button>
     <button class="bottom-btn" id="btn-profile">◆ 个人简介</button>
     <button class="bottom-btn" id="btn-relations">↝ 关系查询</button>
+  </div>
+</div>
+
+<!-- 移动端菜单抽屉 -->
+<div class="mobile-menu-overlay" id="mobile-menu-overlay"></div>
+<div class="mobile-menu-drawer" id="mobile-menu-drawer">
+  <div class="mobile-menu-header">
+    <span class="mobile-menu-title">☰ 功能菜单</span>
+    <button class="mobile-menu-close" id="btn-mobile-menu-close">✕</button>
+  </div>
+  <div class="mobile-menu-content">
+    <div class="mobile-menu-section">
+      <div class="mobile-menu-section-title">快捷操作</div>
+      <div class="mobile-menu-grid" id="mobile-menu-actions">
+        <button class="mobile-menu-btn" id="btn-mobile-bgm">♪ 音乐</button>
+        <button class="mobile-menu-btn" id="btn-mobile-mainmenu">❧ 菜单</button>
+        <button class="mobile-menu-btn" id="btn-mobile-settings">⊛ 设置</button>
+      </div>
+    </div>
+    <div class="mobile-menu-section">
+      <div class="mobile-menu-section-title">存档与数据</div>
+      <div class="mobile-menu-grid" id="mobile-menu-data">
+        <button class="mobile-menu-btn" id="btn-mobile-save">◈ 存档</button>
+        <button class="mobile-menu-btn" id="btn-mobile-load">❧ 读档</button>
+      </div>
+    </div>
+    <div class="mobile-menu-section">
+      <div class="mobile-menu-section-title">查阅</div>
+      <div class="mobile-menu-grid" id="mobile-menu-browse">
+        <button class="mobile-menu-btn" id="btn-mobile-family">❦ 家族树</button>
+        <button class="mobile-menu-btn" id="btn-mobile-archives">¶ 档案</button>
+        <button class="mobile-menu-btn" id="btn-mobile-profile">◆ 简介</button>
+        <button class="mobile-menu-btn" id="btn-mobile-relations">↝ 关系</button>
+      </div>
+    </div>
   </div>
 </div>
 

@@ -727,6 +727,119 @@ body {
   overflow-y: auto;
 }
 
+/* ── 移动端菜单抽屉 ── */
+#btn-mobile-menu {
+  display: none; /* 桌面端隐藏，移动端显示 */
+}
+
+.mobile-menu-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  background: rgba(0,0,0,0.55);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.mobile-menu-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.mobile-menu-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(300px, 82vw);
+  z-index: 60;
+  background: linear-gradient(180deg, #1a1510 0%, #100d08 100%);
+  border-left: 1px solid rgba(184,137,62,0.2);
+  box-shadow: -4px 0 24px rgba(0,0,0,0.5);
+  transform: translateX(100%);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 16px;
+}
+.mobile-menu-drawer.open {
+  transform: translateX(0);
+}
+
+.mobile-menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(184,137,62,0.18);
+}
+.mobile-menu-title {
+  font-family: var(--font-title);
+  font-size: 1.05rem;
+  color: var(--gold-light);
+  letter-spacing: 0.06em;
+}
+.mobile-menu-close {
+  background: none;
+  border: 1px solid rgba(184,137,62,0.3);
+  color: var(--gold-dim);
+  font-size: 1.1rem;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+}
+.mobile-menu-close:active {
+  background: rgba(184,137,62,0.15);
+  border-color: var(--gold);
+  color: var(--gold-light);
+}
+
+.mobile-menu-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.mobile-menu-section-title {
+  font-size: 0.65rem;
+  color: var(--gold-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+  opacity: 0.7;
+}
+.mobile-menu-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.mobile-menu-btn {
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  color: var(--gold-dim);
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(184,137,62,0.18);
+  padding: 12px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  text-align: center;
+  letter-spacing: 0.04em;
+  min-height: 44px;
+}
+.mobile-menu-btn:active {
+  background: rgba(184,137,62,0.12);
+  border-color: rgba(184,137,62,0.4);
+  color: var(--gold-light);
+}
+
 /* 家族树 */
 .family-member {
   padding: 10px 14px;
@@ -1257,6 +1370,26 @@ input[type="range"] {
   }
   .bottom-btn { font-size: 0.6rem; padding: 5px 9px; gap: 3px; letter-spacing: 0.03em; }
 
+  /* 移动端菜单 —— 折叠选项卡 */
+  #btn-mobile-menu {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    font-size: 1.2rem;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .top-actions { display: none; }
+  #bottom-bar { display: none; }
+
+  /* 暗角 —— 移动端减弱 */
+  #vignette {
+    box-shadow: inset 0 0 80px 30px rgba(0,0,0,0.35);
+  }
+
   /* ---- 左页叙事区 ---- */
   .scene-title { font-size: 0.98rem; margin-bottom: 12px; padding-bottom: 8px; }
   .speaker-label { font-size: 0.88rem; margin-bottom: 4px; }
@@ -1423,14 +1556,20 @@ input[type="range"] {
   #top-bar { padding: 3px 4px; gap: 3px; }
   #top-bar .top-item { gap: 3px; }
   .top-btn { font-size: 0.52rem; padding: 3px 7px; }
+  #btn-mobile-menu { font-size: 1.1rem; padding: 0; width: 30px; height: 30px; }
   #progress-label { font-size: 0.5rem; }
 
   #reading-progress { height: 32px; padding: 0 14px; }
   #reading-progress-track { height: 8px; }
   #reading-progress-thumb { width: 22px; height: 22px; }
 
-  #bottom-bar { gap: 4px; padding: 5px 6px 8px; }
+  #bottom-bar { display: none; }
   .bottom-btn { font-size: 0.54rem; padding: 4px 7px; }
+
+  /* 暗角进一步减弱 */
+  #vignette {
+    box-shadow: inset 0 0 60px 20px rgba(0,0,0,0.25);
+  }
 
   /* 确保触摸目标足够大 (WCAG 2.5.5 推荐 ≥44px) */
   .choice-btn, .bottom-btn, .top-btn, .next-btn,
