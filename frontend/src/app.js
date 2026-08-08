@@ -139,6 +139,47 @@ function init() {
     BGM.toggle();
   });
 
+  // ── 移动端菜单 ──
+  const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+  const mobileMenuDrawer = document.getElementById('mobile-menu-drawer');
+  const openMobileMenu = () => {
+    mobileMenuOverlay.classList.add('open');
+    mobileMenuDrawer.classList.add('open');
+  };
+  const closeMobileMenu = () => {
+    mobileMenuOverlay.classList.remove('open');
+    mobileMenuDrawer.classList.remove('open');
+  };
+  document.getElementById('btn-mobile-menu').addEventListener('click', (e) => {
+    e.stopPropagation();
+    openMobileMenu();
+  });
+  document.getElementById('btn-mobile-menu-close').addEventListener('click', closeMobileMenu);
+  mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+
+  // 移动端菜单按钮 —— 触发对应功能
+  const bindMobileBtn = (id, originalId) => {
+    const el = document.getElementById(id);
+    const orig = document.getElementById(originalId);
+    if (el && orig) {
+      el.addEventListener('click', () => {
+        closeMobileMenu();
+        orig.click();
+      });
+    } else if (el && !orig) {
+      el.style.display = 'none'; // 原按钮不存在则隐藏菜单项
+    }
+  };
+  bindMobileBtn('btn-mobile-bgm', 'btn-bgm-toggle');
+  bindMobileBtn('btn-mobile-mainmenu', 'btn-menu');
+  bindMobileBtn('btn-mobile-settings', 'btn-settings');
+  bindMobileBtn('btn-mobile-save', 'btn-save');
+  bindMobileBtn('btn-mobile-load', 'btn-load');
+  bindMobileBtn('btn-mobile-family', 'btn-family-tree');
+  bindMobileBtn('btn-mobile-archives', 'btn-archives');
+  bindMobileBtn('btn-mobile-profile', 'btn-profile');
+  bindMobileBtn('btn-mobile-relations', 'btn-relations');
+
   // 键盘导航
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
